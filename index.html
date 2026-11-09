@@ -31,28 +31,37 @@
 <nav id="nav"></nav>
 
 <main class="wrap">
-  <header class="hero">
-    <div>
-      <span class="badge" data-i18n="badge"></span>
-      <h1><span data-i18n="h1a"></span><br><span class="g" data-i18n="h1b"></span></h1>
-      <p class="lead" data-i18n="lead"></p>
-      <div class="cta">
-        <a class="btn" href="/predict" data-i18n="cta1"></a>
-        <a class="btn ghost" href="/how-it-works" data-i18n="cta2"></a>
-      </div>
+  <header class="hero2">
+    <span class="badge" data-i18n="badge"></span>
+    <h1><span data-i18n="h1a"></span><br><span class="g" data-i18n="h1b"></span></h1>
+    <p class="lead" data-i18n="lead"></p>
+    <div class="cta">
+      <a class="btn lg" href="/predict" data-i18n="cta1"></a>
+      <a class="btn ghost lg" href="/how-it-works" data-i18n="cta2"></a>
     </div>
-    <div class="stage">
-      <div class="orb"></div>
-      <div id="cap3d" aria-hidden="true"></div>
-      <div class="hcard">
-        <small data-i18n="last"></small>
-        <h3 data-i18n="lastT"></h3>
-        <div id="lastBody"></div>
-      </div>
-      <div class="float a">🤖 <span data-i18n="flm"></span></div>
-      <div class="float b">⚡ <span data-i18n="fl"></span></div>
-    </div>
+    <p class="trust" data-i18n="hero_trust"></p>
   </header>
+
+  <div class="showcase">
+    <div class="orb"></div>
+    <div id="cap3d" aria-hidden="true"></div>
+    <div class="win" id="win">
+      <div class="win-bar"><i></i><i></i><i></i><span data-i18n="lastT"></span><em id="winTag"></em></div>
+      <div class="win-body">
+        <div class="win-score">
+          <div class="win-ring">
+            <svg viewBox="0 0 200 200" aria-hidden="true"><circle class="bg" cx="100" cy="100" r="86"/><circle class="fg" id="winArc" cx="100" cy="100" r="86"/></svg>
+            <div class="win-num"><b id="winP">0</b><small>/100</small></div>
+          </div>
+          <span class="pill" id="winLvl"></span>
+        </div>
+        <div class="win-bars" id="winBars"></div>
+      </div>
+      <div class="win-foot" data-i18n="wi_note"></div>
+    </div>
+    <div class="float a">🤖 <span data-i18n="flm"></span></div>
+    <div class="float b">⚡ <span data-i18n="fl"></span></div>
+  </div>
 
   <div class="stats">
     <div class="stat"><b data-i18n="s_1v"></b><span data-i18n="s_1l"></span></div>
@@ -291,6 +300,7 @@
 </script>
 <script>
 Object.assign(T.en, {
+  hero_trust: "Free · No sign-up · About one minute", win_ex: "EXAMPLE", wi_note: "💡 What-if scenarios are recalculated by the same trained model, so you can test a change before you make it.",
   doc_title: "student-performance-predictor | Predict your exam score",
   badge: "DATA SCIENCE × EDUCATION", h1a: "Catch your habits.", h1b: "Improve your results.",
   lead: "Find out how your study habits, attendance, sleep, motivation and environment may be connected to academic performance, using a trained machine-learning model.",
@@ -314,6 +324,7 @@ Object.assign(T.en, {
   band_t: "Ready to see your prediction?", band_d: "It takes about a minute, needs no account and you can try as many different answers as you like.", band_b: "Start the analysis →"
 });
 Object.assign(T.ru, {
+  hero_trust: "Бесплатно · Без регистрации · Около минуты", win_ex: "ПРИМЕР", wi_note: "💡 Сценарии «что если» пересчитывает та же обученная модель, так что изменение можно проверить заранее.",
   doc_title: "student-performance-predictor | Прогноз экзаменационного балла",
   badge: "DATA SCIENCE × ОБРАЗОВАНИЕ", h1a: "Поймите свои привычки.", h1b: "Улучшайте результаты.",
   lead: "Узнайте, как учебные привычки, посещаемость, сон, мотивация и среда связаны с успеваемостью. Прогноз строит обученная ML-модель.",
@@ -338,6 +349,9 @@ Object.assign(T.ru, {
 });
 
 Object.assign(T.uz, {
+  "hero_trust": "Bepul · Ro'yxatdan o'tmasdan · Taxminan bir daqiqa",
+  "win_ex": "NAMUNA",
+  "wi_note": "💡 «Nima bo'ladi agar» ssenariylarini o'sha o'qitilgan model qayta hisoblaydi, shuning uchun o'zgarishni oldindan sinab ko'rish mumkin.",
   "doc_title": "student-performance-predictor | Imtihon balingizni bashorat qiling",
   "badge": "DATA SCIENCE × TA'LIM",
   "h1a": "Odatlaringizni kashf eting.",
@@ -411,21 +425,56 @@ Object.assign(T.uz, {
 
 var ICONS = ["📚", "✅", "🌙", "🔥", "🏫", "📈"];
 function lvl(p) { return p >= 80 ? "excellent" : p >= 70 ? "verygood" : p >= 60 ? "dev" : "need"; }
+var winPlayed = false, winData = null;
+var WIN_EX = { p: 74, h: 18, a: 92, s: 7, m: "Medium" };
+function winFrac(d) {
+  return [d.h / 40, d.a / 100, d.s / 10, d.m === "High" ? 1 : d.m === "Medium" ? 0.62 : 0.3];
+}
 function renderLast() {
   var d = null;
   try { d = JSON.parse(localStorage.getItem("last")); } catch (e) {}
-  var b = document.getElementById("lastBody");
-  if (!b) return;
-  if (!d) {
-    b.innerHTML = '<div class="hbig"><div><b>--</b><span>/100</span></div></div><div class="empty">' + t("lastEmpty") + "</div>";
-    return;
+  var real = !!(d && typeof d.p === "number");
+  if (!real) d = WIN_EX;
+  winData = d;
+  var C = 2 * Math.PI * 86, arc = document.getElementById("winArc");
+  if (!arc) return;
+  arc.style.strokeDasharray = C;
+  document.getElementById("winTag").textContent = real ? t("last") : t("win_ex");
+  var lv = document.getElementById("winLvl"); lv.textContent = t("lv_" + lvl(d.p));
+  var rows = [["l_study", d.h + " " + t("u_h")], ["l_att", d.a + "%"], ["l_sleep", d.s + " " + t("u_h")], ["l_mot", t("o_" + d.m)]], fr = winFrac(d), h = "";
+  rows.forEach(function (r, i) {
+    h += '<div class="wb"><div class="wb-t"><span>' + t(r[0]) + "</span><b>" + r[1] + '</b></div><div class="wb-track"><i data-f="' + Math.max(0.04, Math.min(1, fr[i])).toFixed(3) + '"></i></div></div>';
+  });
+  document.getElementById("winBars").innerHTML = h;
+  setWin(winPlayed ? 1 : 0);
+  if (!winPlayed) { var w = document.getElementById("win"); if (w) winWatch(w); }
+}
+function setWin(k) {
+  var C = 2 * Math.PI * 86, d = winData; if (!d) return;
+  document.getElementById("winArc").style.strokeDashoffset = C * (1 - (d.p / 100) * k);
+  document.getElementById("winP").textContent = Math.round(d.p * k);
+  document.querySelectorAll("#winBars i").forEach(function (e) { e.style.width = (+e.getAttribute("data-f") * k * 100) + "%"; });
+}
+var winTimer = null;
+function winWatch(el) {
+  if (winTimer) return; winTimer = true;
+  function play() {
+    if (winPlayed) return; winPlayed = true;
+    var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduce) { setWin(1); return; }
+    var t0 = null;
+    el.classList.add("anim");
+    function step(ts) {
+      if (t0 === null) t0 = ts;
+      var k = Math.min(1, (ts - t0) / 1100); k = 1 - Math.pow(1 - k, 3);
+      setWin(k); if (k < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
   }
-  b.innerHTML = '<small style="margin-bottom:2px">' + t("l_pred") + "</small>" +
-    '<div class="hbig"><div><b>' + d.p + "</b><span>/100</span></div><span class=\"pill\">" + t("lv_" + lvl(d.p)) + "</span></div>" +
-    '<div class="hrow"><span>' + t("l_study") + "</span><b>" + d.h + " " + t("u_h") + "</b></div>" +
-    '<div class="hrow"><span>' + t("l_att") + "</span><b>" + d.a + "%</b></div>" +
-    '<div class="hrow"><span>' + t("l_sleep") + "</span><b>" + d.s + " " + t("u_h") + "</b></div>" +
-    '<div class="hrow"><span>' + t("l_mot") + "</span><b>" + t("o_" + d.m) + "</b></div>";
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (en) { if (en[0].isIntersecting) { io.disconnect(); play(); } }, { threshold: 0.35 });
+    io.observe(el);
+  } else play();
 }
 function renderFeatures() {
   var h = "";
