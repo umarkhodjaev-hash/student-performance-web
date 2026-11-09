@@ -2,10 +2,53 @@
   "cleanUrls": false,
   "trailingSlash": false,
   "rewrites": [
-    { "source": "/predict", "destination": "/predict.html" },
-    { "source": "/quiz", "destination": "/quiz.html" },
-    { "source": "/how-it-works", "destination": "/how-it-works.html" },
-    { "source": "/improve", "destination": "/improve.html" },
-    { "source": "/about", "destination": "/about.html" }
+    {
+      "source": "/predict",
+      "destination": "/predict.html"
+    },
+    {
+      "source": "/quiz",
+      "destination": "/quiz.html"
+    },
+    {
+      "source": "/focus",
+      "destination": "/focus.html"
+    },
+    {
+      "source": "/how-it-works",
+      "destination": "/how-it-works.html"
+    },
+    {
+      "source": "/improve",
+      "destination": "/improve.html"
+    },
+    {
+      "source": "/about",
+      "destination": "/about.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/sw.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        },
+        {
+          "key": "Service-Worker-Allowed",
+          "value": "/"
+        }
+      ]
+    },
+    {
+      "source": "/manifest.json",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/manifest+json"
+        }
+      ]
+    }
   ]
 }

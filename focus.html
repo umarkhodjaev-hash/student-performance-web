@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#6c47e8">
+<link rel="manifest" href="/manifest.json">
+<title>Focus room | student-performance-predictor</title>
+<meta name="description" content="Study together: a Pomodoro focus timer with a live counter of how many people are studying right now. Anonymous, no accounts.">
+<meta property="og:title" content="Focus room: study together">
+<meta property="og:description" content="A focus timer with a live counter of people studying right now.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="student-performance-predictor">
+<meta property="og:url" content="https://www.studentpp.uz/focus">
+<meta property="og:image" content="https://www.studentpp.uz/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://www.studentpp.uz/og.png">
+<link rel="canonical" href="https://www.studentpp.uz/focus">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("theme")||"dark")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<nav id="nav"></nav>
+
+<main class="wrap">
+  <div class="phead">
+    <span class="crumb" data-i18n="crumb"></span>
+    <h1 data-i18n="fx_title"></h1>
+    <p class="lead" data-i18n="fx_lead"></p>
+  </div>
+
+  <section>
+    <div class="fx-grid">
+      <div class="card fx-main">
+        <div class="fx-modes" id="fxModes"></div>
+        <div class="fx-ringwrap">
+          <svg class="fx-ring" viewBox="0 0 200 200" aria-hidden="true"><circle class="bg" cx="100" cy="100" r="88"/><circle class="fg" id="fxArc" cx="100" cy="100" r="88"/></svg>
+          <div class="fx-time" id="fxTime" role="timer" aria-live="off">25:00</div>
+        </div>
+        <div class="fx-durs" id="fxDurs"></div>
+        <input class="fx-task" id="fxTask" maxlength="60" data-ph="fx_task" autocomplete="off">
+        <div class="fx-btns">
+          <button class="btn" id="fxGo"></button>
+          <button class="btn ghost" id="fxReset"></button>
+        </div>
+        <p class="fx-msg" id="fxMsg" aria-live="polite"></p>
+      </div>
+      <div class="fx-side">
+        <div class="card fx-live">
+          <div class="fx-mascot" id="fxMas"></div>
+          <div class="fx-livenum"><span class="dot off" id="fxDot"></span><span id="fxLive">–</span></div>
+          <div data-i18n="fx_live"></div>
+          <p class="note" id="fxIn" style="margin:8px 0 0"></p>
+          <p class="note" id="fxNet" style="margin:6px 0 0"></p>
+        </div>
+        <div class="card fx-stats">
+          <h3 style="margin:0 0 6px" data-i18n="fx_today"></h3>
+          <div class="row"><span data-i18n="fx_min"></span><b id="stMin">0</b></div>
+          <div class="row"><span data-i18n="fx_sessions"></span><b id="stSes">0</b></div>
+          <div class="row"><span data-i18n="fx_streak"></span><b id="stStr">0</b></div>
+          <div class="fx-bars" id="stBars"></div>
+        </div>
+      </div>
+    </div>
+    <p class="note" style="text-align:center;max-width:640px;margin:22px auto 0" data-i18n="fx_priv"></p>
+  </section>
+
+  <div class="band">
+    <h2 data-i18n="go_t"></h2>
+    <p data-i18n="go_d"></p>
+    <a class="btn white" href="/predict" data-i18n="go_b"></a>
+  </div>
+</main>
+
+<footer id="foot"></footer>
+
+<script>
+/* Shared: dictionary, layout (nav + footer), theme, language */
+(function () {
+  var API = "https://student-performance-predictor-bas2.onrender.com";
+  window.API = API;
+
+  window.T = {
+    en: {
+      n_home: "Home", n_pred: "Predict", n_how: "How it works", n_imp: "Improve", n_about: "About", n_cta: "Analyze", n_quiz: "Quiz", n_focus: "Focus room", install: "Install app",
+      ft_tag: "Predict your exam score from your study habits and see what to change. A data science project from Tashkent.",
+      ft_pages: "PAGES", ft_proj: "PROJECT", ft_gh: "GitHub profile", ft_code: "Prediction server code", ft_web: "Website code",
+      ft_note: "An educational project. Predictions are estimates, not guarantees.",
+      lv_excellent: "Excellent", lv_verygood: "Very Good", lv_dev: "Developing", lv_need: "Needs Improvement",
+      o_Low: "Low", o_Medium: "Medium", o_High: "High", o_Yes: "Yes", o_No: "No",
+      o_Positive: "Positive", o_Neutral: "Neutral", o_Negative: "Negative", o_Near: "Near", o_Moderate: "Moderate", o_Far: "Far",
+      u_h: "h", u_d: "days"
+    },
+    ru: {
+      n_home: "Главная", n_pred: "Прогноз", n_how: "Как это работает", n_imp: "Улучшить", n_about: "О проекте", n_cta: "Анализировать", n_quiz: "Квиз", n_focus: "Комната фокуса", install: "Установить приложение",
+      ft_tag: "Прогнозируйте экзаменационный балл по учебным привычкам и узнайте, что менять. Проект по data science из Ташкента.",
+      ft_pages: "СТРАНИЦЫ", ft_proj: "ПРОЕКТ", ft_gh: "Профиль GitHub", ft_code: "Код сервера прогноза", ft_web: "Код сайта",
+      ft_note: "Учебный проект. Прогнозы приблизительные и не гарантируют результат.",
+      lv_excellent: "Отлично", lv_verygood: "Очень хорошо", lv_dev: "Развивается", lv_need: "Нужно улучшить",
+      o_Low: "Низкий", o_Medium: "Средний", o_High: "Высокий", o_Yes: "Да", o_No: "Нет",
+      o_Positive: "Положит.", o_Neutral: "Нейтр.", o_Negative: "Отрицат.", o_Near: "Близко", o_Moderate: "Средне", o_Far: "Далеко",
+      u_h: "ч", u_d: "дн."
+    }
+  };
+
+  window.T.uz = {
+  "n_home": "Bosh sahifa",
+  "n_pred": "Bashorat",
+  "n_how": "Qanday ishlaydi",
+  "n_imp": "Yaxshilash",
+  "n_about": "Loyiha haqida",
+  "n_cta": "Tahlil qilish",
+  "n_quiz": "Viktorina",
+  "n_focus": "Fokus xonasi",
+  "install": "Ilovani o'rnatish",
+  "ft_tag": "O'quv odatlaringiz asosida imtihon balingizni bashorat qiling va nimani o'zgartirish kerakligini bilib oling. Toshkentdan data science loyihasi.",
+  "ft_pages": "SAHIFALAR",
+  "ft_proj": "LOYIHA",
+  "ft_gh": "GitHub profili",
+  "ft_code": "Bashorat serveri kodi",
+  "ft_web": "Sayt kodi",
+  "ft_note": "O'quv loyihasi. Bashoratlar taxminiy bo'lib, natijani kafolatlamaydi.",
+  "lv_excellent": "A'lo",
+  "lv_verygood": "Juda yaxshi",
+  "lv_dev": "Rivojlanmoqda",
+  "lv_need": "Yaxshilash kerak",
+  "o_Low": "Past",
+  "o_Medium": "O'rta",
+  "o_High": "Yuqori",
+  "o_Yes": "Ha",
+  "o_No": "Yo'q",
+  "o_Positive": "Ijobiy",
+  "o_Neutral": "Neytral",
+  "o_Negative": "Salbiy",
+  "o_Near": "Yaqin",
+  "o_Moderate": "O'rtacha",
+  "o_Far": "Uzoq",
+  "u_h": "soat",
+  "u_d": "kun"
+};
+
+  var lang = "ru";
+  try {
+    var sl = localStorage.getItem("lang");
+    var nl = (navigator.language || "").slice(0, 2);
+    lang = (sl === "ru" || sl === "en" || sl === "uz") ? sl : (nl === "ru" ? "ru" : nl === "uz" ? "uz" : "en");
+  } catch (e) {}
+
+  window.getLang = function () { return lang; };
+  window.t = function (k) {
+    var d = window.T[lang];
+    if (d[k] !== undefined) return d[k];
+    if (window.T.en[k] !== undefined) return window.T.en[k];
+    return k;
+  };
+  window.$ = function (s) { return document.querySelector(s); };
+
+  window.mascot = function (mood) {
+    var think = mood === "think", cheer = mood === "cheer";
+    var px = think ? [74, 104, 114, 104] : [80, 111, 120, 111];
+    var lw = cheer ? 62 : 8, rw = cheer ? -62 : -8;
+    return '<svg class="mascot" viewBox="0 0 200 200" role="img" aria-label="Sovi">' +
+      '<g transform="rotate(' + lw + ' 56 100)"><ellipse cx="44" cy="128" rx="15" ry="36" fill="#6d49e0"/></g>' +
+      '<g transform="rotate(' + rw + ' 144 100)"><ellipse cx="156" cy="128" rx="15" ry="36" fill="#6d49e0"/></g>' +
+      '<ellipse cx="100" cy="124" rx="60" ry="64" fill="#8b6cff"/>' +
+      '<ellipse cx="100" cy="148" rx="36" ry="38" fill="#efe9ff"/>' +
+      '<path d="M84 140q8 8 16 0M100 140q8 8 16 0M92 158q8 8 16 0" stroke="#c9b9ff" stroke-width="3" fill="none" stroke-linecap="round"/>' +
+      '<circle cx="76" cy="108" r="19" fill="#fff"/><circle cx="124" cy="108" r="19" fill="#fff"/>' +
+      '<circle cx="' + px[0] + '" cy="' + px[1] + '" r="9" fill="#2b1b6b"/><circle cx="' + px[2] + '" cy="' + px[3] + '" r="9" fill="#2b1b6b"/>' +
+      '<circle cx="' + (px[0] + 3) + '" cy="' + (px[1] - 3) + '" r="3" fill="#fff"/><circle cx="' + (px[2] + 3) + '" cy="' + (px[3] - 3) + '" r="3" fill="#fff"/>' +
+      (think ? '<path d="M106 88q14-8 28 0" stroke="#2b1b6b" stroke-width="4" fill="none" stroke-linecap="round"/>' : "") +
+      '<path d="M92 122 L108 122 L100 136 Z" fill="#ffd166"/>' +
+      '<polygon points="100,30 162,56 100,82 38,56" fill="#2b1b6b"/>' +
+      '<path d="M66 68 V84 Q100 100 134 84 V68 L100 82 Z" fill="#3b2a8f"/>' +
+      '<path d="M154 59 V88" stroke="#ffd166" stroke-width="4" stroke-linecap="round"/><circle cx="154" cy="92" r="6" fill="#ffd166"/>' +
+      '<ellipse cx="82" cy="190" rx="12" ry="6" fill="#ffd166"/><ellipse cx="118" cy="190" rx="12" ry="6" fill="#ffd166"/>' +
+      (cheer ? '<path d="M28 44l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" fill="#ffd166"/><path d="M176 30l2 6 6 2-6 2-2 6-2-6-6-2 6-2z" fill="#ffd166"/>' : "") +
+      (think ? '<text x="170" y="48" font-size="34" font-weight="800" fill="#ffd166" font-family="Inter,Arial,sans-serif">?</text>' : "") +
+      "</svg>";
+  };
+
+  function buildLayout() {
+    var nav = document.getElementById("nav");
+    if (nav) {
+      nav.innerHTML =
+        '<a class="logo" href="/"><img src="/favicon.svg" alt="" width="30" height="30"><span>student-performance-predictor</span></a>' +
+        '<div class="links" id="links">' +
+        '<a href="/" data-i18n="n_home"></a>' +
+        '<a href="/predict" data-i18n="n_pred"></a>' +
+        '<a href="/quiz" data-i18n="n_quiz"></a><a href="/focus" data-i18n="n_focus"></a>' +
+        '<a href="/how-it-works" data-i18n="n_how"></a>' +
+        '<a href="/improve" data-i18n="n_imp"></a>' +
+        '<a href="/about" data-i18n="n_about"></a></div>' +
+        '<div class="tools">' +
+        '<button class="chip" id="theme" aria-label="Theme"></button>' +
+        '<select class="chip" id="lang" aria-label="Language"><option value="ru">RU</option><option value="en">EN</option><option value="uz">UZ</option></select>' +
+        '<a class="btn small" href="/predict" data-i18n="n_cta"></a>' +
+        '<button class="chip burger" id="burger" aria-label="Menu">☰</button></div>';
+      var path = location.pathname.replace(/\.html$/, "").replace(/\/+$/, "") || "/";
+      nav.querySelectorAll(".links a").forEach(function (a) {
+        if (a.getAttribute("href") === path) a.classList.add("cur");
+      });
+    }
+    var foot = document.getElementById("foot");
+    if (foot) {
+      foot.innerHTML =
+        '<div class="wrap"><div class="foot-grid">' +
+        '<div><a class="logo" href="/" style="padding:0"><img src="/favicon.svg" alt="" width="30" height="30"><span style="display:inline">student-performance-predictor</span></a>' +
+        '<p style="margin-top:12px;max-width:360px" data-i18n="ft_tag"></p></div>' +
+        '<div><h5 data-i18n="ft_pages"></h5>' +
+        '<a href="/" data-i18n="n_home"></a><a href="/predict" data-i18n="n_pred"></a>' +
+        '<a href="/quiz" data-i18n="n_quiz"></a><a href="/focus" data-i18n="n_focus"></a><a href="/how-it-works" data-i18n="n_how"></a><a href="/improve" data-i18n="n_imp"></a>' +
+        '<a href="/about" data-i18n="n_about"></a></div>' +
+        '<div><h5 data-i18n="ft_proj"></h5>' +
+        '<a href="https://github.com/umarkhodjaev-hash" target="_blank" rel="noopener" data-i18n="ft_gh"></a>' +
+        '<a href="https://github.com/umarkhodjaev-hash/student-performance-predictor" target="_blank" rel="noopener" data-i18n="ft_code"></a>' +
+        '<a href="https://github.com/umarkhodjaev-hash/student-performance-web" target="_blank" rel="noopener" data-i18n="ft_web"></a></div>' +
+        '</div><div class="copy">© <span id="yr"></span> student-performance-predictor · Umar<br><span data-i18n="ft_note"></span><br><button class="chip" id="install" hidden data-i18n="install" style="margin-top:12px"></button></div></div>';
+      var y = document.getElementById("yr");
+      if (y) y.textContent = new Date().getFullYear();
+    }
+  }
+
+  function applyLang() {
+    document.documentElement.lang = lang;
+    var d = window.T[lang];
+    if (d.doc_title) document.title = d.doc_title;
+    document.querySelectorAll("[data-i18n]").forEach(function (e) { e.textContent = window.t(e.getAttribute("data-i18n")); });
+    document.querySelectorAll("[data-mascot]").forEach(function (e) { e.innerHTML = window.mascot(e.getAttribute("data-mascot")); });
+    var lb = document.getElementById("lang");
+    if (lb) lb.value = lang;
+    if (window.onLang) window.onLang();
+  }
+  window.applyLang = applyLang;
+
+  function setTheme(m) {
+    document.documentElement.setAttribute("data-theme", m);
+    var b = document.getElementById("theme");
+    if (b) b.textContent = m === "dark" ? "☀️" : "🌙";
+    try { localStorage.setItem("theme", m); } catch (e) {}
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    buildLayout();
+    var saved = null;
+    try { saved = localStorage.getItem("theme"); } catch (e) {}
+    setTheme(saved || "dark");
+    document.getElementById("theme").onclick = function () {
+      setTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
+    };
+    document.getElementById("lang").onchange = function () {
+      lang = this.value;
+      try { localStorage.setItem("lang", lang); } catch (e) {}
+      applyLang();
+    };
+    document.getElementById("burger").onclick = function () {
+      document.getElementById("links").classList.toggle("open");
+    };
+    applyLang();
+    /* wake the free Render server in the background */
+    try { fetch(API + "/robots.txt", { mode: "no-cors" }).catch(function () {}); } catch (e) {}
+  });
+})();
+
+</script>
+<script>
+Object.assign(T.en, {
+  "go_t": "Now test your own habits", "go_d": "It takes about a minute and needs no account.", "go_b": "Open the predictor →",
+  "doc_title": "Focus room | student-performance-predictor",
+  "crumb": "FOCUS ROOM",
+  "fx_title": "Focus room: study together",
+  "fx_lead": "Start a timer and study alongside everyone else who is in the room right now. No chat, no names, just a quiet shared counter that shows you are not alone.",
+  "fx_live": "studying right now",
+  "fx_in": "{n} in the room",
+  "fx_conn": "Connecting to the room… the server can take up to a minute to wake up.",
+  "fx_off": "Live counter is unavailable right now. The timer still works.",
+  "fx_m_focus": "Focus", "fx_m_short": "Break", "fx_m_long": "Long break",
+  "fx_start": "Start", "fx_pause": "Pause", "fx_resume": "Resume", "fx_reset": "Reset",
+  "fx_task": "What are you studying? (optional)",
+  "fx_done": "Session complete! Time for a short break.",
+  "fx_bdone": "Break is over. Ready for another round?",
+  "fx_going": "Focus. Put the phone away.",
+  "fx_today": "Today", "fx_min": "Minutes studied", "fx_sessions": "Sessions finished", "fx_streak": "Day streak",
+  "fx_priv": "Privacy: the room only counts anonymous visitors. No names, no messages, no accounts. What you type in the task field and your statistics stay on your device.",
+  "fx_min_u": "min"
+});
+Object.assign(T.ru, {
+  "go_t": "Теперь проверьте свои привычки", "go_d": "Это займёт около минуты, аккаунт не нужен.", "go_b": "Открыть предиктор →",
+  "doc_title": "Комната фокуса | student-performance-predictor",
+  "crumb": "КОМНАТА ФОКУСА",
+  "fx_title": "Комната фокуса: учимся вместе",
+  "fx_lead": "Запусти таймер и занимайся вместе со всеми, кто сейчас в комнате. Без чата и без имён, только тихий общий счётчик, который показывает, что ты не один.",
+  "fx_live": "учатся прямо сейчас",
+  "fx_in": "в комнате: {n}",
+  "fx_conn": "Подключаемся к комнате… серверу может понадобиться до минуты, чтобы проснуться.",
+  "fx_off": "Живой счётчик сейчас недоступен. Таймер работает как обычно.",
+  "fx_m_focus": "Фокус", "fx_m_short": "Перерыв", "fx_m_long": "Длинный перерыв",
+  "fx_start": "Старт", "fx_pause": "Пауза", "fx_resume": "Продолжить", "fx_reset": "Сброс",
+  "fx_task": "Что учишь? (необязательно)",
+  "fx_done": "Сессия завершена! Время для короткого перерыва.",
+  "fx_bdone": "Перерыв закончился. Готов к новому раунду?",
+  "fx_going": "Фокус. Убери телефон.",
+  "fx_today": "Сегодня", "fx_min": "Минут учёбы", "fx_sessions": "Завершённых сессий", "fx_streak": "Дней подряд",
+  "fx_priv": "Приватность: комната считает только анонимных посетителей. Никаких имён, сообщений и аккаунтов. Текст задачи и твоя статистика хранятся только на твоём устройстве.",
+  "fx_min_u": "мин"
+});
+Object.assign(T.uz, {
+  "go_t": "Endi o'z odatlaringizni tekshiring", "go_d": "Taxminan bir daqiqa vaqt oladi, akkaunt shart emas.", "go_b": "Bashoratchini ochish →",
+  "doc_title": "Fokus xonasi | student-performance-predictor",
+  "crumb": "FOKUS XONASI",
+  "fx_title": "Fokus xonasi: birga o'qiymiz",
+  "fx_lead": "Taymerni ishga tushiring va hozir xonada bo'lgan hamma bilan birga o'qing. Chat ham, ism ham yo'q, faqat yolg'iz emasligingizni ko'rsatuvchi jim umumiy hisoblagich.",
+  "fx_live": "hozir o'qiyapti",
+  "fx_in": "xonada: {n}",
+  "fx_conn": "Xonaga ulanmoqda… serverning uyg'onishi bir daqiqagacha cho'zilishi mumkin.",
+  "fx_off": "Jonli hisoblagich hozir mavjud emas. Taymer odatdagidek ishlaydi.",
+  "fx_m_focus": "Fokus", "fx_m_short": "Tanaffus", "fx_m_long": "Uzun tanaffus",
+  "fx_start": "Boshlash", "fx_pause": "Pauza", "fx_resume": "Davom etish", "fx_reset": "Qayta boshlash",
+  "fx_task": "Nimani o'qiyapsiz? (ixtiyoriy)",
+  "fx_done": "Sessiya tugadi! Qisqa tanaffus vaqti.",
+  "fx_bdone": "Tanaffus tugadi. Yana bir raundga tayyormisiz?",
+  "fx_going": "Fokus. Telefonni chetga qo'ying.",
+  "fx_today": "Bugun", "fx_min": "O'qilgan daqiqalar", "fx_sessions": "Tugagan sessiyalar", "fx_streak": "Ketma-ket kunlar",
+  "fx_priv": "Maxfiylik: xona faqat anonim tashrif buyuruvchilarni sanaydi. Ism, xabar va akkaunt yo'q. Vazifa matni va statistikangiz faqat qurilmangizda saqlanadi.",
+  "fx_min_u": "daq"
+});
+</script>
+<script>
+(function () {
+  var C = 2 * Math.PI * 88;
+  var DUR = { focus: 25 * 60, short: 5 * 60, long: 15 * 60 };
+  var mode = "focus", focusMin = 25, running = false, endAt = 0, remain = DUR.focus, mood = "happy", msgKey = "";
+  var live = null, total = null, net = "conn", audio = null;
+  var $ = function (id) { return document.getElementById(id); };
+  var sid = Math.random().toString(36).slice(2) + Date.now().toString(36);
+
+  function dayKey(d) {
+    d = d || new Date();
+    return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
+  }
+  function loadStats() {
+    try { var s = JSON.parse(localStorage.getItem("fx_stats") || "null"); if (s && s.days && s.ses) return s; } catch (e) {}
+    return { days: {}, ses: {} };
+  }
+  function saveStats() { try { localStorage.setItem("fx_stats", JSON.stringify(stats)); } catch (e) {} }
+  var stats = loadStats();
+  try { var fm = +localStorage.getItem("fx_focusmin"); if (fm === 15 || fm === 25 || fm === 50) { focusMin = fm; DUR.focus = fm * 60; remain = DUR.focus; } } catch (e) {}
+  try { $("fxTask").value = localStorage.getItem("fx_task") || ""; } catch (e) {}
+
+  function fmt(s) { return ("0" + Math.floor(s / 60)).slice(-2) + ":" + ("0" + (s % 60)).slice(-2); }
+
+  function streak() {
+    var n = 0, d = new Date();
+    if (!(stats.days[dayKey(d)] >= 60)) d.setDate(d.getDate() - 1);
+    while (stats.days[dayKey(d)] >= 60) { n++; d.setDate(d.getDate() - 1); }
+    return n;
+  }
+
+  function renderStats() {
+    var k = dayKey();
+    $("stMin").textContent = Math.floor((stats.days[k] || 0) / 60);
+    $("stSes").textContent = stats.ses[k] || 0;
+    $("stStr").textContent = streak();
+    var vals = [], labels = [], max = 30 * 60, i, d;
+    for (i = 6; i >= 0; i--) {
+      d = new Date(); d.setDate(d.getDate() - i);
+      var v = stats.days[dayKey(d)] || 0;
+      vals.push(v); if (v > max) max = v;
+      var lg = { ru: "ru", en: "en", uz: "uz" }[document.documentElement.lang] || "en", w;
+      try { w = d.toLocaleDateString(lg, { weekday: "short" }); } catch (e) { w = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"][d.getDay()]; }
+      labels.push(w);
+    }
+    $("stBars").innerHTML = vals.map(function (v, j) {
+      return '<div title="' + Math.floor(v / 60) + " " + t("fx_min_u") + '"><i style="height:' + Math.round(v / max * 70) + 'px"></i>' + labels[j] + "</div>";
+    }).join("");
+  }
+
+  function renderModes() {
+    var h = "";
+    ["focus", "short", "long"].forEach(function (m) {
+      h += '<button data-m="' + m + '" class="' + (m === mode ? "cur" : "") + '">' + t("fx_m_" + m) + "</button>";
+    });
+    $("fxModes").innerHTML = h;
+    $("fxModes").querySelectorAll("button").forEach(function (b) {
+      b.onclick = function () { setMode(b.getAttribute("data-m")); };
+    });
+    var d = "";
+    if (mode === "focus") [15, 25, 50].forEach(function (m) {
+      d += '<button data-d="' + m + '" class="' + (m === focusMin ? "cur" : "") + '"' + (running ? " disabled" : "") + ">" + m + " " + t("fx_min_u") + "</button>";
+    });
+    $("fxDurs").innerHTML = d;
+    $("fxDurs").querySelectorAll("button").forEach(function (b) {
+      b.onclick = function () {
+        if (running) return;
+        focusMin = +b.getAttribute("data-d"); DUR.focus = focusMin * 60; remain = DUR.focus;
+        try { localStorage.setItem("fx_focusmin", focusMin); } catch (e) {}
+        render();
+      };
+    });
+  }
+
+  function render() {
+    renderModes();
+    var tot = DUR[mode];
+    $("fxArc").style.strokeDasharray = C;
+    $("fxArc").style.strokeDashoffset = C * (1 - remain / tot);
+    $("fxTime").textContent = fmt(remain);
+    var started = remain < tot;
+    $("fxGo").textContent = running ? t("fx_pause") : (started ? t("fx_resume") : t("fx_start"));
+    $("fxReset").textContent = t("fx_reset");
+    $("fxMsg").textContent = running && mode === "focus" ? t("fx_going") : (msgKey ? t(msgKey) : "");
+    $("fxMas").innerHTML = window.mascot(running && mode === "focus" ? "think" : mood);
+    document.title = running ? fmt(remain) + " · " + t("fx_m_" + mode) : t("doc_title");
+    renderNet();
+    renderStats();
+  }
+
+  function renderNet() {
+    $("fxLive").textContent = live === null ? "–" : live;
+    $("fxDot").className = "dot" + (net === "ok" ? "" : " off");
+    $("fxIn").textContent = total === null ? "" : t("fx_in").replace("{n}", total);
+    $("fxNet").textContent = net === "conn" ? t("fx_conn") : net === "off" ? t("fx_off") : "";
+  }
+
+  function setMode(m) {
+    running = false; mode = m; remain = DUR[m]; msgKey = ""; mood = "happy";
+    render(); ping();
+  }
+
+  function beep() {
+    try {
+      if (!audio) return;
+      [0, 0.28].forEach(function (off, i) {
+        var o = audio.createOscillator(), g = audio.createGain();
+        o.type = "sine"; o.frequency.value = i ? 880 : 660;
+        g.gain.setValueAtTime(0.0001, audio.currentTime + off);
+        g.gain.exponentialRampToValueAtTime(0.25, audio.currentTime + off + 0.03);
+        g.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + off + 0.25);
+        o.connect(g); g.connect(audio.destination);
+        o.start(audio.currentTime + off); o.stop(audio.currentTime + off + 0.3);
+      });
+    } catch (e) {}
+  }
+
+  function addSeconds(s) {
+    if (s <= 0) return;
+    var k = dayKey(); stats.days[k] = (stats.days[k] || 0) + s; saveStats();
+  }
+
+  function complete() {
+    running = false;
+    beep();
+    if (mode === "focus") {
+      var k = dayKey(); stats.ses[k] = (stats.ses[k] || 0) + 1; saveStats();
+      mode = "short"; msgKey = "fx_done"; mood = "cheer";
+    } else {
+      mode = "focus"; msgKey = "fx_bdone"; mood = "happy";
+    }
+    remain = DUR[mode];
+    render(); ping();
+  }
+
+  function tick() {
+    if (!running) return;
+    var rem = Math.max(0, Math.round((endAt - Date.now()) / 1000));
+    if (mode === "focus") addSeconds(remain - rem);
+    remain = rem;
+    if (rem <= 0) { complete(); return; }
+    render();
+  }
+
+  $("fxGo").onclick = function () {
+    if (!audio) { try { audio = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} }
+    if (audio && audio.state === "suspended") { try { audio.resume(); } catch (e) {} }
+    if (running) { running = false; }
+    else { running = true; endAt = Date.now() + remain * 1000; msgKey = ""; mood = "happy"; }
+    render(); ping();
+  };
+  $("fxReset").onclick = function () {
+    running = false; remain = DUR[mode]; msgKey = ""; mood = "happy"; render(); ping();
+  };
+  $("fxTask").oninput = function () { try { localStorage.setItem("fx_task", this.value); } catch (e) {} };
+
+  function ping() {
+    var studying = running && mode === "focus";
+    if (document.hidden && !studying) return;
+    try {
+      fetch(window.API + "/api/room/ping", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sid: sid, studying: studying })
+      }).then(function (r) { if (!r.ok) throw new Error("bad"); return r.json(); })
+        .then(function (d) { live = d.studying; total = d.total; net = "ok"; renderNet(); })
+        .catch(function () { net = "off"; renderNet(); });
+    } catch (e) { net = "off"; renderNet(); }
+  }
+
+  setInterval(tick, 250);
+  setInterval(ping, 20000);
+  document.addEventListener("visibilitychange", function () { if (!document.hidden) { tick(); ping(); } });
+
+  window.onLang = function () {
+    $("fxTask").placeholder = t("fx_task");
+    render();
+  };
+  render();
+  ping();
+})();
+</script>
+<script>
+(function () {
+  if (!("serviceWorker" in navigator)) return;
+  window.addEventListener("load", function () { navigator.serviceWorker.register("/sw.js").catch(function () {}); });
+  var deferred = null;
+  window.addEventListener("beforeinstallprompt", function (e) {
+    e.preventDefault(); deferred = e;
+    var b = document.getElementById("install"); if (b) b.hidden = false;
+  });
+  window.addEventListener("appinstalled", function () {
+    deferred = null; var b = document.getElementById("install"); if (b) b.hidden = true;
+  });
+  document.addEventListener("click", function (ev) {
+    if (!ev.target || ev.target.id !== "install" || !deferred) return;
+    deferred.prompt();
+    deferred.userChoice.then(function () { deferred = null; var b = document.getElementById("install"); if (b) b.hidden = true; });
+  });
+})();
+</script>
+</body>
+</html>

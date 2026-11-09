@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#6c47e8">
+<link rel="manifest" href="/manifest.json">
 <title>How to improve | student-performance-predictor</title>
 <meta name="description" content="Practical study tips for routine, attendance, sleep, motivation, environment and balance, plus a 7-day starter plan.">
 <meta property="og:title" content="How to improve your academic performance">
@@ -63,7 +64,7 @@
 
   window.T = {
     en: {
-      n_home: "Home", n_pred: "Predict", n_how: "How it works", n_imp: "Improve", n_about: "About", n_cta: "Analyze", n_quiz: "Quiz",
+      n_home: "Home", n_pred: "Predict", n_how: "How it works", n_imp: "Improve", n_about: "About", n_cta: "Analyze", n_quiz: "Quiz", n_focus: "Focus room", install: "Install app",
       ft_tag: "Predict your exam score from your study habits and see what to change. A data science project from Tashkent.",
       ft_pages: "PAGES", ft_proj: "PROJECT", ft_gh: "GitHub profile", ft_code: "Prediction server code", ft_web: "Website code",
       ft_note: "An educational project. Predictions are estimates, not guarantees.",
@@ -73,7 +74,7 @@
       u_h: "h", u_d: "days"
     },
     ru: {
-      n_home: "Главная", n_pred: "Прогноз", n_how: "Как это работает", n_imp: "Улучшить", n_about: "О проекте", n_cta: "Анализировать", n_quiz: "Квиз",
+      n_home: "Главная", n_pred: "Прогноз", n_how: "Как это работает", n_imp: "Улучшить", n_about: "О проекте", n_cta: "Анализировать", n_quiz: "Квиз", n_focus: "Комната фокуса", install: "Установить приложение",
       ft_tag: "Прогнозируйте экзаменационный балл по учебным привычкам и узнайте, что менять. Проект по data science из Ташкента.",
       ft_pages: "СТРАНИЦЫ", ft_proj: "ПРОЕКТ", ft_gh: "Профиль GitHub", ft_code: "Код сервера прогноза", ft_web: "Код сайта",
       ft_note: "Учебный проект. Прогнозы приблизительные и не гарантируют результат.",
@@ -92,6 +93,8 @@
   "n_about": "Loyiha haqida",
   "n_cta": "Tahlil qilish",
   "n_quiz": "Viktorina",
+  "n_focus": "Fokus xonasi",
+  "install": "Ilovani o'rnatish",
   "ft_tag": "O'quv odatlaringiz asosida imtihon balingizni bashorat qiling va nimani o'zgartirish kerakligini bilib oling. Toshkentdan data science loyihasi.",
   "ft_pages": "SAHIFALAR",
   "ft_proj": "LOYIHA",
@@ -166,7 +169,7 @@
         '<div class="links" id="links">' +
         '<a href="/" data-i18n="n_home"></a>' +
         '<a href="/predict" data-i18n="n_pred"></a>' +
-        '<a href="/quiz" data-i18n="n_quiz"></a>' +
+        '<a href="/quiz" data-i18n="n_quiz"></a><a href="/focus" data-i18n="n_focus"></a>' +
         '<a href="/how-it-works" data-i18n="n_how"></a>' +
         '<a href="/improve" data-i18n="n_imp"></a>' +
         '<a href="/about" data-i18n="n_about"></a></div>' +
@@ -188,13 +191,13 @@
         '<p style="margin-top:12px;max-width:360px" data-i18n="ft_tag"></p></div>' +
         '<div><h5 data-i18n="ft_pages"></h5>' +
         '<a href="/" data-i18n="n_home"></a><a href="/predict" data-i18n="n_pred"></a>' +
-        '<a href="/quiz" data-i18n="n_quiz"></a><a href="/how-it-works" data-i18n="n_how"></a><a href="/improve" data-i18n="n_imp"></a>' +
+        '<a href="/quiz" data-i18n="n_quiz"></a><a href="/focus" data-i18n="n_focus"></a><a href="/how-it-works" data-i18n="n_how"></a><a href="/improve" data-i18n="n_imp"></a>' +
         '<a href="/about" data-i18n="n_about"></a></div>' +
         '<div><h5 data-i18n="ft_proj"></h5>' +
         '<a href="https://github.com/umarkhodjaev-hash" target="_blank" rel="noopener" data-i18n="ft_gh"></a>' +
         '<a href="https://github.com/umarkhodjaev-hash/student-performance-predictor" target="_blank" rel="noopener" data-i18n="ft_code"></a>' +
         '<a href="https://github.com/umarkhodjaev-hash/student-performance-web" target="_blank" rel="noopener" data-i18n="ft_web"></a></div>' +
-        '</div><div class="copy">© <span id="yr"></span> student-performance-predictor · Umar<br><span data-i18n="ft_note"></span></div></div>';
+        '</div><div class="copy">© <span id="yr"></span> student-performance-predictor · Umar<br><span data-i18n="ft_note"></span><br><button class="chip" id="install" hidden data-i18n="install" style="margin-top:12px"></button></div></div>';
       var y = document.getElementById("yr");
       if (y) y.textContent = new Date().getFullYear();
     }
@@ -390,6 +393,25 @@ window.onLang = function () {
   }
   document.getElementById("days").innerHTML = d;
 };
+</script>
+<script>
+(function () {
+  if (!("serviceWorker" in navigator)) return;
+  window.addEventListener("load", function () { navigator.serviceWorker.register("/sw.js").catch(function () {}); });
+  var deferred = null;
+  window.addEventListener("beforeinstallprompt", function (e) {
+    e.preventDefault(); deferred = e;
+    var b = document.getElementById("install"); if (b) b.hidden = false;
+  });
+  window.addEventListener("appinstalled", function () {
+    deferred = null; var b = document.getElementById("install"); if (b) b.hidden = true;
+  });
+  document.addEventListener("click", function (ev) {
+    if (!ev.target || ev.target.id !== "install" || !deferred) return;
+    deferred.prompt();
+    deferred.userChoice.then(function () { deferred = null; var b = document.getElementById("install"); if (b) b.hidden = true; });
+  });
+})();
 </script>
 </body>
 </html>

@@ -17,7 +17,7 @@ button{font-family:inherit}
 a{color:inherit}
 [hidden]{display:none!important}
 /* nav */
-nav{position:sticky;top:14px;z-index:30;margin:14px auto 0;max-width:1040px;display:flex;align-items:center;justify-content:space-between;
+nav{position:sticky;top:14px;z-index:30;margin:14px auto 0;max-width:1240px;display:flex;align-items:center;justify-content:space-between;
   gap:12px;padding:10px 12px 10px 20px;background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(14px);
   border:1px solid var(--line);border-radius:999px;box-shadow:var(--shadow)}
 .logo{display:flex;align-items:center;gap:10px;font-weight:700;text-decoration:none;color:var(--text);white-space:nowrap}
@@ -225,3 +225,47 @@ nav .links{gap:16px}
 nav .links a{white-space:nowrap}
 @media(max-width:1180px){nav .tools .btn.small{display:none}}
 .mascot{overflow:visible}
+
+/* pwa */
+.chip[hidden]{display:none}
+/* focus room */
+.fx-grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:22px;align-items:start}
+@media(max-width:860px){.fx-grid{grid-template-columns:1fr}}
+.fx-main{text-align:center}
+.fx-modes{display:inline-flex;gap:6px;padding:5px;border:1px solid var(--line);border-radius:99px;margin-bottom:18px;flex-wrap:wrap;justify-content:center}
+.fx-modes button{border:0;background:transparent;color:var(--muted);font:inherit;font-size:14px;font-weight:600;padding:8px 16px;border-radius:99px;cursor:pointer}
+.fx-modes button.cur{background:linear-gradient(135deg,var(--brand),var(--brand2));color:#fff}
+.fx-ringwrap{position:relative;width:min(300px,78vw);margin:0 auto 14px}
+.fx-ring{width:100%;height:auto;display:block;transform:rotate(-90deg)}
+.fx-ring circle{fill:none;stroke-width:9;stroke-linecap:round}
+.fx-ring .bg{stroke:var(--line)}
+.fx-ring .fg{stroke:var(--brand);transition:stroke-dashoffset .4s linear}
+.fx-time{position:absolute;inset:0;display:grid;place-items:center;font-size:clamp(44px,13vw,64px);font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-1px}
+.fx-durs{display:flex;gap:8px;justify-content:center;margin-bottom:14px;min-height:36px}
+.fx-durs button{border:1px solid var(--line);background:var(--surface);color:var(--text);font:inherit;font-size:14px;padding:6px 14px;border-radius:99px;cursor:pointer}
+.fx-durs button.cur{border-color:var(--brand);color:var(--brand)}
+.fx-durs button:disabled{opacity:.5;cursor:default}
+.fx-task{width:100%;max-width:380px;box-sizing:border-box;padding:12px 16px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--text);font:inherit;font-size:15px;text-align:center;margin-bottom:16px}
+.fx-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.fx-msg{min-height:22px;margin:14px 0 0;color:var(--muted);font-size:14px}
+.fx-side{display:grid;gap:22px}
+.fx-live{text-align:center}
+.fx-live .fx-mascot{width:120px;margin:0 auto 6px}
+.fx-livenum{display:flex;align-items:center;justify-content:center;gap:10px;font-size:46px;font-weight:800;line-height:1.1}
+.fx-livenum .dot{width:12px;height:12px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 0 color-mix(in srgb,var(--ok) 60%,transparent);animation:fxpulse 2s infinite}
+.fx-livenum .dot.off{background:var(--muted);animation:none}
+@keyframes fxpulse{70%{box-shadow:0 0 0 10px transparent}100%{box-shadow:0 0 0 0 transparent}}
+.fx-stats .row{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--line);color:var(--muted);font-size:14px}
+.fx-stats .row:first-of-type{border-top:0}
+.fx-stats .row b{color:var(--text);font-size:18px}
+.fx-bars{display:flex;gap:8px;align-items:flex-end;height:90px;margin-top:10px}
+.fx-bars div{flex:1;text-align:center;font-size:11px;color:var(--muted);display:flex;flex-direction:column;justify-content:flex-end;height:100%}
+.fx-bars i{display:block;width:100%;border-radius:6px 6px 2px 2px;background:linear-gradient(180deg,var(--brand2),var(--brand));min-height:3px;margin-bottom:4px}
+@media (prefers-reduced-motion:reduce){.fx-livenum .dot{animation:none}.fx-ring .fg{transition:none}}
+/* nav: 7 links need the burger earlier */
+@media(max-width:1279px){
+  .burger{display:inline-block}.logo span{display:none}
+  nav .links{display:none}
+  nav .links.open{display:flex;flex-direction:column;gap:4px;position:absolute;top:calc(100% + 10px);left:0;right:0;background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:14px 20px;box-shadow:var(--shadow);z-index:60}
+  nav .links.open a{padding:10px 0;font-size:16px}
+}
