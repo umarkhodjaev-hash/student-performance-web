@@ -683,12 +683,16 @@ function renderResult() {
     '<div class="mres">' + mascot(lvl(p) === "need" ? "think" : lvl(p) === "dev" ? "happy" : "cheer") + "</div>" +
     '<span class="pill">' + t("lv_" + lvl(p)) + "</span>" +
     '<p style="color:var(--muted);font-size:14px;margin:12px 0 20px">' + t("r_att") + ': <b style="color:var(--text)">' + att + "%</b></p>" +
-    '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn ghost" id="again">' + t("again") + '</button><a class="btn" href="/improve">' + t("r_more") + "</a></div></div>" +
+    '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn ghost" id="again">' + t("again") + '</button><button class="btn ghost" id="share">📤 ' + t("sh_btn") + '</button><a class="btn" href="/improve">' + t("r_more") + "</a></div></div>" +
     "<div>" +
     (ic.a.length ? '<div class="box ins"><h4>' + t("r_ins") + "</h4><ul>" + ic.a.map(function (k) { return "<li>" + t(k) + "</li>"; }).join("") + "</ul></div>" : "") +
     '<div class="box"><h4>' + t("r_rec") + "</h4><ul>" + ic.c.map(function (k) { return "<li>" + t(k) + "</li>"; }).join("") + "</ul></div>" +
     '<div class="box"><h4>' + t("r_what") + '</h4><div id="what"></div></div></div></div>';
   setTimeout(function () { var f = document.getElementById("fg"); if (f) f.style.strokeDashoffset = 578 * (1 - pc / 100); }, 60);
+  document.getElementById("share").onclick = function () {
+    shareCard({ mood: lvl(p) === "need" ? "think" : lvl(p) === "dev" ? "happy" : "cheer", label: t("sh_pred_l"), big: String(p), sub: t("lv_" + lvl(p)),
+      cta: t("sh_cta"), text: t("sh_pred_x").replace("{p}", p), done: function () { var b = document.getElementById("share"); if (b) b.textContent = "✅ " + t("sh_saved"); } });
+  };
   document.getElementById("again").onclick = function () {
     document.getElementById("resultView").hidden = true;
     document.getElementById("formView").hidden = false;
@@ -807,6 +811,53 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 });
 
+</script>
+<script>
+Object.assign(T.en, {"sh_btn": "Share result", "sh_saved": "Image saved. Send it to your friends!", "sh_cta": "Check yours for free", "sh_pred_l": "My predicted exam score", "sh_pred_x": "My predicted exam score is {p}. Check yours on studentpp.uz", "sh_quiz_x": "I got {s} out of {m} in the study quiz. Try it on studentpp.uz"});
+Object.assign(T.ru, {"sh_btn": "Поделиться", "sh_saved": "Картинка сохранена. Отправь её друзьям!", "sh_cta": "Проверь свой результат бесплатно", "sh_pred_l": "Мой прогноз балла на экзамене", "sh_pred_x": "Мой прогноз балла на экзамене: {p}. Проверь свой на studentpp.uz", "sh_quiz_x": "Я набрал {s} из {m} в учебном квизе. Попробуй на studentpp.uz"});
+Object.assign(T.uz, {"sh_btn": "Ulashish", "sh_saved": "Rasm saqlandi. Do'stlaringizga yuboring!", "sh_cta": "O'zingiznikini bepul tekshiring", "sh_pred_l": "Imtihondagi bashorat ballim", "sh_pred_x": "Imtihondagi bashorat ballim: {p}. O'zingiznikini studentpp.uz da tekshiring", "sh_quiz_x": "O'qish viktorinasida {m} dan {s} oldim. studentpp.uz da sinab ko'ring"});
+
+window.shareCard = function (o) {
+  var W = 1080, H = 1350, c = document.createElement("canvas"); c.width = W; c.height = H;
+  var x = c.getContext("2d"), F = "system-ui, -apple-system, Segoe UI, Roboto, sans-serif";
+  var g = x.createLinearGradient(0, 0, W, H); g.addColorStop(0, "#5b3fe0"); g.addColorStop(1, "#1b0f52");
+  x.fillStyle = g; x.fillRect(0, 0, W, H);
+  var rg = x.createRadialGradient(W * 0.75, H * 0.2, 20, W * 0.75, H * 0.2, 620); rg.addColorStop(0, "rgba(179,155,255,.45)"); rg.addColorStop(1, "rgba(179,155,255,0)");
+  x.fillStyle = rg; x.fillRect(0, 0, W, H);
+  x.textAlign = "center"; x.fillStyle = "rgba(255,255,255,.75)"; x.font = "600 38px " + F; x.fillText("student-performance-predictor", W / 2, 110);
+  function fit(txt, size, weight, maxW, y, color) {
+    x.fillStyle = color; var s = size; x.font = weight + " " + s + "px " + F;
+    while (x.measureText(txt).width > maxW && s > 24) { s -= 2; x.font = weight + " " + s + "px " + F; }
+    x.fillText(txt, W / 2, y);
+  }
+  var svg = window.mascot(o.mood || "happy").replace("<svg ", '<svg xmlns="http://www.w3.org/2000/svg" width="420" height="420" ').replace("<defs>", "<defs><style>.lid{display:none}</style>");
+  var img = new Image();
+  function finish() {
+    x.fillStyle = "rgba(255,255,255,.12)"; var bx = 90, by = 780, bw = W - 180, bh = 330, r = 44;
+    x.beginPath(); x.moveTo(bx + r, by); x.arcTo(bx + bw, by, bx + bw, by + bh, r); x.arcTo(bx + bw, by + bh, bx, by + bh, r); x.arcTo(bx, by + bh, bx, by, r); x.arcTo(bx, by, bx + bw, by, r); x.fill();
+    fit(o.label, 36, "600", bw - 60, 850, "rgba(255,255,255,.8)");
+    fit(o.big, 170, "800", bw - 60, 1010, "#ffffff");
+    fit(o.sub, 44, "600", bw - 60, 1080, "#ffe493");
+    fit("studentpp.uz", 52, "700", W - 200, 1250, "#ffffff");
+    fit(o.cta, 34, "500", W - 160, 1300, "rgba(255,255,255,.7)");
+    c.toBlob(function (blob) { send(blob); }, "image/png");
+  }
+  img.onload = function () { x.drawImage(img, W / 2 - 250, 190, 500, 500); finish(); };
+  img.onerror = finish;
+  img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+  function send(blob) {
+    var file; try { file = new File([blob], "studentpp-result.png", { type: "image/png" }); } catch (e) { file = null; }
+    var data = { text: o.text, url: "https://www.studentpp.uz" };
+    if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+      data.files = [file];
+      navigator.share(data).catch(function () {});
+      return;
+    }
+    var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "studentpp-result.png";
+    document.body.appendChild(a); a.click(); a.remove();
+    if (o.done) o.done();
+  }
+};
 </script>
 <script>
 (function () {
