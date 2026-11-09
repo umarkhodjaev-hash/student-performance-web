@@ -241,8 +241,6 @@ Object.assign(T.en, {
   ld1: "Analyzing your profile…", ld2: "The free server may need up to a minute to wake up the first time. Please wait.",
   errT: "Could not reach the model. Check your connection and try again in a moment.",
   r_score: "out of 100", r_att: "Attendance", r_ins: "What the data says", r_rec: "What to improve", r_what: "What if you change…",
-  listen: "🔊 Listen", stopv: "⏹ Stop", noVoice: "Your browser has no voice for this language, so the result cannot be read aloud.",
-  say_score: "Your predicted exam score is {p} out of 100. Level: {l}. Attendance: {a} percent.", say_ins: "What the data says.", say_rec: "What to improve.",
   r_calc: "Calculating with the model…", r_none: "Nothing to add, your profile is already strong here.", r_more: "How to improve →",
   i_att_high: "Your attendance is very strong.", i_att_low: "Your attendance may be limiting your performance.",
   i_study_high: "You keep a strong weekly study routine.", i_study_low: "Your weekly independent study time is relatively low.",
@@ -285,8 +283,6 @@ Object.assign(T.ru, {
   ld1: "Анализируем ваш профиль…", ld2: "Бесплатному серверу при первом запуске нужно до минуты, чтобы проснуться. Подождите немного.",
   errT: "Не удалось связаться с моделью. Проверьте интернет и попробуйте ещё раз через минуту.",
   r_score: "из 100", r_att: "Посещаемость", r_ins: "Что показывают данные", r_rec: "Что улучшить", r_what: "А что если изменить…",
-  listen: "🔊 Озвучить", stopv: "⏹ Стоп", noVoice: "В вашем браузере нет голоса для этого языка, поэтому озвучить результат нельзя.",
-  say_score: "Ваш прогнозируемый балл за экзамен: {p} из 100. Уровень: {l}. Посещаемость: {a} процентов.", say_ins: "Что показывают данные.", say_rec: "Что улучшить.",
   r_calc: "Считаем с помощью модели…", r_none: "Добавить нечего, здесь у вас уже всё сильно.", r_more: "Как улучшить →",
   i_att_high: "У вас очень высокая посещаемость.", i_att_low: "Посещаемость может ограничивать вашу успеваемость.",
   i_study_high: "Вы стабильно много занимаетесь в неделю.", i_study_low: "Самостоятельной учёбы в неделю относительно мало.",
@@ -360,8 +356,6 @@ Object.assign(T.uz, {
   "r_ins": "Ma'lumotlar nimani ko'rsatadi",
   "r_rec": "Nimani yaxshilash kerak",
   "r_what": "Agar o'zgartirsangiz…",
-  "listen": "🔊 Tinglash", "stopv": "⏹ To'xtatish", "noVoice": "Brauzeringizda bu til uchun ovoz yo'q, shuning uchun natijani ovozli o'qib bo'lmaydi.",
-  "say_score": "Sizning imtihon balingiz bashorati: 100 dan {p}. Daraja: {l}. Davomat: {a} foiz.", "say_ins": "Ma'lumotlar nimani ko'rsatadi.", "say_rec": "Nimani yaxshilash kerak.",
   "r_calc": "Model yordamida hisoblanmoqda…",
   "r_none": "Qo'shadigan narsa yo'q, bu yerda profilingiz allaqachon kuchli.",
   "r_more": "Qanday yaxshilash →",
@@ -528,35 +522,6 @@ function insights(x, att) {
   if (!c.length) c.push("c_ok");
   return { a: a, c: c };
 }
-var speaking = false;
-function stopSpeak() {
-  speaking = false;
-  try { window.speechSynthesis.cancel(); } catch (e) {}
-  var b = document.getElementById("speak"); if (b) b.textContent = t("listen");
-}
-function speakText() {
-  var att = attendance(res.input), ic = insights(res.input, att);
-  var s = t("say_score").replace("{p}", res.p).replace("{l}", t("lv_" + lvl(res.p))).replace("{a}", att);
-  if (ic.a.length) s += " " + t("say_ins") + " " + ic.a.map(function (k) { return t(k); }).join(" ");
-  s += " " + t("say_rec") + " " + ic.c.map(function (k) { return t(k); }).join(" ");
-  return s;
-}
-function toggleSpeak() {
-  if (speaking) { stopSpeak(); return; }
-  var code = lang === "ru" ? "ru-RU" : lang === "uz" ? "uz-UZ" : "en-US";
-  var voices = window.speechSynthesis.getVoices() || [];
-  var v = voices.filter(function (x) { return x.lang && x.lang.toLowerCase().replace("_", "-").indexOf(code.slice(0, 2).toLowerCase()) === 0; })[0];
-  var err = document.getElementById("vmsg");
-  if (!v && lang === "uz") { if (err) err.textContent = t("noVoice"); return; }
-  if (err) err.textContent = "";
-  var u = new SpeechSynthesisUtterance(speakText());
-  u.lang = code; if (v) u.voice = v; u.rate = 0.95;
-  u.onend = u.onerror = function () { stopSpeak(); };
-  speaking = true;
-  document.getElementById("speak").textContent = t("stopv");
-  window.speechSynthesis.cancel();
-  window.speechSynthesis.speak(u);
-}
 function showResult() {
   document.getElementById("formView").hidden = true;
   document.getElementById("resultView").hidden = false;
@@ -565,7 +530,6 @@ function showResult() {
 }
 function renderResult() {
   if (!res) return;
-  stopSpeak();
   var p = res.p, att = attendance(res.input), ic = insights(res.input, att), pc = Math.max(0, Math.min(100, p));
   document.getElementById("resultView").innerHTML = '<div class="res"><div class="ringbox">' +
     '<div class="ring"><svg width="230" height="230" viewBox="0 0 220 220"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b39bff"/><stop offset="1" stop-color="#6c47e8"/></linearGradient></defs>' +
@@ -573,17 +537,13 @@ function renderResult() {
     '<div class="mid"><b>' + p + "</b><span>" + t("r_score") + "</span></div></div>" +
     '<span class="pill">' + t("lv_" + lvl(p)) + "</span>" +
     '<p style="color:var(--muted);font-size:14px;margin:12px 0 20px">' + t("r_att") + ': <b style="color:var(--text)">' + att + "%</b></p>" +
-    '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn ghost" id="speak">' + t("listen") + '</button><button class="btn ghost" id="again">' + t("again") + '</button><a class="btn" href="/improve">' + t("r_more") + "</a></div><p class=\"note\" id=\"vmsg\" style=\"margin-top:12px\"></p></div>" +
+    '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn ghost" id="again">' + t("again") + '</button><a class="btn" href="/improve">' + t("r_more") + "</a></div></div>" +
     "<div>" +
     (ic.a.length ? '<div class="box ins"><h4>' + t("r_ins") + "</h4><ul>" + ic.a.map(function (k) { return "<li>" + t(k) + "</li>"; }).join("") + "</ul></div>" : "") +
     '<div class="box"><h4>' + t("r_rec") + "</h4><ul>" + ic.c.map(function (k) { return "<li>" + t(k) + "</li>"; }).join("") + "</ul></div>" +
     '<div class="box"><h4>' + t("r_what") + '</h4><div id="what"></div></div></div></div>';
   setTimeout(function () { var f = document.getElementById("fg"); if (f) f.style.strokeDashoffset = 578 * (1 - pc / 100); }, 60);
-  var sp = document.getElementById("speak");
-  if (!("speechSynthesis" in window)) { sp.hidden = true; }
-  else sp.onclick = toggleSpeak;
   document.getElementById("again").onclick = function () {
-    stopSpeak();
     document.getElementById("resultView").hidden = true;
     document.getElementById("formView").hidden = false;
     step = 0; renderStep(); toTop();
