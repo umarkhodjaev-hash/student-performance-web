@@ -643,12 +643,17 @@ Object.assign(T.uz, {
     }
     var pts = h.map(function (r) { return r.p; }), mn = Math.min.apply(null, pts), mx = Math.max.apply(null, pts);
     if (mx - mn < 5) { mx += 3; mn -= 3; }
-    var W = 300, H = 90, n = pts.length, xy = pts.map(function (v, i) {
-      return [n === 1 ? W / 2 : 10 + i * (W - 20) / (n - 1), H - 10 - (v - mn) / (mx - mn) * (H - 20)];
+    var W = 600, H = 130, n = pts.length, xy = pts.map(function (v, i) {
+      return [n === 1 ? W / 2 : 40 + i * (W - 80) / (n - 1), H - 22 - (v - mn) / (mx - mn) * (H - 70)];
     });
-    var svg = '<svg viewBox="0 0 ' + W + " " + H + '" style="width:100%;height:110px;display:block" role="img"><polyline fill="none" stroke="var(--brand)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="' +
+    var imin = pts.indexOf(Math.min.apply(null, pts)), imax = pts.indexOf(Math.max.apply(null, pts));
+    var svg = '<svg viewBox="0 0 ' + W + " " + H + '" style="width:100%;height:auto;display:block" role="img"><polyline fill="none" stroke="var(--brand)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" points="' +
       xy.map(function (q) { return q[0].toFixed(1) + "," + q[1].toFixed(1); }).join(" ") + '"/>' +
-      xy.map(function (q, i) { return '<circle cx="' + q[0].toFixed(1) + '" cy="' + q[1].toFixed(1) + '" r="4" fill="var(--brand)"><title>' + pts[i] + "</title></circle>"; }).join("") + "</svg>";
+      xy.map(function (q, i) {
+        var show = n <= 8 || i === 0 || i === n - 1 || i === imin || i === imax;
+        return '<circle cx="' + q[0].toFixed(1) + '" cy="' + q[1].toFixed(1) + '" r="7" fill="var(--brand)"><title>' + pts[i] + "</title></circle>" +
+          (show ? '<text x="' + q[0].toFixed(1) + '" y="' + (q[1] - 16).toFixed(1) + '" text-anchor="middle" font-size="22" font-weight="700" fill="currentColor">' + pts[i] + "</text>" : "");
+      }).join("") + "</svg>";
     var foot = daysAgo >= 7 ? '<p class="note" style="margin:12px 0">' + t("pg_stale").replace("{d}", daysAgo) + '</p><a class="btn" href="/predict">' + t("pg_recheck") + "</a>"
       : '<p class="note" style="margin:12px 0 0">' + t("pg_ok").replace("{d}", 7 - daysAgo) + "</p>";
     box.innerHTML = svg + '<p style="margin:10px 0 4px"><b>' + msg + "</b></p>" +
