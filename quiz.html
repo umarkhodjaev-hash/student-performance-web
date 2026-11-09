@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#6c47e8">
 <link rel="manifest" href="/manifest.json">
-<title>Habits quiz | student-performance-predictor</title>
+<title>Study quizzes | student-performance-predictor</title>
 <meta name="description" content="A short quiz about study habits: spaced study, sleep, phone use, attendance and goals, with a clear explanation after each answer.">
 <meta property="og:title" content="Habits quiz: what really works?">
 <meta property="og:description" content="Eight quick questions about study habits with explanations.">
@@ -486,24 +486,339 @@ Object.assign(T.uz, {
   "q8e": "Aniq, kichik va rejalashtirilgan maqsadlarga amal qilish noaniq maqsadlarga qaraganda osonroq. Motivatsiya ko'pincha harakatdan keyin keladi."
 });
 
-var QN = 8, QCORRECT = [1, 2, 0, 1, 2, 0, 2, 1], qi = 0, score = 0, picked = null, qDone = false;
+Object.assign(T.en, {
+ "mq1": "You just read a textbook chapter. What helps you remember it best?",
+ "mq1a": "Read it again three times",
+ "mq1b": "Highlight as much as possible",
+ "mq1c": "Close the book and try to recall the main points",
+ "mq1e": "Testing yourself, called retrieval practice, strengthens memory more than rereading or highlighting.",
+ "mq2": "You learned something today. When should you review it next?",
+ "mq2a": "After a day or two, then with growing gaps",
+ "mq2b": "Ten times in a row right now",
+ "mq2c": "Only right before the exam",
+ "mq2e": "Spaced review fights forgetting. Each repeat after a longer gap makes the memory last longer.",
+ "mq3": "What happens when you explain a topic out loud in your own words, as if teaching a friend?",
+ "mq3a": "It wastes time",
+ "mq3b": "It shows which parts you do not really understand yet",
+ "mq3c": "It only works for languages",
+ "mq3e": "If you get stuck while explaining, that is a gap in your understanding. Now you know exactly what to study.",
+ "mq4": "Is it effective to study while chatting or watching videos?",
+ "mq4a": "Yes, if you are a fast learner",
+ "mq4b": "Only for easy subjects",
+ "mq4c": "No, switching attention makes you slower and weakens memory",
+ "mq4e": "The brain does not really do two demanding things at once. It switches between them, and you lose time and quality.",
+ "mq5": "How should you practice math or physics problems?",
+ "mq5a": "Only read solved examples",
+ "mq5b": "Copy the solutions into your notebook",
+ "mq5c": "Try first, then check, and mix different problem types",
+ "mq5e": "Struggling with a problem yourself builds the skill. Mixed practice teaches you to choose the right method.",
+ "mq6": "What is a good rhythm for a study session?",
+ "mq6a": "Five hours without a break",
+ "mq6b": "25 to 50 minutes of focus, then a short break",
+ "mq6c": "Ten minutes at random moments with the phone nearby",
+ "mq6e": "Many students focus best in blocks of 25 to 50 minutes with short breaks. Find the length that works for you.",
+ "mq7": "Where is it best to study?",
+ "mq7a": "In bed",
+ "mq7b": "At a desk in a calm place, with the phone away",
+ "mq7c": "In front of the TV",
+ "mq7e": "A steady place for studying helps your brain switch to work mode. Bed is for sleeping, and a TV pulls your attention.",
+ "mq8": "What makes notes most useful for revision?",
+ "mq8a": "Short summaries in your own words, plus questions to test yourself",
+ "mq8b": "Copying every word the teacher says",
+ "mq8c": "Only titles of topics",
+ "mq8e": "Writing in your own words forces you to understand. Questions in the margin turn your notes into a self-test.",
+ "eq1": "It is the morning of an exam. What is the best plan?",
+ "eq1a": "Learn new topics until the last minute",
+ "eq1b": "Eat a light meal, drink water, arrive early",
+ "eq1c": "Skip breakfast to save time",
+ "eq1e": "Your brain needs fuel and calm. Arriving early reduces stress, and new topics at the last minute usually just add panic.",
+ "eq2": "You feel very nervous before the exam. What can help in the moment?",
+ "eq2a": "Tell yourself you will fail",
+ "eq2b": "Drink several energy drinks",
+ "eq2c": "Breathe slowly with a longer exhale than inhale",
+ "eq2e": "Slow breathing with long exhales helps the body calm down. Energy drinks usually make nerves worse.",
+ "eq3": "You meet a very hard question during the exam. What do you do?",
+ "eq3a": "Skip it, mark it and come back after the easier ones",
+ "eq3b": "Spend 20 minutes until you solve it",
+ "eq3c": "Leave it blank for good",
+ "eq3e": "Collect the easy points first. Often the hard question looks simpler when you return with a calmer head.",
+ "eq4": "How should you use past exam papers?",
+ "eq4a": "Only read the answers",
+ "eq4b": "Solve them with a timer, then review every mistake",
+ "eq4c": "Avoid them so you do not get scared",
+ "eq4e": "Timed practice shows how you perform under real conditions. Reviewing mistakes is where most of the learning happens.",
+ "eq5": "The exam is 90 minutes with three sections. How do you manage time?",
+ "eq5a": "No plan, just start",
+ "eq5b": "Spend most of the time on the first section",
+ "eq5c": "Plan time for each section at the start and check the clock",
+ "eq5e": "A simple time plan stops you from running out of time on the last section.",
+ "eq6": "You got a low score on a mock exam. What is the most useful reaction?",
+ "eq6a": "Decide you are bad at this subject",
+ "eq6b": "Find which topics lost points and plan how to fix them",
+ "eq6c": "Blame the test",
+ "eq6e": "A mock exam is information, not a verdict. Look for patterns in your mistakes and fix the biggest gap first.",
+ "eq7": "What is the best place for your phone during a study session?",
+ "eq7a": "In another room or on silent, out of sight",
+ "eq7b": "On the desk with notifications on",
+ "eq7c": "In your hand, checked every five minutes as a reward",
+ "eq7e": "Even a phone lying in view can pull your attention. Out of sight really helps focus.",
+ "eq8": "How much sleep do most students need to study well?",
+ "eq8a": "Four to five hours",
+ "eq8b": "Twelve hours or more",
+ "eq8c": "About seven to nine hours",
+ "eq8e": "Sleep helps memory and attention. Most students do best with around seven to nine hours.",
+ "doc_title": "Study quizzes | student-performance-predictor",
+ "qz_title": "Study quizzes: what really works?",
+ "qz_lead": "Pick a topic: study habits, memory techniques or exam strategy. Eight quick questions each, with a short explanation after every answer. Sovi will cheer you on.",
+ "qz_pick": "Choose a topic",
+ "qz_topics": "← All topics",
+ "qz_best": "Best: {s} of {m}",
+ "qz_new": "Not tried yet",
+ "tp_h_t": "Study habits",
+ "tp_h_d": "Planning, sleep, attendance and goals.",
+ "tp_m_t": "Memory techniques",
+ "tp_m_d": "Recall, spaced review and smarter note-taking.",
+ "tp_e_t": "Exam strategy",
+ "tp_e_d": "Exam day, nerves, time management and mock exams."
+});
+Object.assign(T.ru, {
+ "mq1": "Ты только что прочитал главу учебника. Что лучше всего помогает её запомнить?",
+ "mq1a": "Перечитать три раза",
+ "mq1b": "Выделить маркером как можно больше",
+ "mq1c": "Закрыть книгу и попытаться вспомнить главное",
+ "mq1e": "Проверка себя, или активное припоминание, укрепляет память сильнее, чем перечитывание и выделение текста.",
+ "mq2": "Ты выучил что-то сегодня. Когда лучше повторить это в следующий раз?",
+ "mq2a": "Через день-два, а потом через всё более длинные паузы",
+ "mq2b": "Десять раз подряд прямо сейчас",
+ "mq2c": "Только перед экзаменом",
+ "mq2e": "Интервальное повторение борется с забыванием. Каждое повторение после более долгой паузы закрепляет память надолго.",
+ "mq3": "Что происходит, когда ты объясняешь тему вслух своими словами, как будто учишь друга?",
+ "mq3a": "Это пустая трата времени",
+ "mq3b": "Видно, какие части ты ещё не понимаешь",
+ "mq3c": "Это работает только для языков",
+ "mq3e": "Если ты запнулся при объяснении, значит, там пробел в понимании. Теперь ты точно знаешь, что повторять.",
+ "mq4": "Эффективно ли учиться, одновременно переписываясь или смотря видео?",
+ "mq4a": "Да, если ты быстро соображаешь",
+ "mq4b": "Только для лёгких предметов",
+ "mq4c": "Нет, переключение внимания замедляет и ухудшает запоминание",
+ "mq4e": "Мозг на самом деле не делает два сложных дела сразу. Он переключается между ними, и ты теряешь время и качество.",
+ "mq5": "Как лучше тренироваться на задачах по математике или физике?",
+ "mq5a": "Только читать разобранные примеры",
+ "mq5b": "Переписывать решения в тетрадь",
+ "mq5c": "Сначала решить самому, потом проверить, и чередовать разные типы задач",
+ "mq5e": "Борьба с задачей самостоятельно развивает навык. Смешанная практика учит выбирать нужный метод.",
+ "mq6": "Какой ритм хорош для занятия?",
+ "mq6a": "Пять часов без перерыва",
+ "mq6b": "25–50 минут сосредоточенной работы, потом короткий перерыв",
+ "mq6c": "Десять минут в случайные моменты с телефоном рядом",
+ "mq6e": "Многие лучше всего концентрируются блоками по 25–50 минут с короткими перерывами. Найди длину, которая подходит тебе.",
+ "mq7": "Где лучше всего заниматься?",
+ "mq7a": "В кровати",
+ "mq7b": "За столом в спокойном месте, телефон убран",
+ "mq7c": "Перед телевизором",
+ "mq7e": "Постоянное место для учёбы помогает мозгу переключаться в рабочий режим. Кровать для сна, а телевизор отвлекает.",
+ "mq8": "Какие конспекты лучше всего помогают при повторении?",
+ "mq8a": "Короткие выводы своими словами и вопросы для самопроверки",
+ "mq8b": "Дословная запись всего, что говорит учитель",
+ "mq8c": "Только названия тем",
+ "mq8e": "Запись своими словами заставляет понимать. Вопросы на полях превращают конспект в самопроверку.",
+ "eq1": "Утро экзамена. Какой план лучший?",
+ "eq1a": "Учить новые темы до последней минуты",
+ "eq1b": "Лёгкий завтрак, вода, прийти заранее",
+ "eq1c": "Не завтракать, чтобы сэкономить время",
+ "eq1e": "Мозгу нужны энергия и спокойствие. Если прийти заранее, стресса меньше, а новые темы в последний момент обычно только добавляют паники.",
+ "eq2": "Ты сильно волнуешься перед экзаменом. Что может помочь прямо сейчас?",
+ "eq2a": "Говорить себе, что провалишься",
+ "eq2b": "Выпить несколько энергетиков",
+ "eq2c": "Дышать медленно, выдох длиннее вдоха",
+ "eq2e": "Медленное дыхание с долгим выдохом помогает телу успокоиться. Энергетики обычно усиливают волнение.",
+ "eq3": "На экзамене попался очень сложный вопрос. Что делать?",
+ "eq3a": "Пропустить, отметить и вернуться после лёгких",
+ "eq3b": "Сидеть 20 минут, пока не решишь",
+ "eq3c": "Оставить пустым",
+ "eq3e": "Сначала собери лёгкие баллы. Часто сложный вопрос кажется проще, когда возвращаешься со спокойной головой.",
+ "eq4": "Как использовать прошлые варианты экзамена?",
+ "eq4a": "Только читать ответы",
+ "eq4b": "Решать с таймером, потом разбирать каждую ошибку",
+ "eq4c": "Избегать, чтобы не пугаться",
+ "eq4e": "Решение на время показывает, как ты справляешься в реальных условиях. Разбор ошибок это то место, где происходит основное обучение.",
+ "eq5": "Экзамен длится 90 минут и состоит из трёх частей. Как распределить время?",
+ "eq5a": "Без плана, просто начать",
+ "eq5b": "Потратить почти всё время на первую часть",
+ "eq5c": "В начале спланировать время на каждую часть и следить за часами",
+ "eq5e": "Простой план времени не даст тебе остаться без минут на последней части.",
+ "eq6": "Ты получил низкий балл на пробном экзамене. Какая реакция самая полезная?",
+ "eq6a": "Решить, что ты плох в этом предмете",
+ "eq6b": "Найти темы, где потеряны баллы, и спланировать исправление",
+ "eq6c": "Обвинить тест",
+ "eq6e": "Пробный экзамен это информация, а не приговор. Ищи закономерности в ошибках и сначала закрывай самый большой пробел.",
+ "eq7": "Где лучше всего держать телефон во время занятий?",
+ "eq7a": "В другой комнате или на беззвучном, вне поля зрения",
+ "eq7b": "На столе с включёнными уведомлениями",
+ "eq7c": "В руке, проверяя раз в пять минут как награду",
+ "eq7e": "Даже телефон, лежащий на виду, отвлекает внимание. Если он вне поля зрения, сосредоточиться реально легче.",
+ "eq8": "Сколько сна нужно большинству учеников, чтобы хорошо учиться?",
+ "eq8a": "Четыре-пять часов",
+ "eq8b": "Двенадцать часов и больше",
+ "eq8c": "Примерно семь-девять часов",
+ "eq8e": "Сон помогает памяти и вниманию. Большинству лучше всего подходит примерно семь-девять часов.",
+ "doc_title": "Квизы по учёбе | student-performance-predictor",
+ "qz_title": "Квизы по учёбе: что действительно работает?",
+ "qz_lead": "Выбери тему: учебные привычки, техники запоминания или стратегия экзамена. В каждой по восемь коротких вопросов с пояснением после каждого ответа. Совушка будет болеть за тебя.",
+ "qz_pick": "Выбери тему",
+ "qz_topics": "← Все темы",
+ "qz_best": "Лучший результат: {s} из {m}",
+ "qz_new": "Ещё не проходил",
+ "tp_h_t": "Учебные привычки",
+ "tp_h_d": "Планирование, сон, посещаемость и цели.",
+ "tp_m_t": "Техники запоминания",
+ "tp_m_d": "Припоминание, интервальное повторение и умные конспекты.",
+ "tp_e_t": "Стратегия экзамена",
+ "tp_e_d": "День экзамена, волнение, время и пробные экзамены."
+});
+Object.assign(T.uz, {
+ "mq1": "Siz hozirgina darslikning bir bobini o'qidingiz. Uni eslab qolishga nima eng ko'p yordam beradi?",
+ "mq1a": "Uni uch marta qayta o'qish",
+ "mq1b": "Iloji boricha ko'proq joyni belgilab chiqish",
+ "mq1c": "Kitobni yopib, asosiy fikrlarni eslashga urinish",
+ "mq1e": "O'zingizni sinash, ya'ni eslashga urinish, xotirani qayta o'qish yoki belgilashdan ko'ra kuchliroq mustahkamlaydi.",
+ "mq2": "Bugun nimadir o'rgandingiz. Uni keyingi safar qachon takrorlash kerak?",
+ "mq2a": "Bir-ikki kundan keyin, so'ng tobora uzoqroq tanaffuslar bilan",
+ "mq2b": "Hozir ketma-ket o'n marta",
+ "mq2c": "Faqat imtihondan oldin",
+ "mq2e": "Oraliqli takrorlash unutishga qarshi kurashadi. Har bir uzoqroq tanaffusdan keyingi takror xotirani uzoqqa saqlaydi.",
+ "mq3": "Mavzuni do'stingizga o'rgatayotgandek, o'z so'zlaringiz bilan ovoz chiqarib tushuntirsangiz nima bo'ladi?",
+ "mq3a": "Bu vaqtni bekor sarflashdir",
+ "mq3b": "Qaysi qismlarni hali yaxshi tushunmaganingiz ko'rinadi",
+ "mq3c": "Bu faqat tillar uchun ishlaydi",
+ "mq3e": "Tushuntirayotganda to'xtab qolsangiz, demak tushunishda bo'shliq bor. Endi nimani takrorlash kerakligini aniq bilasiz.",
+ "mq4": "Suhbatlashib yoki video ko'rib turib o'qish samaralimi?",
+ "mq4a": "Ha, agar tez o'zlashtirsangiz",
+ "mq4b": "Faqat oson fanlar uchun",
+ "mq4c": "Yo'q, diqqatni almashtirish sekinlashtiradi va xotirani zaiflashtiradi",
+ "mq4e": "Miya aslida ikkita murakkab ishni bir vaqtda qilmaydi. U ular orasida almashadi va siz vaqt hamda sifatni yo'qotasiz.",
+ "mq5": "Matematika yoki fizika masalalarini qanday mashq qilgan ma'qul?",
+ "mq5a": "Faqat yechilgan misollarni o'qish",
+ "mq5b": "Yechimlarni daftarga ko'chirish",
+ "mq5c": "Avval o'zi yechishga urinish, keyin tekshirish va turli masalalarni aralashtirish",
+ "mq5e": "Masala bilan o'zingiz kurashish ko'nikmani rivojlantiradi. Aralash mashq to'g'ri usulni tanlashga o'rgatadi.",
+ "mq6": "Mashg'ulot uchun yaxshi ritm qanday?",
+ "mq6a": "Tanaffussiz besh soat",
+ "mq6b": "25–50 daqiqa diqqat bilan ishlab, so'ng qisqa tanaffus",
+ "mq6c": "Telefon yonida tasodifiy paytlarda o'n daqiqa",
+ "mq6e": "Ko'pchilik 25–50 daqiqalik bloklarda, qisqa tanaffuslar bilan eng yaxshi diqqatini jamlaydi. O'zingizga mos davomiylikni toping.",
+ "mq7": "Qayerda o'qish eng yaxshi?",
+ "mq7a": "Karavotda",
+ "mq7b": "Tinch joyda stol oldida, telefon uzoqda",
+ "mq7c": "Televizor oldida",
+ "mq7e": "Doimiy o'qish joyi miyaga ish rejimiga o'tishga yordam beradi. Karavot uyqu uchun, televizor esa diqqatni chalg'itadi.",
+ "mq8": "Takrorlash uchun qanday konspekt eng foydali?",
+ "mq8a": "O'z so'zlaringiz bilan qisqa xulosalar va o'zini tekshirish uchun savollar",
+ "mq8b": "O'qituvchi aytgan hamma so'zni ko'chirish",
+ "mq8c": "Faqat mavzu nomlari",
+ "mq8e": "O'z so'zlaringiz bilan yozish tushunishga majbur qiladi. Chetdagi savollar konspektni o'zini sinash vositasiga aylantiradi.",
+ "eq1": "Imtihon tongi. Eng yaxshi reja qaysi?",
+ "eq1a": "So'nggi daqiqagacha yangi mavzularni o'rganish",
+ "eq1b": "Yengil ovqat, suv ichish, erta kelish",
+ "eq1c": "Vaqtni tejash uchun nonushta qilmaslik",
+ "eq1e": "Miyaga quvvat va xotirjamlik kerak. Erta kelish stressni kamaytiradi, so'nggi daqiqadagi yangi mavzular esa odatda vahimani oshiradi.",
+ "eq2": "Imtihondan oldin qattiq hayajonlanyapsiz. Hozirning o'zida nima yordam beradi?",
+ "eq2a": "O'zingizga yiqilishingizni aytish",
+ "eq2b": "Bir necha energetik ichish",
+ "eq2c": "Sekin nafas olish, nafas chiqarish nafas olishdan uzunroq bo'lsin",
+ "eq2e": "Uzoq nafas chiqarish bilan sekin nafas olish tanani tinchlantirishga yordam beradi. Energetiklar odatda hayajonni kuchaytiradi.",
+ "eq3": "Imtihonda juda qiyin savolga duch keldingiz. Nima qilasiz?",
+ "eq3a": "Uni o'tkazib yuborib, belgilab qo'yish va oson savollardan keyin qaytish",
+ "eq3b": "Yechmaguncha 20 daqiqa o'tirish",
+ "eq3c": "Bo'sh qoldirish",
+ "eq3e": "Avval oson ballarni yig'ing. Qiyin savol ko'pincha xotirjam bosh bilan qaytganingizda osonroq ko'rinadi.",
+ "eq4": "Oldingi yillardagi imtihon variantlaridan qanday foydalanish kerak?",
+ "eq4a": "Faqat javoblarni o'qish",
+ "eq4b": "Taymer bilan yechib, keyin har bir xatoni tahlil qilish",
+ "eq4c": "Qo'rqmaslik uchun ulardan qochish",
+ "eq4e": "Vaqt bilan yechish haqiqiy sharoitda qanday ishlashingizni ko'rsatadi. O'rganishning asosiy qismi xatolarni tahlil qilishda bo'ladi.",
+ "eq5": "Imtihon 90 daqiqa va uch bo'limdan iborat. Vaqtni qanday taqsimlaysiz?",
+ "eq5a": "Rejasiz, shunchaki boshlash",
+ "eq5b": "Vaqtning ko'p qismini birinchi bo'limga sarflash",
+ "eq5c": "Boshida har bir bo'lim uchun vaqt rejalashtirib, soatni kuzatish",
+ "eq5e": "Oddiy vaqt rejasi oxirgi bo'limda vaqt yetmay qolishining oldini oladi.",
+ "eq6": "Sinov imtihonida past ball oldingiz. Eng foydali munosabat qaysi?",
+ "eq6a": "Bu fanda yomonman deb qaror qilish",
+ "eq6b": "Qaysi mavzularda ball yo'qotilganini topib, tuzatishni rejalashtirish",
+ "eq6c": "Testni ayblash",
+ "eq6e": "Sinov imtihoni hukm emas, ma'lumotdir. Xatolaringizdagi qonuniyatlarni toping va avval eng katta bo'shliqni yoping.",
+ "eq7": "O'qish paytida telefonni qayerda saqlagan ma'qul?",
+ "eq7a": "Boshqa xonada yoki ovozsiz rejimda, ko'zdan uzoqda",
+ "eq7b": "Stolda, bildirishnomalar yoqilgan holda",
+ "eq7c": "Qo'lda, mukofot sifatida har besh daqiqada tekshirib turish",
+ "eq7e": "Ko'z oldida yotgan telefon ham diqqatni tortadi. Ko'zdan uzoqda bo'lsa, diqqatni jamlash haqiqatan osonlashadi.",
+ "eq8": "Yaxshi o'qish uchun ko'pchilik o'quvchiga qancha uyqu kerak?",
+ "eq8a": "To'rt-besh soat",
+ "eq8b": "O'n ikki soat va undan ko'p",
+ "eq8c": "Taxminan yetti-to'qqiz soat",
+ "eq8e": "Uyqu xotira va diqqatga yordam beradi. Ko'pchilik uchun taxminan yetti-to'qqiz soat eng yaxshisi.",
+ "doc_title": "O'qish viktorinalari | student-performance-predictor",
+ "qz_title": "O'qish viktorinalari: nima haqiqatan ishlaydi?",
+ "qz_lead": "Mavzuni tanlang: o'qish odatlari, yodlash usullari yoki imtihon strategiyasi. Har birida sakkizta qisqa savol, har bir javobdan keyin qisqa izoh bor. Sovi sizni qo'llab-quvvatlaydi.",
+ "qz_pick": "Mavzuni tanlang",
+ "qz_topics": "← Barcha mavzular",
+ "qz_best": "Eng yaxshi natija: {s} / {m}",
+ "qz_new": "Hali topshirilmagan",
+ "tp_h_t": "O'qish odatlari",
+ "tp_h_d": "Rejalashtirish, uyqu, davomat va maqsadlar.",
+ "tp_m_t": "Yodlash usullari",
+ "tp_m_d": "Eslash, oraliqli takrorlash va aqlli konspekt.",
+ "tp_e_t": "Imtihon strategiyasi",
+ "tp_e_d": "Imtihon kuni, hayajon, vaqt va sinov imtihonlari."
+});
+
+var QTOPICS = {
+  h: { pre: "q", n: 8, ok: [1, 2, 0, 1, 2, 0, 2, 1], ic: "📅" },
+  m: { pre: "mq", n: 8, ok: [2, 0, 1, 2, 2, 1, 1, 0], ic: "🧠" },
+  e: { pre: "eq", n: 8, ok: [1, 2, 0, 1, 2, 1, 0, 2], ic: "🎯" }
+};
+var qtopic = null, QN = 0, QCORRECT = [], qpre = "q", qi = 0, score = 0, picked = null, qDone = false;
+
+function qBest() { try { return JSON.parse(localStorage.getItem("qbest") || "{}") || {}; } catch (e) { return {}; } }
+function qSaveBest() {
+  try { var b = qBest(); if (b[qtopic] === undefined || score > b[qtopic]) b[qtopic] = score; localStorage.setItem("qbest", JSON.stringify(b)); } catch (e) {}
+}
+function qStart(k) {
+  var tp = QTOPICS[k]; qtopic = k; QN = tp.n; QCORRECT = tp.ok; qpre = tp.pre;
+  qi = 0; score = 0; picked = null; qDone = false;
+  qRender(); window.scrollTo({ top: 0, behavior: "smooth" });
+}
+function qPicker(box) {
+  var best = qBest();
+  var h = '<h2 style="font-size:20px;margin-bottom:14px">' + t("qz_pick") + "</h2>";
+  ["h", "m", "e"].forEach(function (k) {
+    var tp = QTOPICS[k], b = best[k];
+    var st = b === undefined ? t("qz_new") : t("qz_best").replace("{s}", b).replace("{m}", tp.n);
+    h += '<button class="qopt" data-topic="' + k + '"><b>' + tp.ic + " " + t("tp_" + k + "_t") + '</b><br><span class="note" style="margin:0">' +
+      t("tp_" + k + "_d") + '</span><br><span class="note" style="margin:4px 0 0;display:block;font-size:13px">' + st + "</span></button>";
+  });
+  box.innerHTML = h;
+  box.querySelectorAll("[data-topic]").forEach(function (b) { b.onclick = function () { qStart(b.getAttribute("data-topic")); }; });
+}
 
 function qRender() {
   var box = document.getElementById("qbox");
+  if (!qtopic) { qPicker(box); return; }
   if (qi >= QN) { qResult(box); return; }
-  var n = qi + 1, ok = QCORRECT[qi];
+  var n = qi + 1, ok = QCORRECT[qi], K = qpre + n;
   var h = '<div class="qprog"><i style="width:' + (qi / QN * 100) + '%"></i></div>' +
     '<p class="note" style="margin:0 0 8px">' + t("qz_prog").replace("{n}", n).replace("{m}", QN) + "</p>" +
-    '<h2 style="font-size:22px;margin-bottom:16px">' + t("q" + n) + "</h2>";
+    '<h2 style="font-size:22px;margin-bottom:16px">' + t(K) + "</h2>";
   ["a", "b", "c"].forEach(function (k, i) {
     var cl = "qopt";
     if (picked !== null) cl += i === ok ? " ok" : i === picked ? " bad" : "";
-    h += '<button class="' + cl + '" data-i="' + i + '"' + (picked !== null ? " disabled" : "") + ">" + t("q" + n + k) + "</button>";
+    h += '<button class="' + cl + '" data-i="' + i + '"' + (picked !== null ? " disabled" : "") + ">" + t(K + k) + "</button>";
   });
   if (picked !== null) {
-    h += '<div class="qexp"><b>' + (picked === ok ? t("qz_right") : t("qz_wrong")) + "</b> " + t("q" + n + "e") + "</div>" +
+    h += '<div class="qexp"><b>' + (picked === ok ? t("qz_right") : t("qz_wrong")) + "</b> " + t(K + "e") + "</div>" +
       '<button class="btn" id="qnext">' + (qi === QN - 1 ? t("qz_finish") : t("qz_next")) + "</button>";
   }
+  h += '<p style="margin:16px 0 0"><button class="btn ghost small" id="qtopics">' + t("qz_topics") + "</button></p>";
   box.innerHTML = h;
   box.querySelectorAll(".qopt").forEach(function (b) {
     b.onclick = function () {
@@ -515,18 +830,21 @@ function qRender() {
   });
   var nx = document.getElementById("qnext");
   if (nx) nx.onclick = function () { qi++; picked = null; qRender(); window.scrollTo({ top: 0, behavior: "smooth" }); };
+  document.getElementById("qtopics").onclick = function () { qtopic = null; qRender(); };
 }
 
 function qResult(box) {
-  if (!qDone) { qDone = true; if (window.recordAct) recordAct("quiz", 30); }
-  var tier = score >= 7 ? 1 : score >= 5 ? 2 : score >= 3 ? 3 : 4;
+  if (!qDone) { qDone = true; qSaveBest(); if (window.recordAct) recordAct("quiz", 30); }
+  var r = score / QN;
+  var tier = r >= 0.85 ? 1 : r >= 0.6 ? 2 : r >= 0.35 ? 3 : 4;
   var mood = tier === 1 ? "cheer" : tier === 4 ? "think" : "happy";
   box.innerHTML = '<div class="qres"><div class="mres">' + mascot(mood) + "</div>" +
     '<p class="note" style="margin:0">' + t("qz_res_t") + "</p>" +
     '<div class="big">' + t("qz_score").replace("{s}", score).replace("{m}", QN) + "</div>" +
     '<p style="max-width:460px;margin:0 auto 22px">' + t("qz_t" + tier) + "</p>" +
-    '<div class="cta" style="justify-content:center"><button class="btn ghost" id="qagain">' + t("qz_again") + '</button><a class="btn" href="/improve">' + t("qz_imp") + "</a></div></div>";
-  document.getElementById("qagain").onclick = function () { qi = 0; score = 0; picked = null; qDone = false; qRender(); };
+    '<div class="cta" style="justify-content:center"><button class="btn ghost" id="qagain">' + t("qz_again") + '</button><button class="btn ghost" id="qtopics">' + t("qz_topics") + '</button><a class="btn" href="/improve">' + t("qz_imp") + "</a></div></div>";
+  document.getElementById("qagain").onclick = function () { qStart(qtopic); };
+  document.getElementById("qtopics").onclick = function () { qtopic = null; qRender(); };
 }
 
 window.onLang = qRender;
