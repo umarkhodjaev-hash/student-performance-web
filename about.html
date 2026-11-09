@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>About | student-performance-predictor</title>
+<meta name="description" content="About the student performance predictor: a personal data science project by Umar, a student from Tashkent, Uzbekistan.">
+<meta property="og:title" content="About the project">
+<meta property="og:description" content="A personal data science project about how everyday habits connect to exam results.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%236c47e8'/%3E%3Cpath d='M10 22 L22 10 M13 10 H22 V19' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("theme")||"dark")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<nav id="nav"></nav>
+
+<main class="wrap">
+  <div class="phead">
+    <span class="crumb" data-i18n="crumb"></span>
+    <h1 data-i18n="ab_title"></h1>
+    <p class="lead" data-i18n="ab_lead"></p>
+  </div>
+
+  <section>
+    <div class="card" style="display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap">
+      <div class="logo"><i style="width:72px;height:72px;border-radius:22px;font-size:32px">U</i></div>
+      <div style="flex:1;min-width:260px">
+        <h2 style="font-size:28px" data-i18n="me_t"></h2>
+        <p style="font-size:16px" data-i18n="me_d"></p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="cards2">
+      <div class="card"><h3 data-i18n="why_t"></h3><p style="font-size:16px" data-i18n="why_d"></p></div>
+      <div class="card"><h3 data-i18n="what_t"></h3><ul class="points" id="what"></ul></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 data-i18n="tech_t"></h2>
+    <div class="cards4">
+      <div class="card"><h3 data-i18n="tc1"></h3><div class="stack"><span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span></div></div>
+      <div class="card"><h3 data-i18n="tc2"></h3><div class="stack"><span class="tag">FastAPI</span><span class="tag">Python</span></div></div>
+      <div class="card"><h3 data-i18n="tc3"></h3><div class="stack"><span class="tag">scikit-learn</span><span class="tag">pandas</span><span class="tag">joblib</span></div></div>
+      <div class="card"><h3 data-i18n="tc4"></h3><div class="stack"><span class="tag">Vercel</span><span class="tag">Render</span><span class="tag">GitHub</span></div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="cards2">
+      <div class="card"><h3 data-i18n="road_t"></h3><ul class="points" id="road"></ul></div>
+      <div class="card"><h3 data-i18n="links_t"></h3>
+        <ul class="points">
+          <li><a href="https://github.com/umarkhodjaev-hash" target="_blank" rel="noopener" data-i18n="ft_gh"></a></li>
+          <li><a href="https://github.com/umarkhodjaev-hash/student-performance-predictor" target="_blank" rel="noopener" data-i18n="ft_code"></a></li>
+          <li><a href="https://github.com/umarkhodjaev-hash/student-performance-web" target="_blank" rel="noopener" data-i18n="ft_web"></a></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="notice"><b data-i18n="disc_t"></b> <span data-i18n="disc_d"></span></div>
+  </section>
+
+  <div class="band">
+    <h2 data-i18n="go_t"></h2>
+    <p data-i18n="go_d"></p>
+    <a class="btn white" href="/predict" data-i18n="go_b"></a>
+  </div>
+</main>
+
+<footer id="foot"></footer>
+
+<script>
+/* Shared: dictionary, layout (nav + footer), theme, language */
+(function () {
+  var API = "https://student-performance-predictor-bas2.onrender.com";
+  window.API = API;
+
+  window.T = {
+    en: {
+      n_home: "Home", n_pred: "Predict", n_how: "How it works", n_imp: "Improve", n_about: "About", n_cta: "Analyze",
+      ft_tag: "Predict your exam score from your study habits and see what to change. A data science project from Tashkent.",
+      ft_pages: "PAGES", ft_proj: "PROJECT", ft_gh: "GitHub profile", ft_code: "Prediction server code", ft_web: "Website code",
+      ft_note: "An educational project. Predictions are estimates, not guarantees.",
+      lv_excellent: "Excellent", lv_verygood: "Very Good", lv_dev: "Developing", lv_need: "Needs Improvement",
+      o_Low: "Low", o_Medium: "Medium", o_High: "High", o_Yes: "Yes", o_No: "No",
+      o_Positive: "Positive", o_Neutral: "Neutral", o_Negative: "Negative", o_Near: "Near", o_Moderate: "Moderate", o_Far: "Far",
+      u_h: "h", u_d: "days"
+    },
+    ru: {
+      n_home: "Главная", n_pred: "Прогноз", n_how: "Как это работает", n_imp: "Улучшить", n_about: "О проекте", n_cta: "Анализировать",
+      ft_tag: "Прогнозируйте экзаменационный балл по учебным привычкам и узнайте, что менять. Проект по data science из Ташкента.",
+      ft_pages: "СТРАНИЦЫ", ft_proj: "ПРОЕКТ", ft_gh: "Профиль GitHub", ft_code: "Код сервера прогноза", ft_web: "Код сайта",
+      ft_note: "Учебный проект. Прогнозы приблизительные и не гарантируют результат.",
+      lv_excellent: "Отлично", lv_verygood: "Очень хорошо", lv_dev: "Развивается", lv_need: "Нужно улучшить",
+      o_Low: "Низкий", o_Medium: "Средний", o_High: "Высокий", o_Yes: "Да", o_No: "Нет",
+      o_Positive: "Положит.", o_Neutral: "Нейтр.", o_Negative: "Отрицат.", o_Near: "Близко", o_Moderate: "Средне", o_Far: "Далеко",
+      u_h: "ч", u_d: "дн."
+    }
+  };
+
+  var lang = "ru";
+  try { lang = localStorage.getItem("lang") || (navigator.language.indexOf("ru") === 0 ? "ru" : "en"); } catch (e) {}
+
+  window.getLang = function () { return lang; };
+  window.t = function (k) {
+    var d = window.T[lang];
+    if (d[k] !== undefined) return d[k];
+    if (window.T.en[k] !== undefined) return window.T.en[k];
+    return k;
+  };
+  window.$ = function (s) { return document.querySelector(s); };
+
+  function buildLayout() {
+    var nav = document.getElementById("nav");
+    if (nav) {
+      nav.innerHTML =
+        '<a class="logo" href="/"><i>↗</i><span>student-performance-predictor</span></a>' +
+        '<div class="links" id="links">' +
+        '<a href="/" data-i18n="n_home"></a>' +
+        '<a href="/predict" data-i18n="n_pred"></a>' +
+        '<a href="/how-it-works" data-i18n="n_how"></a>' +
+        '<a href="/improve" data-i18n="n_imp"></a>' +
+        '<a href="/about" data-i18n="n_about"></a></div>' +
+        '<div class="tools">' +
+        '<button class="chip" id="theme" aria-label="Theme"></button>' +
+        '<button class="chip" id="lang"></button>' +
+        '<a class="btn small" href="/predict" data-i18n="n_cta"></a>' +
+        '<button class="chip burger" id="burger" aria-label="Menu">☰</button></div>';
+      var path = location.pathname.replace(/\.html$/, "").replace(/\/+$/, "") || "/";
+      nav.querySelectorAll(".links a").forEach(function (a) {
+        if (a.getAttribute("href") === path) a.classList.add("cur");
+      });
+    }
+    var foot = document.getElementById("foot");
+    if (foot) {
+      foot.innerHTML =
+        '<div class="wrap"><div class="foot-grid">' +
+        '<div><a class="logo" href="/" style="padding:0"><i>↗</i><span style="display:inline">student-performance-predictor</span></a>' +
+        '<p style="margin-top:12px;max-width:360px" data-i18n="ft_tag"></p></div>' +
+        '<div><h5 data-i18n="ft_pages"></h5>' +
+        '<a href="/" data-i18n="n_home"></a><a href="/predict" data-i18n="n_pred"></a>' +
+        '<a href="/how-it-works" data-i18n="n_how"></a><a href="/improve" data-i18n="n_imp"></a>' +
+        '<a href="/about" data-i18n="n_about"></a></div>' +
+        '<div><h5 data-i18n="ft_proj"></h5>' +
+        '<a href="https://github.com/umarkhodjaev-hash" target="_blank" rel="noopener" data-i18n="ft_gh"></a>' +
+        '<a href="https://github.com/umarkhodjaev-hash/student-performance-predictor" target="_blank" rel="noopener" data-i18n="ft_code"></a>' +
+        '<a href="https://github.com/umarkhodjaev-hash/student-performance-web" target="_blank" rel="noopener" data-i18n="ft_web"></a></div>' +
+        '</div><div class="copy">© <span id="yr"></span> student-performance-predictor · Umar<br><span data-i18n="ft_note"></span></div></div>';
+      var y = document.getElementById("yr");
+      if (y) y.textContent = new Date().getFullYear();
+    }
+  }
+
+  function applyLang() {
+    document.documentElement.lang = lang;
+    var d = window.T[lang];
+    if (d.doc_title) document.title = d.doc_title;
+    document.querySelectorAll("[data-i18n]").forEach(function (e) { e.textContent = window.t(e.getAttribute("data-i18n")); });
+    var lb = document.getElementById("lang");
+    if (lb) lb.textContent = lang === "ru" ? "EN" : "RU";
+    if (window.onLang) window.onLang();
+  }
+  window.applyLang = applyLang;
+
+  function setTheme(m) {
+    document.documentElement.setAttribute("data-theme", m);
+    var b = document.getElementById("theme");
+    if (b) b.textContent = m === "dark" ? "☀️" : "🌙";
+    try { localStorage.setItem("theme", m); } catch (e) {}
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    buildLayout();
+    var saved = null;
+    try { saved = localStorage.getItem("theme"); } catch (e) {}
+    setTheme(saved || "dark");
+    document.getElementById("theme").onclick = function () {
+      setTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
+    };
+    document.getElementById("lang").onclick = function () {
+      lang = lang === "ru" ? "en" : "ru";
+      try { localStorage.setItem("lang", lang); } catch (e) {}
+      applyLang();
+    };
+    document.getElementById("burger").onclick = function () {
+      document.getElementById("links").classList.toggle("open");
+    };
+    applyLang();
+    /* wake the free Render server in the background */
+    try { fetch(API + "/robots.txt", { mode: "no-cors" }).catch(function () {}); } catch (e) {}
+  });
+})();
+
+</script>
+<script>
+Object.assign(T.en, {
+  doc_title: "About | student-performance-predictor",
+  crumb: "ABOUT", ab_title: "About the project",
+  ab_lead: "A personal data science project about how everyday habits connect to exam results.",
+  me_t: "Hi, I'm Umar",
+  me_d: "I'm a student from Tashkent, Uzbekistan, interested in data science and in building tools that people can actually use. This project started with a simple question: how much do habits like studying, sleeping and showing up to class really relate to exam scores?",
+  why_t: "Why I built it",
+  why_d: "I wanted to turn a machine-learning model into something visible: a website anyone can open, answer a few questions on and learn from. The goal is not to judge anyone, but to help students notice habits they can change.",
+  what_t: "What you can do here",
+  w1: "Get a predicted exam score from 15 answers about routine, environment and lifestyle.",
+  w2: "See insights and recommendations based on your answers.",
+  w3: "Test what-if scenarios computed by the same model.",
+  w4: "Use the site in Russian or English, in light or dark mode.",
+  tech_t: "How it is built", tc1: "Website", tc2: "Prediction server", tc3: "Machine learning", tc4: "Hosting and code",
+  road_t: "What's next",
+  r1: "Uzbek language", r2: "Compare two scenarios side by side", r3: "Progress history over time", r4: "More visuals and animations",
+  links_t: "Links",
+  disc_t: "Please note.", disc_d: "This is an educational project. Predictions are estimates based on patterns in data and are not a guarantee of results. Do not use them to make important decisions about yourself or other people.",
+  go_t: "Try the predictor", go_d: "It takes about a minute and needs no account.", go_b: "Open the predictor →"
+});
+Object.assign(T.ru, {
+  doc_title: "О проекте | student-performance-predictor",
+  crumb: "О ПРОЕКТЕ", ab_title: "О проекте",
+  ab_lead: "Личный проект по data science о том, как повседневные привычки связаны с результатами экзаменов.",
+  me_t: "Привет, я Умар",
+  me_d: "Я студент из Ташкента, Узбекистан, интересуюсь data science и созданием инструментов, которыми люди реально пользуются. Проект начался с простого вопроса: насколько привычки вроде учёбы, сна и посещения занятий на самом деле связаны с экзаменационными баллами?",
+  why_t: "Зачем я это сделал",
+  why_d: "Я хотел превратить модель машинного обучения во что-то видимое: сайт, который любой может открыть, ответить на несколько вопросов и чему-то научиться. Цель не в том, чтобы кого-то оценивать, а в том, чтобы помочь ученикам заметить привычки, которые они могут изменить.",
+  what_t: "Что можно сделать здесь",
+  w1: "Получить прогноз экзаменационного балла по 15 ответам о рутине, окружении и образе жизни.",
+  w2: "Увидеть выводы и рекомендации по своим ответам.",
+  w3: "Проверить сценарии «а что если», посчитанные той же моделью.",
+  w4: "Пользоваться сайтом на русском или английском, в светлой или тёмной теме.",
+  tech_t: "Как это сделано", tc1: "Сайт", tc2: "Сервер прогноза", tc3: "Машинное обучение", tc4: "Хостинг и код",
+  road_t: "Что дальше",
+  r1: "Узбекский язык", r2: "Сравнение двух сценариев рядом", r3: "История прогресса со временем", r4: "Больше визуализаций и анимаций",
+  links_t: "Ссылки",
+  disc_t: "Важно.", disc_d: "Это учебный проект. Прогнозы — оценки по закономерностям в данных, они не гарантируют результат. Не используйте их для важных решений о себе или других людях.",
+  go_t: "Попробуйте предиктор", go_d: "Это займёт около минуты, аккаунт не нужен.", go_b: "Открыть предиктор →"
+});
+
+window.onLang = function () {
+  document.getElementById("what").innerHTML = [1, 2, 3, 4].map(function (i) { return "<li>" + t("w" + i) + "</li>"; }).join("");
+  document.getElementById("road").innerHTML = [1, 2, 3, 4].map(function (i) { return "<li>" + t("r" + i) + "</li>"; }).join("");
+};
+</script>
+</body>
+</html>

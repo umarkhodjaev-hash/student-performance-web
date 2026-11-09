@@ -3,511 +3,273 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>student-performance-predictor</title>
-<meta name="description" content="Predict your exam score from your study habits with a trained ML model, then see what to change.">
+<title>student-performance-predictor | Predict your exam score</title>
+<meta name="description" content="Predict your exam score from 15 study habits with a trained machine-learning model, then see what to change. A data science project.">
+<meta property="og:title" content="student-performance-predictor">
+<meta property="og:description" content="Predict your exam score from your habits and see what to improve.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%236c47e8'/%3E%3Cpath d='M10 22 L22 10 M13 10 H22 V19' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("theme")||"dark")}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#fafaff;--surface:#fff;--text:#0f1020;--muted:#5d6079;--line:#e7e7f3;
-  --brand:#6c47e8;--brand2:#9b6bff;--ok:#16a34a;--bad:#ef4444;
-  --shadow:0 10px 40px rgba(60,40,140,.10);--grid:rgba(108,71,232,.06);
-}
-:root[data-theme="dark"]{
-  --bg:#080b16;--surface:#101528;--text:#f2f3fb;--muted:#9a9eb9;--line:#232a45;
-  --brand:#7f63ff;--brand2:#b39bff;--shadow:0 12px 44px rgba(0,0,0,.5);--grid:rgba(127,99,255,.07);
-}
-*{box-sizing:border-box;margin:0}
-html{scroll-behavior:smooth}
-body{font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;
-  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
-  background-size:48px 48px;transition:background-color .3s,color .3s}
-.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
-button{font-family:inherit}
-[hidden]{display:none!important}
-/* nav */
-nav{position:sticky;top:14px;z-index:20;margin:14px auto 0;max-width:1000px;display:flex;align-items:center;justify-content:space-between;
-  gap:12px;padding:10px 12px 10px 20px;background:color-mix(in srgb,var(--surface) 85%,transparent);backdrop-filter:blur(14px);
-  border:1px solid var(--line);border-radius:999px;box-shadow:var(--shadow)}
-.logo{display:flex;align-items:center;gap:10px;font-weight:700;text-decoration:none;color:var(--text);white-space:nowrap}
-.logo i{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--brand),var(--brand2));display:grid;place-items:center;color:#fff;font-style:normal;font-size:16px}
-nav .links{display:flex;gap:24px}
-nav .links a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500}
-nav .links a:hover{color:var(--text)}
-.tools{display:flex;gap:8px;align-items:center}
-.chip{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:999px;padding:7px 12px;font:600 13px Inter;cursor:pointer}
-.btn{border:0;background:var(--brand);color:#fff;border-radius:999px;padding:13px 24px;font:600 15px Inter;cursor:pointer;text-decoration:none;display:inline-flex;gap:8px;align-items:center;justify-content:center;
-  box-shadow:0 8px 24px color-mix(in srgb,var(--brand) 40%,transparent);transition:transform .15s,opacity .15s}
-.btn:hover{transform:translateY(-2px)}
-.btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
-.btn.ghost{background:transparent;color:var(--text);box-shadow:none;border:1px solid var(--line)}
-/* hero */
-.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:30px;align-items:center;padding:70px 0 50px}
-.badge{display:inline-block;padding:7px 14px;border:1px solid var(--line);border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.1em;color:var(--brand);background:var(--surface);margin-bottom:22px}
-h1{font-size:clamp(40px,6vw,70px);line-height:1.04;letter-spacing:-.035em;font-weight:800}
-h1 .g{background:linear-gradient(90deg,var(--brand),var(--brand2));-webkit-background-clip:text;background-clip:text;color:transparent}
-.lead{margin:22px 0 30px;color:var(--muted);font-size:18px;max-width:520px}
-.cta{display:flex;gap:12px;flex-wrap:wrap}
-.stage{position:relative;min-height:380px;display:grid;place-items:center}
-.orb{position:absolute;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle at 35% 30%,var(--brand2),var(--brand) 55%,transparent 72%);opacity:.25;filter:blur(10px)}
-.hcard{position:relative;width:100%;max-width:400px;background:var(--surface);border:1px solid var(--line);border-radius:26px;padding:26px;box-shadow:var(--shadow)}
-.hcard small{display:block;font-size:11px;letter-spacing:.12em;font-weight:700;color:var(--muted)}
-.hcard h3{font-size:20px;margin:4px 0 16px}
-.hbig{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:14px}
-.hbig b{font-size:60px;line-height:1;letter-spacing:-.04em;background:linear-gradient(135deg,var(--brand),var(--brand2));-webkit-background-clip:text;background-clip:text;color:transparent}
-.hbig span{color:var(--muted);font-size:15px;margin-left:4px}
-.pill{display:inline-block;padding:6px 14px;border-radius:999px;font-weight:700;font-size:13px;color:var(--brand);border:1px solid color-mix(in srgb,var(--brand) 40%,transparent);background:color-mix(in srgb,var(--brand) 12%,transparent)}
-.hrow{display:flex;justify-content:space-between;font-size:14px;padding:8px 0;border-top:1px solid var(--line);color:var(--muted)}
-.hrow b{color:var(--text)}
-.empty{color:var(--muted);font-size:14px;padding:8px 0}
-.float{position:absolute;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:10px 14px;box-shadow:var(--shadow);animation:bob 6s ease-in-out infinite;font-size:13px;font-weight:600}
-.float.a{top:6px;right:0}.float.b{bottom:16px;left:0;animation-delay:-3s}
-@keyframes bob{50%{transform:translateY(-9px)}}
-/* sections */
-section{padding:54px 0}
-h2{font-size:clamp(28px,4vw,42px);letter-spacing:-.03em;font-weight:800;margin-bottom:10px}
-.sub{color:var(--muted);margin-bottom:30px;max-width:600px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:26px;padding:28px;box-shadow:var(--shadow)}
-/* stepper */
-.stepper{display:flex;gap:10px;margin-bottom:26px}
-.sp{flex:1}
-.sp i{display:block;height:6px;border-radius:99px;background:var(--line);margin-bottom:8px;overflow:hidden;position:relative}
-.sp i::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--brand),var(--brand2));transform:scaleX(0);transform-origin:left;transition:transform .4s}
-.sp.on i::after,.sp.done i::after{transform:scaleX(1)}
-.sp span{font-size:12px;font-weight:600;color:var(--muted)}
-.sp.on span{color:var(--text)}
-.st-t{font-size:24px;letter-spacing:-.02em}
-.st-d{color:var(--muted);margin:4px 0 22px;font-size:15px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:22px 30px}
-.field .row{display:flex;justify-content:space-between;gap:10px;font-weight:600;font-size:14px;margin-bottom:9px}
-.field .row output{color:var(--brand);white-space:nowrap}
-.field .hint{font-size:12px;color:var(--muted);margin-top:7px}
-input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:8px;border-radius:99px;outline:0;
-  background:linear-gradient(90deg,var(--brand) var(--p,50%),var(--line) var(--p,50%))}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;border:4px solid var(--brand);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25)}
-input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#fff;border:4px solid var(--brand);cursor:pointer}
-.seg{display:flex;gap:6px;background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:4px}
-.seg button{flex:1;border:0;background:transparent;color:var(--muted);font:600 13px Inter;padding:9px 6px;border-radius:10px;cursor:pointer;transition:all .15s}
-.seg button.on{background:var(--brand);color:#fff;box-shadow:0 4px 14px color-mix(in srgb,var(--brand) 40%,transparent)}
-.att{margin-top:20px;padding:12px 16px;border-radius:14px;background:color-mix(in srgb,var(--brand) 10%,transparent);font-size:14px}
-.att b{color:var(--brand)}
-.navb{display:flex;justify-content:space-between;margin-top:28px;gap:12px}
-/* result */
-.res{display:grid;grid-template-columns:.8fr 1.2fr;gap:28px}
-.ringbox{text-align:center}
-.ring{position:relative;width:230px;height:230px;margin:0 auto 14px}
-.ring svg{transform:rotate(-90deg)}
-.ring circle{fill:none;stroke-width:16;stroke-linecap:round}
-.ring .bg{stroke:var(--line)}
-.ring .fg{stroke:url(#g);transition:stroke-dashoffset 1.1s cubic-bezier(.2,.8,.2,1)}
-.ring .mid{position:absolute;inset:0;display:grid;place-content:center}
-.ring .mid b{font-size:58px;letter-spacing:-.03em;line-height:1}
-.ring .mid span{color:var(--muted);font-size:13px}
-.box{background:var(--bg);border:1px solid var(--line);border-radius:18px;padding:18px 20px;margin-bottom:14px}
-.box h4{font-size:14px;margin-bottom:10px}
-.box ul{list-style:none;padding:0;display:grid;gap:8px}
-.box li{font-size:14px;padding-left:22px;position:relative;color:var(--muted)}
-.box li::before{content:"";position:absolute;left:2px;top:7px;width:8px;height:8px;border-radius:50%;background:var(--brand)}
-.box.ins li::before{background:var(--ok)}
-.sc{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:14px;padding:9px 0;border-top:1px solid var(--line)}
-.sc:first-of-type{border-top:0}
-.sc b{white-space:nowrap}
-.pos{color:var(--ok)}.neg{color:var(--bad)}.zero{color:var(--muted)}
-.steps3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-.num{width:36px;height:36px;border-radius:12px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:700;margin-bottom:14px}
-.steps3 p{color:var(--muted);font-size:15px;margin-top:4px}
-.note{margin-top:16px;font-size:12.5px;color:var(--muted)}
-/* loader */
-.loader{position:fixed;inset:0;z-index:50;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(8px);display:grid;place-content:center;text-align:center;gap:16px;padding:20px}
-.spin{width:52px;height:52px;border-radius:50%;border:5px solid var(--line);border-top-color:var(--brand);margin:0 auto;animation:sp 0.9s linear infinite}
-@keyframes sp{to{transform:rotate(360deg)}}
-.err{padding:14px 16px;border-radius:14px;background:color-mix(in srgb,var(--bad) 12%,transparent);color:var(--bad);font-size:14px;margin-top:16px}
-footer{padding:36px 0 56px;color:var(--muted);font-size:14px;text-align:center;border-top:1px solid var(--line);margin-top:30px}
-@media(max-width:860px){
-  nav .links{display:none}.hero,.res,.steps3,.grid{grid-template-columns:1fr}.hero{padding-top:44px}.logo span{display:none}
-}
-</style>
+<link rel="stylesheet" href="/style.css">
 </head>
 <body>
-<nav>
-  <a class="logo" href="#top"><i>↗</i><span>student-performance-predictor</span></a>
-  <div class="links">
-    <a href="#top" data-i18n="n_home">Home</a>
-    <a href="#predict" data-i18n="n_pred">Predict</a>
-    <a href="#how" data-i18n="n_how">How it works</a>
-    <a href="#about" data-i18n="n_about">About</a>
-  </div>
-  <div class="tools">
-    <button class="chip" id="theme" aria-label="Theme">🌙</button>
-    <button class="chip" id="lang">EN</button>
-    <a class="btn" href="#predict" style="padding:9px 18px;font-size:14px" data-i18n="n_cta">Analyze</a>
-  </div>
-</nav>
+<nav id="nav"></nav>
 
-<main class="wrap" id="top">
+<main class="wrap">
   <header class="hero">
     <div>
-      <span class="badge" data-i18n="badge">DATA SCIENCE × EDUCATION</span>
-      <h1><span data-i18n="h1a">Catch your habits.</span><br><span class="g" data-i18n="h1b">Improve your results.</span></h1>
+      <span class="badge" data-i18n="badge"></span>
+      <h1><span data-i18n="h1a"></span><br><span class="g" data-i18n="h1b"></span></h1>
       <p class="lead" data-i18n="lead"></p>
       <div class="cta">
-        <a class="btn" href="#predict" data-i18n="cta1">Analyze my performance →</a>
-        <a class="btn ghost" href="#how" data-i18n="cta2">How it works</a>
+        <a class="btn" href="/predict" data-i18n="cta1"></a>
+        <a class="btn ghost" href="/how-it-works" data-i18n="cta2"></a>
       </div>
     </div>
     <div class="stage">
       <div class="orb"></div>
       <div class="hcard">
-        <small data-i18n="last">YOUR LAST ANALYSIS</small>
-        <h3 data-i18n="lastT">Performance analysis</h3>
+        <small data-i18n="last"></small>
+        <h3 data-i18n="lastT"></h3>
         <div id="lastBody"></div>
       </div>
-      <div class="float a">🤖 ML model</div>
-      <div class="float b">⚡ <span data-i18n="fl">15 factors</span></div>
+      <div class="float a">🤖 <span data-i18n="flm"></span></div>
+      <div class="float b">⚡ <span data-i18n="fl"></span></div>
     </div>
   </header>
 
-  <section id="predict">
-    <h2 data-i18n="t_pred">Build your academic profile</h2>
-    <p class="sub" data-i18n="s_pred"></p>
-    <div class="card">
-      <div id="formView">
-        <div class="stepper" id="stepper"></div>
-        <div id="panel"></div>
-        <div id="error"></div>
-        <div class="navb">
-          <button class="btn ghost" id="back"></button>
-          <button class="btn" id="next"></button>
-        </div>
-      </div>
-      <div id="resultView" hidden></div>
-    </div>
+  <div class="stats">
+    <div class="stat"><b data-i18n="s_1v"></b><span data-i18n="s_1l"></span></div>
+    <div class="stat"><b data-i18n="s_2v"></b><span data-i18n="s_2l"></span></div>
+    <div class="stat"><b>RU · EN</b><span data-i18n="s_3l"></span></div>
+    <div class="stat"><b data-i18n="s_4v"></b><span data-i18n="s_4l"></span></div>
+  </div>
+
+  <section>
+    <h2 data-i18n="wh_t"></h2>
+    <p class="sub" data-i18n="wh_s"></p>
+    <div class="cards3" id="features"></div>
   </section>
 
-  <section id="how">
-    <h2 data-i18n="t_how">How it works</h2>
-    <p class="sub" data-i18n="s_how"></p>
-    <div class="steps3">
-      <div class="card"><div class="num">1</div><h3 data-i18n="h_1"></h3><p data-i18n="d_1"></p></div>
-      <div class="card"><div class="num">2</div><h3 data-i18n="h_2"></h3><p data-i18n="d_2"></p></div>
-      <div class="card"><div class="num">3</div><h3 data-i18n="h_3"></h3><p data-i18n="d_3"></p></div>
+  <section>
+    <h2 data-i18n="hw_t"></h2>
+    <p class="sub" data-i18n="hw_s"></p>
+    <div class="cards3">
+      <div class="card"><div class="num">1</div><h3 data-i18n="p_1t"></h3><p data-i18n="p_1d"></p></div>
+      <div class="card"><div class="num">2</div><h3 data-i18n="p_2t"></h3><p data-i18n="p_2d"></p></div>
+      <div class="card"><div class="num">3</div><h3 data-i18n="p_3t"></h3><p data-i18n="p_3d"></p></div>
     </div>
-    <p class="note" data-i18n="note"></p>
+    <p style="margin-top:22px"><a class="btn ghost" href="/how-it-works" data-i18n="hw_more"></a></p>
   </section>
 
-  <section id="about">
-    <div class="card" style="display:flex;gap:22px;align-items:center;flex-wrap:wrap">
-      <div class="logo"><i style="width:64px;height:64px;border-radius:20px;font-size:28px">U</i></div>
-      <div style="flex:1;min-width:240px">
-        <h2 style="font-size:26px;margin-bottom:6px" data-i18n="t_about"></h2>
-        <p style="color:var(--muted)" data-i18n="d_about"></p>
-      </div>
-    </div>
-  </section>
+  <div class="band">
+    <h2 data-i18n="band_t"></h2>
+    <p data-i18n="band_d"></p>
+    <a class="btn white" href="/predict" data-i18n="band_b"></a>
+  </div>
 </main>
-<footer>© <span id="yr"></span> student-performance-predictor · Umar</footer>
 
-<div class="loader" id="loader" hidden>
-  <div class="spin"></div>
-  <b id="loadT"></b>
-  <span id="loadS" style="color:var(--muted);font-size:14px;max-width:340px"></span>
-</div>
+<footer id="foot"></footer>
 
 <script>
-/* ====== CONFIG ====== */
-const API = "https://student-performance-predictor-bas2.onrender.com";
+/* Shared: dictionary, layout (nav + footer), theme, language */
+(function () {
+  var API = "https://student-performance-predictor-bas2.onrender.com";
+  window.API = API;
 
-/* ====== TEXT ====== */
-const T = {
-en:{n_home:"Home",n_pred:"Predict",n_how:"How it works",n_about:"About",n_cta:"Analyze",badge:"DATA SCIENCE × EDUCATION",
-h1a:"Catch your habits.",h1b:"Improve your results.",
-lead:"Find out how your study habits, attendance, sleep, motivation and environment may be connected to academic performance, using a trained machine-learning model.",
-cta1:"Analyze my performance →",cta2:"How it works",last:"YOUR LAST ANALYSIS",lastT:"Performance analysis",fl:"15 factors",
-lastEmpty:"Run your first analysis and it will appear here.",l_pred:"Predicted score",l_study:"Study time",l_att:"Attendance",l_sleep:"Sleep",l_mot:"Motivation",
-t_pred:"Build your academic profile",s_pred:"Answer a few questions about your routine, environment and lifestyle. The model estimates your exam score and gives personal insights.",
-s1:"Routine",s2:"Environment",s3:"Lifestyle",
-t_s1:"Academic routine",d_s1:"Your workload, attendance and independent study habits.",
-t_s2:"Learning environment",d_s2:"The support and conditions around your studies.",
-t_s3:"Motivation & lifestyle",d_s3:"Your daily routine gives more context to the prediction.",
-f_classes_per_week:"Classes per week",h_classes_per_week:"Used to calculate attendance fairly.",
-f_classes_attended:"Classes attended per week",h_classes_attended:"Compared with your total classes.",
-f_hours_studied:"Independent study hours per week",h_hours_studied:"Study time outside regular lessons.",
-f_previous_scores:"Previous academic score",h_previous_scores:"Your recent academic starting point.",
-f_tutoring_sessions:"Tutoring sessions per month",h_tutoring_sessions:"Extra academic support you receive.",
-f_parental_involvement:"Parental involvement",h_parental_involvement:"Encouragement and involvement at home.",
-f_access_to_resources:"Access to learning resources",h_access_to_resources:"Textbooks, materials and study tools.",
-f_internet_access:"Reliable internet for studying",h_internet_access:"Affects access to online resources.",
-f_teacher_quality:"Teacher quality",h_teacher_quality:"Your view of the teaching environment.",
-f_peer_influence:"Friends' influence on studies",h_peer_influence:"Do friends support or distract you?",
-f_distance_from_home:"Distance from school",h_distance_from_home:"Travel can affect time for study and rest.",
-f_motivation_level:"Motivation to study",h_motivation_level:"Your current level of academic motivation.",
-f_sleep_hours:"Sleep per night",h_sleep_hours:"Average on a typical school night.",
-f_physical_activity:"Physically active days per week",h_physical_activity:"Regular physical activity.",
-f_extracurricular_activities:"Extracurricular activities",h_extracurricular_activities:"Clubs, sports, competitions.",
-o_Low:"Low",o_Medium:"Medium",o_High:"High",o_Yes:"Yes",o_No:"No",o_Positive:"Positive",o_Neutral:"Neutral",o_Negative:"Negative",o_Near:"Near",o_Moderate:"Moderate",o_Far:"Far",
-u_h:"h",u_d:"days",attIs:"Your attendance:",back:"← Back",next:"Next →",go:"Analyze ✨",again:"Start over",
-ld1:"Analyzing your profile…",ld2:"The free server may need up to a minute to wake up the first time. Please wait.",
-errT:"Could not reach the model. Check your connection and try again in a moment.",
-r_score:"out of 100",r_att:"Attendance",r_ins:"What the data says",r_rec:"What to improve",r_what:"What if you change…",r_calc:"Calculating with the model…",r_none:"Nothing to add, your profile is already strong here.",
-lv_excellent:"Excellent",lv_verygood:"Very Good",lv_dev:"Developing",lv_need:"Needs Improvement",
-i_att_high:"Your attendance is very strong.",i_att_low:"Your attendance may be limiting your performance.",i_study_high:"You keep a strong weekly study routine.",i_study_low:"Your weekly independent study time is relatively low.",
-i_sleep_ok:"Your sleep supports a consistent academic routine.",i_sleep_low:"Your sleep duration is relatively low.",i_prev_high:"Your previous academic performance is strong.",i_mot_high:"You report a high level of motivation.",
-i_res_low:"Limited learning resources may make studying harder.",i_teach_high:"You report a strong teaching environment.",i_peer_pos:"Your peer environment supports your studies.",
-c_att:"Improve attendance and quickly catch up on missed classes.",c_study:"Build a more consistent weekly independent study routine.",c_sleep:"Keep a more consistent sleep schedule.",c_tutor:"Consider tutoring or academic support for difficult topics.",
-c_phys:"Add regular physical activity to your week.",c_mot:"Break big goals into smaller weekly targets.",c_res:"Look for extra learning resources at school or online.",c_net:"Use offline materials or school resources when internet is limited.",
-c_peer:"Protect focused study time from negative peer pressure.",c_ok:"Keep your routine and keep tracking progress.",
-w_study:"+5 study hours per week",w_att:"Attend every class",w_sleep:"Sleep 8 hours",w_tutor:"+2 tutoring sessions per month",w_mot:"High motivation",
-t_how:"How it works",s_how:"From your answers to a prediction in a few seconds.",
-h_1:"Answer questions",d_1:"15 short questions about routine, environment and lifestyle.",
-h_2:"The model predicts",d_2:"A trained machine-learning model estimates your exam score.",
-h_3:"Get a plan",d_3:"See insights, recommendations and what-if effects computed by the same model.",
-note:"The prediction is an estimate for learning and self-reflection, not a guarantee of results.",
-t_about:"Built by Umar",d_about:"Student from Tashkent, Uzbekistan, interested in data science. This is a personal project about how habits relate to academic results."},
-ru:{n_home:"Главная",n_pred:"Прогноз",n_how:"Как это работает",n_about:"О проекте",n_cta:"Анализировать",badge:"DATA SCIENCE × ОБРАЗОВАНИЕ",
-h1a:"Поймите свои привычки.",h1b:"Улучшайте результаты.",
-lead:"Узнайте, как учебные привычки, посещаемость, сон, мотивация и среда связаны с успеваемостью. Прогноз строит обученная ML-модель.",
-cta1:"Проанализировать мою успеваемость →",cta2:"Как это работает",last:"ВАШ ПОСЛЕДНИЙ АНАЛИЗ",lastT:"Анализ успеваемости",fl:"15 факторов",
-lastEmpty:"Пройдите первый анализ, и он появится здесь.",l_pred:"Прогнозируемый балл",l_study:"Время на учёбу",l_att:"Посещаемость",l_sleep:"Сон",l_mot:"Мотивация",
-t_pred:"Создайте свой учебный профиль",s_pred:"Ответьте на несколько вопросов о рутине, окружении и образе жизни. Модель оценит ваш экзаменационный балл и даст персональные выводы.",
-s1:"Рутина",s2:"Окружение",s3:"Образ жизни",
-t_s1:"Учебная рутина",d_s1:"Нагрузка, посещаемость и самостоятельная учёба.",
-t_s2:"Учебная среда",d_s2:"Поддержка и условия вокруг вашей учёбы.",
-t_s3:"Мотивация и образ жизни",d_s3:"Ежедневные привычки дают прогнозу больше контекста.",
-f_classes_per_week:"Занятий в неделю",h_classes_per_week:"Нужно, чтобы честно посчитать посещаемость.",
-f_classes_attended:"Посещаете занятий в неделю",h_classes_attended:"Сравнивается с общим числом занятий.",
-f_hours_studied:"Часов самостоятельной учёбы в неделю",h_hours_studied:"Время учёбы вне обычных уроков.",
-f_previous_scores:"Прошлый академический балл",h_previous_scores:"Ваша недавняя отправная точка.",
-f_tutoring_sessions:"Занятий с репетитором в месяц",h_tutoring_sessions:"Дополнительная академическая поддержка.",
-f_parental_involvement:"Участие родителей",h_parental_involvement:"Поддержка и вовлечённость дома.",
-f_access_to_resources:"Доступ к учебным ресурсам",h_access_to_resources:"Учебники, материалы и инструменты.",
-f_internet_access:"Стабильный интернет для учёбы",h_internet_access:"Влияет на доступ к онлайн-ресурсам.",
-f_teacher_quality:"Качество преподавания",h_teacher_quality:"Ваша оценка учебной среды.",
-f_peer_influence:"Влияние друзей на учёбу",h_peer_influence:"Друзья поддерживают или отвлекают?",
-f_distance_from_home:"Расстояние до школы",h_distance_from_home:"Дорога влияет на время для учёбы и отдыха.",
-f_motivation_level:"Мотивация к учёбе",h_motivation_level:"Ваш текущий уровень мотивации.",
-f_sleep_hours:"Сон за ночь",h_sleep_hours:"В среднем в обычную учебную ночь.",
-f_physical_activity:"Дней физической активности в неделю",h_physical_activity:"Регулярная физическая активность.",
-f_extracurricular_activities:"Внеучебные занятия",h_extracurricular_activities:"Кружки, спорт, соревнования.",
-o_Low:"Низкий",o_Medium:"Средний",o_High:"Высокий",o_Yes:"Да",o_No:"Нет",o_Positive:"Положит.",o_Neutral:"Нейтр.",o_Negative:"Отрицат.",o_Near:"Близко",o_Moderate:"Средне",o_Far:"Далеко",
-u_h:"ч",u_d:"дн.",attIs:"Ваша посещаемость:",back:"← Назад",next:"Далее →",go:"Анализировать ✨",again:"Пройти заново",
-ld1:"Анализируем ваш профиль…",ld2:"Бесплатному серверу при первом запуске нужно до минуты, чтобы проснуться. Подождите немного.",
-errT:"Не удалось связаться с моделью. Проверьте интернет и попробуйте ещё раз через минуту.",
-r_score:"из 100",r_att:"Посещаемость",r_ins:"Что показывают данные",r_rec:"Что улучшить",r_what:"А что если изменить…",r_calc:"Считаем с помощью модели…",r_none:"Добавить нечего, здесь у вас уже всё сильно.",
-lv_excellent:"Отлично",lv_verygood:"Очень хорошо",lv_dev:"Развивается",lv_need:"Нужно улучшить",
-i_att_high:"У вас очень высокая посещаемость.",i_att_low:"Посещаемость может ограничивать вашу успеваемость.",i_study_high:"Вы стабильно много занимаетесь в неделю.",i_study_low:"Самостоятельной учёбы в неделю относительно мало.",
-i_sleep_ok:"Ваш сон поддерживает стабильный учебный режим.",i_sleep_low:"Сна относительно мало.",i_prev_high:"У вас сильные прошлые результаты.",i_mot_high:"Вы сообщаете о высокой мотивации.",
-i_res_low:"Ограниченный доступ к ресурсам может усложнять учёбу.",i_teach_high:"Вы отмечаете сильное преподавание.",i_peer_pos:"Окружение друзей поддерживает вашу учёбу.",
-c_att:"Повысьте посещаемость и быстро навёрстывайте пропущенное.",c_study:"Выстройте более регулярную самостоятельную учёбу.",c_sleep:"Придерживайтесь более стабильного режима сна.",c_tutor:"Подумайте о репетиторе или помощи по сложным темам.",
-c_phys:"Добавьте регулярную физическую активность.",c_mot:"Разбейте большие цели на небольшие недельные задачи.",c_res:"Поищите дополнительные ресурсы в школе или онлайн.",c_net:"Используйте офлайн-материалы или ресурсы школы, когда нет интернета.",
-c_peer:"Защищайте время учёбы от негативного влияния друзей.",c_ok:"Сохраняйте режим и следите за прогрессом.",
-w_study:"+5 часов учёбы в неделю",w_att:"Ходить на все занятия",w_sleep:"Спать 8 часов",w_tutor:"+2 занятия с репетитором в месяц",w_mot:"Высокая мотивация",
-t_how:"Как это работает",s_how:"От ваших ответов до прогноза за несколько секунд.",
-h_1:"Ответьте на вопросы",d_1:"15 коротких вопросов о рутине, среде и образе жизни.",
-h_2:"Модель делает прогноз",d_2:"Обученная ML-модель оценивает ваш экзаменационный балл.",
-h_3:"Получите план",d_3:"Выводы, рекомендации и эффект изменений, посчитанный той же моделью.",
-note:"Прогноз — это оценка для обучения и самоанализа, а не гарантия результата.",
-t_about:"Сделал Умар",d_about:"Студент из Ташкента, Узбекистан, интересуюсь data science. Это личный проект о том, как привычки связаны с учебными результатами."}
-};
+  window.T = {
+    en: {
+      n_home: "Home", n_pred: "Predict", n_how: "How it works", n_imp: "Improve", n_about: "About", n_cta: "Analyze",
+      ft_tag: "Predict your exam score from your study habits and see what to change. A data science project from Tashkent.",
+      ft_pages: "PAGES", ft_proj: "PROJECT", ft_gh: "GitHub profile", ft_code: "Prediction server code", ft_web: "Website code",
+      ft_note: "An educational project. Predictions are estimates, not guarantees.",
+      lv_excellent: "Excellent", lv_verygood: "Very Good", lv_dev: "Developing", lv_need: "Needs Improvement",
+      o_Low: "Low", o_Medium: "Medium", o_High: "High", o_Yes: "Yes", o_No: "No",
+      o_Positive: "Positive", o_Neutral: "Neutral", o_Negative: "Negative", o_Near: "Near", o_Moderate: "Moderate", o_Far: "Far",
+      u_h: "h", u_d: "days"
+    },
+    ru: {
+      n_home: "Главная", n_pred: "Прогноз", n_how: "Как это работает", n_imp: "Улучшить", n_about: "О проекте", n_cta: "Анализировать",
+      ft_tag: "Прогнозируйте экзаменационный балл по учебным привычкам и узнайте, что менять. Проект по data science из Ташкента.",
+      ft_pages: "СТРАНИЦЫ", ft_proj: "ПРОЕКТ", ft_gh: "Профиль GitHub", ft_code: "Код сервера прогноза", ft_web: "Код сайта",
+      ft_note: "Учебный проект. Прогнозы приблизительные и не гарантируют результат.",
+      lv_excellent: "Отлично", lv_verygood: "Очень хорошо", lv_dev: "Развивается", lv_need: "Нужно улучшить",
+      o_Low: "Низкий", o_Medium: "Средний", o_High: "Высокий", o_Yes: "Да", o_No: "Нет",
+      o_Positive: "Положит.", o_Neutral: "Нейтр.", o_Negative: "Отрицат.", o_Near: "Близко", o_Moderate: "Средне", o_Far: "Далеко",
+      u_h: "ч", u_d: "дн."
+    }
+  };
 
-/* ====== FIELDS ====== */
-const STEPS=[
- {k:"s1",f:["classes_per_week","classes_attended","hours_studied","previous_scores","tutoring_sessions"]},
- {k:"s2",f:["parental_involvement","access_to_resources","internet_access","teacher_quality","peer_influence","distance_from_home"]},
- {k:"s3",f:["motivation_level","sleep_hours","physical_activity","extracurricular_activities"]}];
-const R={
- classes_per_week:{min:1,max:60,step:1,v:30,u:""},
- classes_attended:{min:0,max:60,step:1,v:27,u:""},
- hours_studied:{min:0,max:60,step:1,v:20,u:"h"},
- previous_scores:{min:0,max:100,step:1,v:80,u:""},
- tutoring_sessions:{min:0,max:8,step:1,v:2,u:""},
- sleep_hours:{min:3,max:12,step:.5,v:7.5,u:"h"},
- physical_activity:{min:0,max:6,step:1,v:3,u:"d"}};
-const L3=["Low","Medium","High"],YN=["Yes","No"];
-const C={
- parental_involvement:{o:L3,v:"Medium"},access_to_resources:{o:L3,v:"Medium"},internet_access:{o:YN,v:"Yes"},
- teacher_quality:{o:L3,v:"Medium"},peer_influence:{o:["Positive","Neutral","Negative"],v:"Neutral"},
- distance_from_home:{o:["Near","Moderate","Far"],v:"Moderate"},motivation_level:{o:L3,v:"Medium"},extracurricular_activities:{o:YN,v:"Yes"}};
+  var lang = "ru";
+  try { lang = localStorage.getItem("lang") || (navigator.language.indexOf("ru") === 0 ? "ru" : "en"); } catch (e) {}
 
-/* ====== STATE ====== */
-const $=s=>document.querySelector(s);
-let lang="ru",step=0,S={},res=null;
-try{lang=localStorage.getItem("lang")||(navigator.language.startsWith("ru")?"ru":"en")}catch(e){}
-Object.keys(R).forEach(k=>S[k]=R[k].v);Object.keys(C).forEach(k=>S[k]=C[k].v);
-const t=k=>(T[lang][k]??k);
-const maxOf=id=>id==="classes_attended"?S.classes_per_week:R[id].max;
-const unit=u=>u==="h"?" "+t("u_h"):u==="d"?" "+t("u_d"):"";
-const attendance=(x)=>x.classes_per_week<=0?0:Math.round(Math.min(100,x.classes_attended/x.classes_per_week*100)*10)/10;
-const lvl=p=>p>=80?"excellent":p>=70?"verygood":p>=60?"dev":"need";
+  window.getLang = function () { return lang; };
+  window.t = function (k) {
+    var d = window.T[lang];
+    if (d[k] !== undefined) return d[k];
+    if (window.T.en[k] !== undefined) return window.T.en[k];
+    return k;
+  };
+  window.$ = function (s) { return document.querySelector(s); };
 
-/* ====== FORM ====== */
-function fieldHTML(id){
- if(R[id]){
-  const r=R[id];
-  return `<div class="field"><div class="row"><label for="${id}">${t("f_"+id)}</label><output id="o_${id}"></output></div>
-  <input type="range" id="${id}" min="${r.min}" max="${maxOf(id)}" step="${r.step}" value="${S[id]}">
-  <div class="hint">${t("h_"+id)}</div></div>`;
- }
- const c=C[id];
- return `<div class="field"><div class="row"><label>${t("f_"+id)}</label></div>
- <div class="seg" data-id="${id}">${c.o.map(v=>`<button type="button" data-v="${v}" class="${S[id]===v?"on":""}">${t("o_"+v)}</button>`).join("")}</div>
- <div class="hint">${t("h_"+id)}</div></div>`;
-}
-function syncRange(id){
- const i=$("#"+id);if(!i)return;
- const r=R[id],mx=maxOf(id);
- i.max=mx;i.value=S[id];
- i.style.setProperty("--p",((S[id]-r.min)/(mx-r.min||1)*100)+"%");
- $("#o_"+id).textContent=S[id]+unit(r.u);
-}
-function updAtt(){const a=$("#attVal");if(a)a.textContent=attendance(S)+"%"}
-function renderStep(){
- const st=STEPS[step];
- $("#stepper").innerHTML=STEPS.map((s,i)=>`<div class="sp ${i<step?"done":""} ${i===step?"on":""}"><i></i><span>${i+1}. ${t(s.k)}</span></div>`).join("");
- $("#panel").innerHTML=`<h3 class="st-t">${t("t_"+st.k)}</h3><p class="st-d">${t("d_"+st.k)}</p>
-  <div class="grid">${st.f.map(fieldHTML).join("")}</div>
-  ${step===0?`<div class="att">${t("attIs")} <b id="attVal"></b></div>`:""}`;
- st.f.forEach(id=>{if(R[id])syncRange(id)});updAtt();
- $("#back").textContent=t("back");$("#back").style.visibility=step===0?"hidden":"visible";
- $("#next").textContent=step===STEPS.length-1?t("go"):t("next");
- $("#error").innerHTML="";
-}
-$("#panel").addEventListener("input",e=>{
- const id=e.target.id;if(!R[id])return;
- S[id]=+e.target.value;
- if(id==="classes_per_week"){S.classes_attended=Math.min(S.classes_attended,S.classes_per_week);syncRange("classes_attended")}
- syncRange(id);updAtt();
+  function buildLayout() {
+    var nav = document.getElementById("nav");
+    if (nav) {
+      nav.innerHTML =
+        '<a class="logo" href="/"><i>↗</i><span>student-performance-predictor</span></a>' +
+        '<div class="links" id="links">' +
+        '<a href="/" data-i18n="n_home"></a>' +
+        '<a href="/predict" data-i18n="n_pred"></a>' +
+        '<a href="/how-it-works" data-i18n="n_how"></a>' +
+        '<a href="/improve" data-i18n="n_imp"></a>' +
+        '<a href="/about" data-i18n="n_about"></a></div>' +
+        '<div class="tools">' +
+        '<button class="chip" id="theme" aria-label="Theme"></button>' +
+        '<button class="chip" id="lang"></button>' +
+        '<a class="btn small" href="/predict" data-i18n="n_cta"></a>' +
+        '<button class="chip burger" id="burger" aria-label="Menu">☰</button></div>';
+      var path = location.pathname.replace(/\.html$/, "").replace(/\/+$/, "") || "/";
+      nav.querySelectorAll(".links a").forEach(function (a) {
+        if (a.getAttribute("href") === path) a.classList.add("cur");
+      });
+    }
+    var foot = document.getElementById("foot");
+    if (foot) {
+      foot.innerHTML =
+        '<div class="wrap"><div class="foot-grid">' +
+        '<div><a class="logo" href="/" style="padding:0"><i>↗</i><span style="display:inline">student-performance-predictor</span></a>' +
+        '<p style="margin-top:12px;max-width:360px" data-i18n="ft_tag"></p></div>' +
+        '<div><h5 data-i18n="ft_pages"></h5>' +
+        '<a href="/" data-i18n="n_home"></a><a href="/predict" data-i18n="n_pred"></a>' +
+        '<a href="/how-it-works" data-i18n="n_how"></a><a href="/improve" data-i18n="n_imp"></a>' +
+        '<a href="/about" data-i18n="n_about"></a></div>' +
+        '<div><h5 data-i18n="ft_proj"></h5>' +
+        '<a href="https://github.com/umarkhodjaev-hash" target="_blank" rel="noopener" data-i18n="ft_gh"></a>' +
+        '<a href="https://github.com/umarkhodjaev-hash/student-performance-predictor" target="_blank" rel="noopener" data-i18n="ft_code"></a>' +
+        '<a href="https://github.com/umarkhodjaev-hash/student-performance-web" target="_blank" rel="noopener" data-i18n="ft_web"></a></div>' +
+        '</div><div class="copy">© <span id="yr"></span> student-performance-predictor · Umar<br><span data-i18n="ft_note"></span></div></div>';
+      var y = document.getElementById("yr");
+      if (y) y.textContent = new Date().getFullYear();
+    }
+  }
+
+  function applyLang() {
+    document.documentElement.lang = lang;
+    var d = window.T[lang];
+    if (d.doc_title) document.title = d.doc_title;
+    document.querySelectorAll("[data-i18n]").forEach(function (e) { e.textContent = window.t(e.getAttribute("data-i18n")); });
+    var lb = document.getElementById("lang");
+    if (lb) lb.textContent = lang === "ru" ? "EN" : "RU";
+    if (window.onLang) window.onLang();
+  }
+  window.applyLang = applyLang;
+
+  function setTheme(m) {
+    document.documentElement.setAttribute("data-theme", m);
+    var b = document.getElementById("theme");
+    if (b) b.textContent = m === "dark" ? "☀️" : "🌙";
+    try { localStorage.setItem("theme", m); } catch (e) {}
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    buildLayout();
+    var saved = null;
+    try { saved = localStorage.getItem("theme"); } catch (e) {}
+    setTheme(saved || "dark");
+    document.getElementById("theme").onclick = function () {
+      setTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
+    };
+    document.getElementById("lang").onclick = function () {
+      lang = lang === "ru" ? "en" : "ru";
+      try { localStorage.setItem("lang", lang); } catch (e) {}
+      applyLang();
+    };
+    document.getElementById("burger").onclick = function () {
+      document.getElementById("links").classList.toggle("open");
+    };
+    applyLang();
+    /* wake the free Render server in the background */
+    try { fetch(API + "/robots.txt", { mode: "no-cors" }).catch(function () {}); } catch (e) {}
+  });
+})();
+
+</script>
+<script>
+Object.assign(T.en, {
+  doc_title: "student-performance-predictor | Predict your exam score",
+  badge: "DATA SCIENCE × EDUCATION", h1a: "Catch your habits.", h1b: "Improve your results.",
+  lead: "Find out how your study habits, attendance, sleep, motivation and environment may be connected to academic performance, using a trained machine-learning model.",
+  cta1: "Analyze my performance →", cta2: "How it works",
+  last: "YOUR LAST ANALYSIS", lastT: "Performance analysis", lastEmpty: "Run your first analysis and it will appear here.",
+  l_pred: "Predicted score", l_study: "Study time", l_att: "Attendance", l_sleep: "Sleep", l_mot: "Motivation",
+  flm: "ML model", fl: "15 factors",
+  s_1v: "15", s_1l: "factors analyzed", s_2v: "~1 min", s_2l: "to get a result", s_3l: "two languages", s_4v: "Free", s_4l: "no sign-up",
+  wh_t: "What the model looks at", wh_s: "Fifteen answers about your routine, environment and lifestyle, grouped into six areas.",
+  f1t: "Study routine", f1d: "Weekly study hours, classes and tutoring sessions show how much effort goes into your studies.",
+  f2t: "Attendance", f2d: "Calculated automatically from the classes you have and the classes you actually attend.",
+  f3t: "Sleep and lifestyle", f3d: "Sleep, physical activity and extracurricular activities describe your day-to-day balance.",
+  f4t: "Motivation", f4d: "How motivated you feel to study shapes how consistent your habits are.",
+  f5t: "Learning environment", f5d: "Parents' involvement, learning resources, internet, teacher quality, friends and distance to school.",
+  f6t: "Previous results", f6d: "Your previous academic score is the starting point for the prediction.",
+  hw_t: "How it works in 3 steps", hw_s: "From your answers to a prediction in about a minute.",
+  p_1t: "Answer questions", p_1d: "15 short questions about your routine, environment and lifestyle.",
+  p_2t: "The model predicts", p_2d: "A trained machine-learning model estimates your exam score from 0 to 100.",
+  p_3t: "Get a plan", p_3d: "See insights, recommendations and what-if effects computed by the same model.",
+  hw_more: "Read the full explanation →",
+  band_t: "Ready to see your prediction?", band_d: "It takes about a minute, needs no account and you can try as many different answers as you like.", band_b: "Start the analysis →"
 });
-$("#panel").addEventListener("click",e=>{
- const b=e.target.closest(".seg button");if(!b)return;
- const id=b.parentElement.dataset.id;S[id]=b.dataset.v;
- b.parentElement.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));
+Object.assign(T.ru, {
+  doc_title: "student-performance-predictor | Прогноз экзаменационного балла",
+  badge: "DATA SCIENCE × ОБРАЗОВАНИЕ", h1a: "Поймите свои привычки.", h1b: "Улучшайте результаты.",
+  lead: "Узнайте, как учебные привычки, посещаемость, сон, мотивация и среда связаны с успеваемостью. Прогноз строит обученная ML-модель.",
+  cta1: "Проанализировать мою успеваемость →", cta2: "Как это работает",
+  last: "ВАШ ПОСЛЕДНИЙ АНАЛИЗ", lastT: "Анализ успеваемости", lastEmpty: "Пройдите первый анализ, и он появится здесь.",
+  l_pred: "Прогнозируемый балл", l_study: "Время на учёбу", l_att: "Посещаемость", l_sleep: "Сон", l_mot: "Мотивация",
+  flm: "ML-модель", fl: "15 факторов",
+  s_1v: "15", s_1l: "факторов в анализе", s_2v: "~1 мин", s_2l: "до результата", s_3l: "два языка", s_4v: "Бесплатно", s_4l: "без регистрации",
+  wh_t: "Что учитывает модель", wh_s: "Пятнадцать ответов о рутине, окружении и образе жизни, сгруппированные в шесть областей.",
+  f1t: "Учебная рутина", f1d: "Часы учёбы, занятия и репетитор показывают, сколько усилий вы вкладываете в учёбу.",
+  f2t: "Посещаемость", f2d: "Считается автоматически: сколько у вас занятий и сколько вы на самом деле посещаете.",
+  f3t: "Сон и образ жизни", f3d: "Сон, физическая активность и внеучебные занятия описывают ваш ежедневный баланс.",
+  f4t: "Мотивация", f4d: "Насколько вы мотивированы учиться, влияет на стабильность ваших привычек.",
+  f5t: "Учебная среда", f5d: "Участие родителей, учебные ресурсы, интернет, качество преподавания, друзья и расстояние до школы.",
+  f6t: "Прошлые результаты", f6d: "Ваш прошлый академический балл — отправная точка для прогноза.",
+  hw_t: "Как это работает в 3 шага", hw_s: "От ваших ответов до прогноза примерно за минуту.",
+  p_1t: "Ответьте на вопросы", p_1d: "15 коротких вопросов о рутине, среде и образе жизни.",
+  p_2t: "Модель делает прогноз", p_2d: "Обученная ML-модель оценивает ваш экзаменационный балл от 0 до 100.",
+  p_3t: "Получите план", p_3d: "Выводы, рекомендации и эффект изменений, посчитанный той же моделью.",
+  hw_more: "Читать подробное объяснение →",
+  band_t: "Готовы увидеть свой прогноз?", band_d: "Это займёт около минуты, аккаунт не нужен, и можно пробовать сколько угодно разных ответов.", band_b: "Начать анализ →"
 });
-$("#back").onclick=()=>{if(step>0){step--;renderStep();$("#predict").scrollIntoView({behavior:"smooth"})}};
-$("#next").onclick=()=>{
- if(step<STEPS.length-1){step++;renderStep();$("#predict").scrollIntoView({behavior:"smooth"})}else submit();
-};
 
-/* ====== API ====== */
-async function call(payload,signal){
- const r=await fetch(API+"/api/predict",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload),signal});
- if(!r.ok)throw new Error("HTTP "+r.status);
- return r.json();
+var ICONS = ["📚", "✅", "🌙", "🔥", "🏫", "📈"];
+function lvl(p) { return p >= 80 ? "excellent" : p >= 70 ? "verygood" : p >= 60 ? "dev" : "need"; }
+function renderLast() {
+  var d = null;
+  try { d = JSON.parse(localStorage.getItem("last")); } catch (e) {}
+  var b = document.getElementById("lastBody");
+  if (!b) return;
+  if (!d) {
+    b.innerHTML = '<div class="hbig"><div><b>--</b><span>/100</span></div></div><div class="empty">' + t("lastEmpty") + "</div>";
+    return;
+  }
+  b.innerHTML = '<small style="margin-bottom:2px">' + t("l_pred") + "</small>" +
+    '<div class="hbig"><div><b>' + d.p + "</b><span>/100</span></div><span class=\"pill\">" + t("lv_" + lvl(d.p)) + "</span></div>" +
+    '<div class="hrow"><span>' + t("l_study") + "</span><b>" + d.h + " " + t("u_h") + "</b></div>" +
+    '<div class="hrow"><span>' + t("l_att") + "</span><b>" + d.a + "%</b></div>" +
+    '<div class="hrow"><span>' + t("l_sleep") + "</span><b>" + d.s + " " + t("u_h") + "</b></div>" +
+    '<div class="hrow"><span>' + t("l_mot") + "</span><b>" + t("o_" + d.m) + "</b></div>";
 }
-async function submit(){
- const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),100000);
- $("#loadT").textContent=t("ld1");$("#loadS").textContent="";$("#loader").hidden=false;
- const slow=setTimeout(()=>{$("#loadS").textContent=t("ld2")},4000);
- try{
-  const d=await call(S,ctl.signal);
-  const p=Math.round(d.prediction*10)/10;
-  res={p,input:{...S},scen:null};
-  saveLast(res);renderLast();showResult();loadScen(res);
- }catch(e){
-  $("#error").innerHTML=`<div class="err">${t("errT")}</div>`;
- }finally{clearTimeout(to);clearTimeout(slow);$("#loader").hidden=true}
+function renderFeatures() {
+  var h = "";
+  for (var i = 1; i <= 6; i++) {
+    h += '<div class="card"><div class="ico">' + ICONS[i - 1] + "</div><h3>" + t("f" + i + "t") + "</h3><p>" + t("f" + i + "d") + "</p></div>";
+  }
+  document.getElementById("features").innerHTML = h;
 }
-async function loadScen(r){
- const x=r.input,list=[];
- if(x.hours_studied<55)list.push(["w_study",{hours_studied:x.hours_studied+5}]);
- if(x.classes_attended<x.classes_per_week)list.push(["w_att",{classes_attended:x.classes_per_week}]);
- if(x.sleep_hours<8)list.push(["w_sleep",{sleep_hours:8}]);
- if(x.tutoring_sessions<7)list.push(["w_tutor",{tutoring_sessions:x.tutoring_sessions+2}]);
- if(x.motivation_level!=="High")list.push(["w_mot",{motivation_level:"High"}]);
- try{
-  const out=await Promise.all(list.map(async([k,ch])=>{const d=await call({...x,...ch});return{k,d:d.prediction-r.p}}));
-  r.scen=out.sort((a,b)=>b.d-a.d).slice(0,4);
- }catch(e){r.scen=[]}
- if(res===r)renderWhat();
-}
-
-/* ====== RESULT ====== */
-function insights(x,att){
- const a=[],c=[];
- if(att>=90)a.push("i_att_high");else if(att<75)a.push("i_att_low");
- if(x.hours_studied>=20)a.push("i_study_high");else if(x.hours_studied<10)a.push("i_study_low");
- if(x.sleep_hours>=7)a.push("i_sleep_ok");else if(x.sleep_hours<6)a.push("i_sleep_low");
- if(x.previous_scores>=80)a.push("i_prev_high");
- if(x.motivation_level==="High")a.push("i_mot_high");
- if(x.access_to_resources==="Low")a.push("i_res_low");
- if(x.teacher_quality==="High")a.push("i_teach_high");
- if(x.peer_influence==="Positive")a.push("i_peer_pos");
- if(att<90)c.push("c_att");
- if(x.hours_studied<20)c.push("c_study");
- if(x.sleep_hours<7)c.push("c_sleep");
- if(x.tutoring_sessions===0)c.push("c_tutor");
- if(x.physical_activity<2)c.push("c_phys");
- if(x.motivation_level==="Low")c.push("c_mot");
- if(x.access_to_resources==="Low")c.push("c_res");
- if(x.internet_access==="No")c.push("c_net");
- if(x.peer_influence==="Negative")c.push("c_peer");
- if(!c.length)c.push("c_ok");
- return{a,c};
-}
-function showResult(){
- $("#formView").hidden=true;$("#resultView").hidden=false;renderResult();
- $("#predict").scrollIntoView({behavior:"smooth"});
-}
-function renderResult(){
- if(!res)return;
- const p=res.p,att=attendance(res.input),{a,c}=insights(res.input,att),pc=Math.max(0,Math.min(100,p));
- $("#resultView").innerHTML=`<div class="res">
-  <div class="ringbox">
-   <div class="ring"><svg width="230" height="230" viewBox="0 0 220 220">
-     <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b39bff"/><stop offset="1" stop-color="#6c47e8"/></linearGradient></defs>
-     <circle class="bg" cx="110" cy="110" r="92"/><circle class="fg" id="fg" cx="110" cy="110" r="92" stroke-dasharray="578" stroke-dashoffset="578"/></svg>
-     <div class="mid"><b>${p}</b><span>${t("r_score")}</span></div></div>
-   <span class="pill">${t("lv_"+lvl(p))}</span>
-   <p style="color:var(--muted);font-size:14px;margin:12px 0 20px">${t("r_att")}: <b style="color:var(--text)">${att}%</b></p>
-   <button class="btn ghost" id="again">${t("again")}</button>
-  </div>
-  <div>
-   ${a.length?`<div class="box ins"><h4>${t("r_ins")}</h4><ul>${a.map(k=>`<li>${t("i_"+k.slice(2))}</li>`).join("")}</ul></div>`:""}
-   <div class="box"><h4>${t("r_rec")}</h4><ul>${c.map(k=>`<li>${t(k)}</li>`).join("")}</ul></div>
-   <div class="box"><h4>${t("r_what")}</h4><div id="what"></div></div>
-  </div></div>`;
- setTimeout(()=>{const f=$("#fg");if(f)f.style.strokeDashoffset=578*(1-pc/100)},60);
- $("#again").onclick=()=>{$("#resultView").hidden=true;$("#formView").hidden=false;step=0;renderStep();$("#predict").scrollIntoView({behavior:"smooth"})};
- renderWhat();
-}
-function renderWhat(){
- const w=$("#what");if(!w||!res)return;
- if(res.scen===null){w.innerHTML=`<div class="empty">${t("r_calc")}</div>`;return}
- if(!res.scen.length){w.innerHTML=`<div class="empty">${t("r_none")}</div>`;return}
- w.innerHTML=res.scen.map(s=>{const d=Math.round(s.d*10)/10,cl=d>0?"pos":d<0?"neg":"zero";
-  return `<div class="sc"><span>${t(s.k)}</span><b class="${cl}">${d>0?"+":""}${d}</b></div>`}).join("");
-}
-
-/* ====== LAST ANALYSIS (hero card) ====== */
-function saveLast(r){
- try{localStorage.setItem("last",JSON.stringify({p:r.p,h:r.input.hours_studied,a:attendance(r.input),s:r.input.sleep_hours,m:r.input.motivation_level}))}catch(e){}
-}
-function renderLast(){
- let d=null;try{d=JSON.parse(localStorage.getItem("last"))}catch(e){}
- const b=$("#lastBody");
- if(!d){b.innerHTML=`<div class="hbig"><div><b>--</b><span>/100</span></div></div><div class="empty">${t("lastEmpty")}</div>`;return}
- b.innerHTML=`<small style="margin-bottom:2px">${t("l_pred")}</small>
-  <div class="hbig"><div><b>${d.p}</b><span>/100</span></div><span class="pill">${t("lv_"+lvl(d.p))}</span></div>
-  <div class="hrow"><span>${t("l_study")}</span><b>${d.h} ${t("u_h")}</b></div>
-  <div class="hrow"><span>${t("l_att")}</span><b>${d.a}%</b></div>
-  <div class="hrow"><span>${t("l_sleep")}</span><b>${d.s} ${t("u_h")}</b></div>
-  <div class="hrow"><span>${t("l_mot")}</span><b>${t("o_"+d.m)}</b></div>`;
-}
-
-/* ====== LANG / THEME ====== */
-function applyLang(){
- document.documentElement.lang=lang;$("#lang").textContent=lang==="ru"?"EN":"RU";
- document.querySelectorAll("[data-i18n]").forEach(e=>{const v=T[lang][e.dataset.i18n];if(v)e.textContent=v});
- renderStep();renderLast();renderResult();
-}
-$("#lang").onclick=()=>{lang=lang==="ru"?"en":"ru";try{localStorage.setItem("lang",lang)}catch(e){}applyLang()};
-function setTheme(m){document.documentElement.dataset.theme=m;$("#theme").textContent=m==="dark"?"☀️":"🌙";try{localStorage.setItem("theme",m)}catch(e){}}
-let sv=null;try{sv=localStorage.getItem("theme")}catch(e){}
-setTheme(sv||"dark");
-$("#theme").onclick=()=>setTheme(document.documentElement.dataset.theme==="dark"?"light":"dark");
-$("#yr").textContent=new Date().getFullYear();
-applyLang();
-/* wake the free Render server in the background */
-fetch(API+"/robots.txt",{mode:"no-cors"}).catch(()=>{});
+window.onLang = function () { renderLast(); renderFeatures(); };
 </script>
 </body>
 </html>

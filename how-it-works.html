@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How it works | student-performance-predictor</title>
+<meta name="description" content="How the student performance predictor works: the 15 factors, the machine-learning model, what the score levels mean, limits and privacy.">
+<meta property="og:title" content="How the predictor works">
+<meta property="og:description" content="From 15 answers to a predicted exam score: factors, model, levels, limits and privacy.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%236c47e8'/%3E%3Cpath d='M10 22 L22 10 M13 10 H22 V19' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("theme")||"dark")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<nav id="nav"></nav>
+
+<main class="wrap">
+  <div class="phead">
+    <span class="crumb" data-i18n="crumb"></span>
+    <h1 data-i18n="h_title"></h1>
+    <p class="lead" data-i18n="h_lead"></p>
+  </div>
+
+  <section>
+    <h2 data-i18n="o_t"></h2>
+    <div class="card">
+      <p style="margin-top:0;font-size:16px" data-i18n="o_d"></p>
+      <p style="font-size:16px" data-i18n="o_d2"></p>
+    </div>
+  </section>
+
+  <section>
+    <h2 data-i18n="pl_t"></h2>
+    <div class="cards4">
+      <div class="card"><div class="num">1</div><h3 data-i18n="p1t"></h3><p data-i18n="p1d"></p></div>
+      <div class="card"><div class="num">2</div><h3 data-i18n="p2t"></h3><p data-i18n="p2d"></p></div>
+      <div class="card"><div class="num">3</div><h3 data-i18n="p3t"></h3><p data-i18n="p3d"></p></div>
+      <div class="card"><div class="num">4</div><h3 data-i18n="p4t"></h3><p data-i18n="p4d"></p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 data-i18n="fa_t"></h2>
+    <p class="sub" data-i18n="fa_s"></p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th data-i18n="th1"></th><th data-i18n="th2"></th><th data-i18n="th3"></th></tr></thead>
+        <tbody>
+          <tr><td data-i18n="g1n"></td><td data-i18n="g1a"></td><td data-i18n="g1w"></td></tr>
+          <tr><td data-i18n="g2n"></td><td data-i18n="g2a"></td><td data-i18n="g2w"></td></tr>
+          <tr><td data-i18n="g3n"></td><td data-i18n="g3a"></td><td data-i18n="g3w"></td></tr>
+          <tr><td data-i18n="g4n"></td><td data-i18n="g4a"></td><td data-i18n="g4w"></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2 data-i18n="lv_t"></h2>
+    <p class="sub" data-i18n="lv_s"></p>
+    <div class="cards4">
+      <div class="card lvl"><b>80 – 100</b><h3 data-i18n="lv_excellent"></h3><p data-i18n="lvAd"></p></div>
+      <div class="card lvl"><b>70 – 79</b><h3 data-i18n="lv_verygood"></h3><p data-i18n="lvBd"></p></div>
+      <div class="card lvl"><b>60 – 69</b><h3 data-i18n="lv_dev"></h3><p data-i18n="lvCd"></p></div>
+      <div class="card lvl"><b data-i18n="lvDr"></b><h3 data-i18n="lv_need"></h3><p data-i18n="lvDd"></p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2 data-i18n="wi_t"></h2>
+    <div class="card"><p style="margin-top:0;font-size:16px" data-i18n="wi_d"></p></div>
+  </section>
+
+  <section>
+    <h2 data-i18n="li_t"></h2>
+    <div class="card"><ul class="points" id="limits"></ul></div>
+  </section>
+
+  <section>
+    <h2 data-i18n="pr_t"></h2>
+    <div class="notice" data-i18n="pr_d"></div>
+  </section>
+
+  <section>
+    <h2 data-i18n="fq_t"></h2>
+    <div class="faq" id="faq"></div>
+  </section>
+
+  <div class="band">
+    <h2 data-i18n="go_t"></h2>
+    <p data-i18n="go_d"></p>
+    <a class="btn white" href="/predict" data-i18n="go_b"></a>
+  </div>
+</main>
+
+<footer id="foot"></footer>
+
+<script>
+/* Shared: dictionary, layout (nav + footer), theme, language */
+(function () {
+  var API = "https://student-performance-predictor-bas2.onrender.com";
+  window.API = API;
+
+  window.T = {
+    en: {
+      n_home: "Home", n_pred: "Predict", n_how: "How it works", n_imp: "Improve", n_about: "About", n_cta: "Analyze",
+      ft_tag: "Predict your exam score from your study habits and see what to change. A data science project from Tashkent.",
+      ft_pages: "PAGES", ft_proj: "PROJECT", ft_gh: "GitHub profile", ft_code: "Prediction server code", ft_web: "Website code",
+      ft_note: "An educational project. Predictions are estimates, not guarantees.",
+      lv_excellent: "Excellent", lv_verygood: "Very Good", lv_dev: "Developing", lv_need: "Needs Improvement",
+      o_Low: "Low", o_Medium: "Medium", o_High: "High", o_Yes: "Yes", o_No: "No",
+      o_Positive: "Positive", o_Neutral: "Neutral", o_Negative: "Negative", o_Near: "Near", o_Moderate: "Moderate", o_Far: "Far",
+      u_h: "h", u_d: "days"
+    },
+    ru: {
+      n_home: "Главная", n_pred: "Прогноз", n_how: "Как это работает", n_imp: "Улучшить", n_about: "О проекте", n_cta: "Анализировать",
+      ft_tag: "Прогнозируйте экзаменационный балл по учебным привычкам и узнайте, что менять. Проект по data science из Ташкента.",
+      ft_pages: "СТРАНИЦЫ", ft_proj: "ПРОЕКТ", ft_gh: "Профиль GitHub", ft_code: "Код сервера прогноза", ft_web: "Код сайта",
+      ft_note: "Учебный проект. Прогнозы приблизительные и не гарантируют результат.",
+      lv_excellent: "Отлично", lv_verygood: "Очень хорошо", lv_dev: "Развивается", lv_need: "Нужно улучшить",
+      o_Low: "Низкий", o_Medium: "Средний", o_High: "Высокий", o_Yes: "Да", o_No: "Нет",
+      o_Positive: "Положит.", o_Neutral: "Нейтр.", o_Negative: "Отрицат.", o_Near: "Близко", o_Moderate: "Средне", o_Far: "Далеко",
+      u_h: "ч", u_d: "дн."
+    }
+  };
+
+  var lang = "ru";
+  try { lang = localStorage.getItem("lang") || (navigator.language.indexOf("ru") === 0 ? "ru" : "en"); } catch (e) {}
+
+  window.getLang = function () { return lang; };
+  window.t = function (k) {
+    var d = window.T[lang];
+    if (d[k] !== undefined) return d[k];
+    if (window.T.en[k] !== undefined) return window.T.en[k];
+    return k;
+  };
+  window.$ = function (s) { return document.querySelector(s); };
+
+  function buildLayout() {
+    var nav = document.getElementById("nav");
+    if (nav) {
+      nav.innerHTML =
+        '<a class="logo" href="/"><i>↗</i><span>student-performance-predictor</span></a>' +
+        '<div class="links" id="links">' +
+        '<a href="/" data-i18n="n_home"></a>' +
+        '<a href="/predict" data-i18n="n_pred"></a>' +
+        '<a href="/how-it-works" data-i18n="n_how"></a>' +
+        '<a href="/improve" data-i18n="n_imp"></a>' +
+        '<a href="/about" data-i18n="n_about"></a></div>' +
+        '<div class="tools">' +
+        '<button class="chip" id="theme" aria-label="Theme"></button>' +
+        '<button class="chip" id="lang"></button>' +
+        '<a class="btn small" href="/predict" data-i18n="n_cta"></a>' +
+        '<button class="chip burger" id="burger" aria-label="Menu">☰</button></div>';
+      var path = location.pathname.replace(/\.html$/, "").replace(/\/+$/, "") || "/";
+      nav.querySelectorAll(".links a").forEach(function (a) {
+        if (a.getAttribute("href") === path) a.classList.add("cur");
+      });
+    }
+    var foot = document.getElementById("foot");
+    if (foot) {
+      foot.innerHTML =
+        '<div class="wrap"><div class="foot-grid">' +
+        '<div><a class="logo" href="/" style="padding:0"><i>↗</i><span style="display:inline">student-performance-predictor</span></a>' +
+        '<p style="margin-top:12px;max-width:360px" data-i18n="ft_tag"></p></div>' +
+        '<div><h5 data-i18n="ft_pages"></h5>' +
+        '<a href="/" data-i18n="n_home"></a><a href="/predict" data-i18n="n_pred"></a>' +
+        '<a href="/how-it-works" data-i18n="n_how"></a><a href="/improve" data-i18n="n_imp"></a>' +
+        '<a href="/about" data-i18n="n_about"></a></div>' +
+        '<div><h5 data-i18n="ft_proj"></h5>' +
+        '<a href="https://github.com/umarkhodjaev-hash" target="_blank" rel="noopener" data-i18n="ft_gh"></a>' +
+        '<a href="https://github.com/umarkhodjaev-hash/student-performance-predictor" target="_blank" rel="noopener" data-i18n="ft_code"></a>' +
+        '<a href="https://github.com/umarkhodjaev-hash/student-performance-web" target="_blank" rel="noopener" data-i18n="ft_web"></a></div>' +
+        '</div><div class="copy">© <span id="yr"></span> student-performance-predictor · Umar<br><span data-i18n="ft_note"></span></div></div>';
+      var y = document.getElementById("yr");
+      if (y) y.textContent = new Date().getFullYear();
+    }
+  }
+
+  function applyLang() {
+    document.documentElement.lang = lang;
+    var d = window.T[lang];
+    if (d.doc_title) document.title = d.doc_title;
+    document.querySelectorAll("[data-i18n]").forEach(function (e) { e.textContent = window.t(e.getAttribute("data-i18n")); });
+    var lb = document.getElementById("lang");
+    if (lb) lb.textContent = lang === "ru" ? "EN" : "RU";
+    if (window.onLang) window.onLang();
+  }
+  window.applyLang = applyLang;
+
+  function setTheme(m) {
+    document.documentElement.setAttribute("data-theme", m);
+    var b = document.getElementById("theme");
+    if (b) b.textContent = m === "dark" ? "☀️" : "🌙";
+    try { localStorage.setItem("theme", m); } catch (e) {}
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    buildLayout();
+    var saved = null;
+    try { saved = localStorage.getItem("theme"); } catch (e) {}
+    setTheme(saved || "dark");
+    document.getElementById("theme").onclick = function () {
+      setTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
+    };
+    document.getElementById("lang").onclick = function () {
+      lang = lang === "ru" ? "en" : "ru";
+      try { localStorage.setItem("lang", lang); } catch (e) {}
+      applyLang();
+    };
+    document.getElementById("burger").onclick = function () {
+      document.getElementById("links").classList.toggle("open");
+    };
+    applyLang();
+    /* wake the free Render server in the background */
+    try { fetch(API + "/robots.txt", { mode: "no-cors" }).catch(function () {}); } catch (e) {}
+  });
+})();
+
+</script>
+<script>
+Object.assign(T.en, {
+  doc_title: "How it works | student-performance-predictor",
+  crumb: "HOW IT WORKS", h_title: "From your answers to a prediction",
+  h_lead: "A clear look at what happens behind the form, what the model uses and where its limits are.",
+  o_t: "The big idea",
+  o_d: "The model learned patterns from many examples of students: how much they studied, how often they attended classes, how they slept, what their environment looked like and what exam scores they got. When you enter your own answers, it estimates the score a student with a similar profile would be likely to get.",
+  o_d2: "It does not know you personally. It compares your profile with the patterns it learned, which is why the result is an estimate and not a verdict.",
+  pl_t: "The pipeline, step by step",
+  p1t: "Answer 15 questions", p1d: "You describe your routine, environment and lifestyle in three short steps.",
+  p2t: "Your data is prepared", p2d: "Attendance is calculated automatically: classes attended divided by classes per week, capped at 100%. Everything is arranged in the exact format the model was trained on.",
+  p3t: "The model predicts", p3d: "A machine-learning regression model, trained with scikit-learn, estimates an exam score from 0 to 100.",
+  p4t: "You get insights", p4d: "The score becomes a level, and simple rules turn your answers into insights and recommendations. What-if scenarios run the same model again with one habit changed.",
+  fa_t: "The factors behind the prediction", fa_s: "Fifteen answers, grouped into four areas. Attendance is calculated from two of them.",
+  th1: "Area", th2: "What we ask", th3: "Why it matters",
+  g1n: "Routine", g1a: "Classes per week, classes attended, independent study hours, previous score, tutoring sessions",
+  g1w: "These describe workload and effort. Study time and earlier results are often strong signals in student-performance data.",
+  g2n: "Environment", g2a: "Parental involvement, access to resources, internet access, teacher quality, friends' influence, distance from school",
+  g2w: "The support and conditions around you can make studying easier or harder.",
+  g3n: "Motivation", g3a: "How motivated you are to study", g3w: "Motivation shapes how consistently good habits turn into results.",
+  g4n: "Lifestyle", g4a: "Sleep per night, physically active days, extracurricular activities",
+  g4w: "Rest and balance affect focus, energy and mood during the school year.",
+  lv_t: "What the levels mean", lv_s: "The score from 0 to 100 is grouped into four levels.",
+  lvAd: "Strong results are expected. Keep your routine and avoid burnout.",
+  lvBd: "Solid results. A few small improvements can push you higher.",
+  lvCd: "Room to grow. Pick one or two habits to improve first.", lvDr: "Below 60",
+  lvDd: "Time for a plan. Start with the Improve page and change one thing at a time.",
+  wi_t: "What-if scenarios",
+  wi_d: "After your prediction, the site tests changes such as five more study hours per week or attending every class. Each scenario sends a new request to the same model, so the numbers you see come from the model itself, not from a fixed rule of thumb.",
+  li_t: "Limits you should know",
+  li1: "It is an estimate. Real exam results depend on many things the form cannot see: the exam itself, health, luck and your exact school.",
+  li2: "It shows patterns, not causes. A habit linked to higher scores in data does not guarantee that changing it will raise yours by the same amount.",
+  li3: "It reflects its training data. Students, schools and countries differ, so the model may fit some profiles better than others.",
+  li4: "It is not for real decisions. Do not use it to grade, rank or judge students, or for admissions.",
+  pr_t: "Privacy",
+  pr_d: "There are no accounts. Your answers are sent to the prediction server only to calculate the result, and this project's code does not save them. Your latest result is stored in your own browser so the home page can show it.",
+  fq_t: "Frequently asked questions",
+  q1: "How accurate is the prediction?", a1: "It is a rough guide, useful for reflection. It cannot know your exam or your teacher, so treat it as a conversation starter rather than a forecast you must believe.",
+  q2: "Why did the first prediction take so long?", a2: "The prediction server runs on a free hosting plan that goes to sleep when nobody uses it. The first request wakes it up, which can take up to a minute. After that it is fast.",
+  q3: "Do you store my answers?", a3: "There are no accounts and no database in this project. See the privacy section above.",
+  q4: "Can I trust the recommendations?", a4: "They are general study tips linked to your answers, not personal or medical advice. If something affects your health, talk to a doctor, a parent or a school counselor.",
+  q5: "Can I try different answers?", a5: "Yes, as many times as you like. Try changing one habit at a time to see how the estimate moves.",
+  go_t: "Try it with your own habits", go_d: "It takes about a minute and needs no account.", go_b: "Open the predictor →"
+});
+Object.assign(T.ru, {
+  doc_title: "Как это работает | student-performance-predictor",
+  crumb: "КАК ЭТО РАБОТАЕТ", h_title: "От ваших ответов до прогноза",
+  h_lead: "Понятный разбор того, что происходит за формой, что использует модель и где проходят её границы.",
+  o_t: "Главная идея",
+  o_d: "Модель выучила закономерности на множестве примеров учеников: сколько они занимались, как часто ходили на занятия, как спали, какая у них была среда и какие баллы они получили на экзамене. Когда вы вводите свои ответы, она оценивает балл, который, вероятно, получил бы ученик с похожим профилем.",
+  o_d2: "Модель не знает вас лично. Она сравнивает ваш профиль с найденными закономерностями, поэтому результат — это оценка, а не приговор.",
+  pl_t: "Конвейер по шагам",
+  p1t: "Ответьте на 15 вопросов", p1d: "Вы описываете рутину, окружение и образ жизни в трёх коротких шагах.",
+  p2t: "Данные готовятся", p2d: "Посещаемость считается автоматически: посещённые занятия делятся на занятия в неделю, максимум 100%. Всё приводится к точному формату, на котором обучалась модель.",
+  p3t: "Модель делает прогноз", p3d: "Регрессионная ML-модель, обученная с помощью scikit-learn, оценивает экзаменационный балл от 0 до 100.",
+  p4t: "Вы получаете выводы", p4d: "Балл превращается в уровень, а простые правила дают выводы и рекомендации по вашим ответам. Сценарии «а что если» запускают ту же модель с одной изменённой привычкой.",
+  fa_t: "Факторы, влияющие на прогноз", fa_s: "Пятнадцать ответов, сгруппированных в четыре области. Посещаемость считается из двух из них.",
+  th1: "Область", th2: "О чём спрашиваем", th3: "Почему это важно",
+  g1n: "Рутина", g1a: "Занятий в неделю, посещённых занятий, часы самостоятельной учёбы, прошлый балл, занятия с репетитором",
+  g1w: "Это нагрузка и усилия. Время учёбы и прошлые результаты часто оказываются сильными сигналами в данных об успеваемости.",
+  g2n: "Окружение", g2a: "Участие родителей, доступ к ресурсам, интернет, качество преподавания, влияние друзей, расстояние до школы",
+  g2w: "Поддержка и условия вокруг могут облегчать или усложнять учёбу.",
+  g3n: "Мотивация", g3a: "Насколько вы мотивированы учиться", g3w: "Мотивация определяет, насколько стабильно хорошие привычки превращаются в результат.",
+  g4n: "Образ жизни", g4a: "Сон за ночь, дни физической активности, внеучебные занятия",
+  g4w: "Отдых и баланс влияют на концентрацию, энергию и настроение в течение учебного года.",
+  lv_t: "Что означают уровни", lv_s: "Балл от 0 до 100 делится на четыре уровня.",
+  lvAd: "Ожидаются сильные результаты. Сохраняйте режим и не выгорайте.",
+  lvBd: "Хорошие результаты. Несколько небольших улучшений поднимут вас выше.",
+  lvCd: "Есть куда расти. Выберите одну-две привычки для улучшения.", lvDr: "Ниже 60",
+  lvDd: "Пора составить план. Начните со страницы «Улучшить» и меняйте по одной вещи.",
+  wi_t: "Сценарии «а что если»",
+  wi_d: "После прогноза сайт проверяет изменения вроде пяти дополнительных часов учёбы в неделю или посещения всех занятий. Каждый сценарий отправляет новый запрос в ту же модель, поэтому цифры берутся из самой модели, а не из фиксированного правила.",
+  li_t: "Ограничения, которые стоит знать",
+  li1: "Это оценка. Реальный результат экзамена зависит от многого, чего форма не видит: самого экзамена, здоровья, удачи и вашей конкретной школы.",
+  li2: "Модель показывает закономерности, а не причины. Привычка, связанная с высокими баллами в данных, не гарантирует, что её изменение даст вам такой же прирост.",
+  li3: "Модель отражает свои обучающие данные. Ученики, школы и страны отличаются, поэтому одни профили подходят ей лучше других.",
+  li4: "Это не основание для реальных решений. Не используйте её, чтобы оценивать, ранжировать или судить учеников, или для поступления.",
+  pr_t: "Конфиденциальность",
+  pr_d: "Аккаунтов нет. Ваши ответы отправляются на сервер прогноза только для расчёта результата, и код этого проекта их не сохраняет. Последний результат хранится в вашем браузере, чтобы главная страница могла его показать.",
+  fq_t: "Частые вопросы",
+  q1: "Насколько точен прогноз?", a1: "Это ориентир, полезный для размышлений. Модель не знает ваш экзамен и вашего учителя, поэтому относитесь к ней как к поводу подумать, а не как к прогнозу, в который обязательно верить.",
+  q2: "Почему первый прогноз считался так долго?", a2: "Сервер прогноза работает на бесплатном тарифе и засыпает, когда им никто не пользуется. Первый запрос его будит, это может занять до минуты. Потом всё работает быстро.",
+  q3: "Вы сохраняете мои ответы?", a3: "В этом проекте нет ни аккаунтов, ни базы данных. См. раздел о конфиденциальности выше.",
+  q4: "Можно ли доверять рекомендациям?", a4: "Это общие учебные советы, связанные с вашими ответами, а не персональные или медицинские рекомендации. Если что-то влияет на здоровье, поговорите с врачом, родителями или школьным психологом.",
+  q5: "Можно ли пробовать разные ответы?", a5: "Да, сколько угодно раз. Меняйте по одной привычке, чтобы увидеть, как двигается оценка.",
+  go_t: "Попробуйте со своими привычками", go_d: "Это займёт около минуты, аккаунт не нужен.", go_b: "Открыть предиктор →"
+});
+
+window.onLang = function () {
+  document.getElementById("limits").innerHTML = [1, 2, 3, 4].map(function (i) { return "<li>" + t("li" + i) + "</li>"; }).join("");
+  document.getElementById("faq").innerHTML = [1, 2, 3, 4, 5].map(function (i) {
+    return "<details><summary>" + t("q" + i) + "</summary><p>" + t("a" + i) + "</p></details>";
+  }).join("");
+};
+</script>
+</body>
+</html>

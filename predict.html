@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Predict your exam score | student-performance-predictor</title>
+<meta name="description" content="Answer 15 questions about your study routine, environment and lifestyle and get a predicted exam score with personal insights.">
+<meta property="og:title" content="Predict your exam score">
+<meta property="og:description" content="Answer 15 short questions and get a predicted score with recommendations.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%236c47e8'/%3E%3Cpath d='M10 22 L22 10 M13 10 H22 V19' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("theme")||"dark")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<nav id="nav"></nav>
+
+<main class="wrap">
+  <div class="phead">
+    <span class="crumb" data-i18n="crumb"></span>
+    <h1 data-i18n="t_pred"></h1>
+    <p class="lead" data-i18n="s_pred"></p>
+  </div>
+
+  <section id="app">
+    <div class="card">
+      <div id="formView">
+        <div class="stepper" id="stepper"></div>
+        <div id="panel"></div>
+        <div id="error"></div>
+        <div class="navb">
+          <button class="btn ghost" id="back"></button>
+          <button class="btn" id="next"></button>
+        </div>
+      </div>
+      <div id="resultView" hidden></div>
+    </div>
+    <p class="note" data-i18n="note"></p>
+  </section>
+</main>
+
+<footer id="foot"></footer>
+
+<div class="loader" id="loader" hidden>
+  <div class="spin"></div>
+  <b id="loadT"></b>
+  <span id="loadS" style="color:var(--muted);font-size:14px;max-width:340px"></span>
+</div>
+
+<script>
+/* Shared: dictionary, layout (nav + footer), theme, language */
+(function () {
+  var API = "https://student-performance-predictor-bas2.onrender.com";
+  window.API = API;
+
+  window.T = {
+    en: {
+      n_home: "Home", n_pred: "Predict", n_how: "How it works", n_imp: "Improve", n_about: "About", n_cta: "Analyze",
+      ft_tag: "Predict your exam score from your study habits and see what to change. A data science project from Tashkent.",
+      ft_pages: "PAGES", ft_proj: "PROJECT", ft_gh: "GitHub profile", ft_code: "Prediction server code", ft_web: "Website code",
+      ft_note: "An educational project. Predictions are estimates, not guarantees.",
+      lv_excellent: "Excellent", lv_verygood: "Very Good", lv_dev: "Developing", lv_need: "Needs Improvement",
+      o_Low: "Low", o_Medium: "Medium", o_High: "High", o_Yes: "Yes", o_No: "No",
+      o_Positive: "Positive", o_Neutral: "Neutral", o_Negative: "Negative", o_Near: "Near", o_Moderate: "Moderate", o_Far: "Far",
+      u_h: "h", u_d: "days"
+    },
+    ru: {
+      n_home: "Главная", n_pred: "Прогноз", n_how: "Как это работает", n_imp: "Улучшить", n_about: "О проекте", n_cta: "Анализировать",
+      ft_tag: "Прогнозируйте экзаменационный балл по учебным привычкам и узнайте, что менять. Проект по data science из Ташкента.",
+      ft_pages: "СТРАНИЦЫ", ft_proj: "ПРОЕКТ", ft_gh: "Профиль GitHub", ft_code: "Код сервера прогноза", ft_web: "Код сайта",
+      ft_note: "Учебный проект. Прогнозы приблизительные и не гарантируют результат.",
+      lv_excellent: "Отлично", lv_verygood: "Очень хорошо", lv_dev: "Развивается", lv_need: "Нужно улучшить",
+      o_Low: "Низкий", o_Medium: "Средний", o_High: "Высокий", o_Yes: "Да", o_No: "Нет",
+      o_Positive: "Положит.", o_Neutral: "Нейтр.", o_Negative: "Отрицат.", o_Near: "Близко", o_Moderate: "Средне", o_Far: "Далеко",
+      u_h: "ч", u_d: "дн."
+    }
+  };
+
+  var lang = "ru";
+  try { lang = localStorage.getItem("lang") || (navigator.language.indexOf("ru") === 0 ? "ru" : "en"); } catch (e) {}
+
+  window.getLang = function () { return lang; };
+  window.t = function (k) {
+    var d = window.T[lang];
+    if (d[k] !== undefined) return d[k];
+    if (window.T.en[k] !== undefined) return window.T.en[k];
+    return k;
+  };
+  window.$ = function (s) { return document.querySelector(s); };
+
+  function buildLayout() {
+    var nav = document.getElementById("nav");
+    if (nav) {
+      nav.innerHTML =
+        '<a class="logo" href="/"><i>↗</i><span>student-performance-predictor</span></a>' +
+        '<div class="links" id="links">' +
+        '<a href="/" data-i18n="n_home"></a>' +
+        '<a href="/predict" data-i18n="n_pred"></a>' +
+        '<a href="/how-it-works" data-i18n="n_how"></a>' +
+        '<a href="/improve" data-i18n="n_imp"></a>' +
+        '<a href="/about" data-i18n="n_about"></a></div>' +
+        '<div class="tools">' +
+        '<button class="chip" id="theme" aria-label="Theme"></button>' +
+        '<button class="chip" id="lang"></button>' +
+        '<a class="btn small" href="/predict" data-i18n="n_cta"></a>' +
+        '<button class="chip burger" id="burger" aria-label="Menu">☰</button></div>';
+      var path = location.pathname.replace(/\.html$/, "").replace(/\/+$/, "") || "/";
+      nav.querySelectorAll(".links a").forEach(function (a) {
+        if (a.getAttribute("href") === path) a.classList.add("cur");
+      });
+    }
+    var foot = document.getElementById("foot");
+    if (foot) {
+      foot.innerHTML =
+        '<div class="wrap"><div class="foot-grid">' +
+        '<div><a class="logo" href="/" style="padding:0"><i>↗</i><span style="display:inline">student-performance-predictor</span></a>' +
+        '<p style="margin-top:12px;max-width:360px" data-i18n="ft_tag"></p></div>' +
+        '<div><h5 data-i18n="ft_pages"></h5>' +
+        '<a href="/" data-i18n="n_home"></a><a href="/predict" data-i18n="n_pred"></a>' +
+        '<a href="/how-it-works" data-i18n="n_how"></a><a href="/improve" data-i18n="n_imp"></a>' +
+        '<a href="/about" data-i18n="n_about"></a></div>' +
+        '<div><h5 data-i18n="ft_proj"></h5>' +
+        '<a href="https://github.com/umarkhodjaev-hash" target="_blank" rel="noopener" data-i18n="ft_gh"></a>' +
+        '<a href="https://github.com/umarkhodjaev-hash/student-performance-predictor" target="_blank" rel="noopener" data-i18n="ft_code"></a>' +
+        '<a href="https://github.com/umarkhodjaev-hash/student-performance-web" target="_blank" rel="noopener" data-i18n="ft_web"></a></div>' +
+        '</div><div class="copy">© <span id="yr"></span> student-performance-predictor · Umar<br><span data-i18n="ft_note"></span></div></div>';
+      var y = document.getElementById("yr");
+      if (y) y.textContent = new Date().getFullYear();
+    }
+  }
+
+  function applyLang() {
+    document.documentElement.lang = lang;
+    var d = window.T[lang];
+    if (d.doc_title) document.title = d.doc_title;
+    document.querySelectorAll("[data-i18n]").forEach(function (e) { e.textContent = window.t(e.getAttribute("data-i18n")); });
+    var lb = document.getElementById("lang");
+    if (lb) lb.textContent = lang === "ru" ? "EN" : "RU";
+    if (window.onLang) window.onLang();
+  }
+  window.applyLang = applyLang;
+
+  function setTheme(m) {
+    document.documentElement.setAttribute("data-theme", m);
+    var b = document.getElementById("theme");
+    if (b) b.textContent = m === "dark" ? "☀️" : "🌙";
+    try { localStorage.setItem("theme", m); } catch (e) {}
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    buildLayout();
+    var saved = null;
+    try { saved = localStorage.getItem("theme"); } catch (e) {}
+    setTheme(saved || "dark");
+    document.getElementById("theme").onclick = function () {
+      setTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
+    };
+    document.getElementById("lang").onclick = function () {
+      lang = lang === "ru" ? "en" : "ru";
+      try { localStorage.setItem("lang", lang); } catch (e) {}
+      applyLang();
+    };
+    document.getElementById("burger").onclick = function () {
+      document.getElementById("links").classList.toggle("open");
+    };
+    applyLang();
+    /* wake the free Render server in the background */
+    try { fetch(API + "/robots.txt", { mode: "no-cors" }).catch(function () {}); } catch (e) {}
+  });
+})();
+
+</script>
+<script>
+/* Predict page: multi-step form, call to the model, result view */
+Object.assign(T.en, {
+  doc_title: "Predict your exam score | student-performance-predictor",
+  crumb: "PREDICT", t_pred: "Build your academic profile",
+  s_pred: "Answer a few questions about your routine, environment and lifestyle. The model estimates your exam score and gives personal insights.",
+  note: "The prediction is an estimate for learning and self-reflection, not a guarantee of results.",
+  s1: "Routine", s2: "Environment", s3: "Lifestyle",
+  t_s1: "Academic routine", d_s1: "Your workload, attendance and independent study habits.",
+  t_s2: "Learning environment", d_s2: "The support and conditions around your studies.",
+  t_s3: "Motivation & lifestyle", d_s3: "Your daily routine gives more context to the prediction.",
+  f_classes_per_week: "Classes per week", h_classes_per_week: "Used to calculate attendance fairly.",
+  f_classes_attended: "Classes attended per week", h_classes_attended: "Compared with your total classes.",
+  f_hours_studied: "Independent study hours per week", h_hours_studied: "Study time outside regular lessons.",
+  f_previous_scores: "Previous academic score", h_previous_scores: "Your recent academic starting point.",
+  f_tutoring_sessions: "Tutoring sessions per month", h_tutoring_sessions: "Extra academic support you receive.",
+  f_parental_involvement: "Parental involvement", h_parental_involvement: "Encouragement and involvement at home.",
+  f_access_to_resources: "Access to learning resources", h_access_to_resources: "Textbooks, materials and study tools.",
+  f_internet_access: "Reliable internet for studying", h_internet_access: "Affects access to online resources.",
+  f_teacher_quality: "Teacher quality", h_teacher_quality: "Your view of the teaching environment.",
+  f_peer_influence: "Friends' influence on studies", h_peer_influence: "Do friends support or distract you?",
+  f_distance_from_home: "Distance from school", h_distance_from_home: "Travel can affect time for study and rest.",
+  f_motivation_level: "Motivation to study", h_motivation_level: "Your current level of academic motivation.",
+  f_sleep_hours: "Sleep per night", h_sleep_hours: "Average on a typical school night.",
+  f_physical_activity: "Physically active days per week", h_physical_activity: "Regular physical activity.",
+  f_extracurricular_activities: "Extracurricular activities", h_extracurricular_activities: "Clubs, sports, competitions.",
+  attIs: "Your attendance:", back: "← Back", next: "Next →", go: "Analyze ✨", again: "Start over",
+  ld1: "Analyzing your profile…", ld2: "The free server may need up to a minute to wake up the first time. Please wait.",
+  errT: "Could not reach the model. Check your connection and try again in a moment.",
+  r_score: "out of 100", r_att: "Attendance", r_ins: "What the data says", r_rec: "What to improve", r_what: "What if you change…",
+  r_calc: "Calculating with the model…", r_none: "Nothing to add, your profile is already strong here.", r_more: "How to improve →",
+  i_att_high: "Your attendance is very strong.", i_att_low: "Your attendance may be limiting your performance.",
+  i_study_high: "You keep a strong weekly study routine.", i_study_low: "Your weekly independent study time is relatively low.",
+  i_sleep_ok: "Your sleep supports a consistent academic routine.", i_sleep_low: "Your sleep duration is relatively low.",
+  i_prev_high: "Your previous academic performance is strong.", i_mot_high: "You report a high level of motivation.",
+  i_res_low: "Limited learning resources may make studying harder.", i_teach_high: "You report a strong teaching environment.",
+  i_peer_pos: "Your peer environment supports your studies.",
+  c_att: "Improve attendance and quickly catch up on missed classes.", c_study: "Build a more consistent weekly independent study routine.",
+  c_sleep: "Keep a more consistent sleep schedule.", c_tutor: "Consider tutoring or academic support for difficult topics.",
+  c_phys: "Add regular physical activity to your week.", c_mot: "Break big goals into smaller weekly targets.",
+  c_res: "Look for extra learning resources at school or online.", c_net: "Use offline materials or school resources when internet is limited.",
+  c_peer: "Protect focused study time from negative peer pressure.", c_ok: "Keep your routine and keep tracking progress.",
+  w_study: "+5 study hours per week", w_att: "Attend every class", w_sleep: "Sleep 8 hours", w_tutor: "+2 tutoring sessions per month", w_mot: "High motivation"
+});
+Object.assign(T.ru, {
+  doc_title: "Прогноз экзаменационного балла | student-performance-predictor",
+  crumb: "ПРОГНОЗ", t_pred: "Создайте свой учебный профиль",
+  s_pred: "Ответьте на несколько вопросов о рутине, окружении и образе жизни. Модель оценит ваш экзаменационный балл и даст персональные выводы.",
+  note: "Прогноз — это оценка для обучения и самоанализа, а не гарантия результата.",
+  s1: "Рутина", s2: "Окружение", s3: "Образ жизни",
+  t_s1: "Учебная рутина", d_s1: "Нагрузка, посещаемость и самостоятельная учёба.",
+  t_s2: "Учебная среда", d_s2: "Поддержка и условия вокруг вашей учёбы.",
+  t_s3: "Мотивация и образ жизни", d_s3: "Ежедневные привычки дают прогнозу больше контекста.",
+  f_classes_per_week: "Занятий в неделю", h_classes_per_week: "Нужно, чтобы честно посчитать посещаемость.",
+  f_classes_attended: "Посещаете занятий в неделю", h_classes_attended: "Сравнивается с общим числом занятий.",
+  f_hours_studied: "Часов самостоятельной учёбы в неделю", h_hours_studied: "Время учёбы вне обычных уроков.",
+  f_previous_scores: "Прошлый академический балл", h_previous_scores: "Ваша недавняя отправная точка.",
+  f_tutoring_sessions: "Занятий с репетитором в месяц", h_tutoring_sessions: "Дополнительная академическая поддержка.",
+  f_parental_involvement: "Участие родителей", h_parental_involvement: "Поддержка и вовлечённость дома.",
+  f_access_to_resources: "Доступ к учебным ресурсам", h_access_to_resources: "Учебники, материалы и инструменты.",
+  f_internet_access: "Стабильный интернет для учёбы", h_internet_access: "Влияет на доступ к онлайн-ресурсам.",
+  f_teacher_quality: "Качество преподавания", h_teacher_quality: "Ваша оценка учебной среды.",
+  f_peer_influence: "Влияние друзей на учёбу", h_peer_influence: "Друзья поддерживают или отвлекают?",
+  f_distance_from_home: "Расстояние до школы", h_distance_from_home: "Дорога влияет на время для учёбы и отдыха.",
+  f_motivation_level: "Мотивация к учёбе", h_motivation_level: "Ваш текущий уровень мотивации.",
+  f_sleep_hours: "Сон за ночь", h_sleep_hours: "В среднем в обычную учебную ночь.",
+  f_physical_activity: "Дней физической активности в неделю", h_physical_activity: "Регулярная физическая активность.",
+  f_extracurricular_activities: "Внеучебные занятия", h_extracurricular_activities: "Кружки, спорт, соревнования.",
+  attIs: "Ваша посещаемость:", back: "← Назад", next: "Далее →", go: "Анализировать ✨", again: "Пройти заново",
+  ld1: "Анализируем ваш профиль…", ld2: "Бесплатному серверу при первом запуске нужно до минуты, чтобы проснуться. Подождите немного.",
+  errT: "Не удалось связаться с моделью. Проверьте интернет и попробуйте ещё раз через минуту.",
+  r_score: "из 100", r_att: "Посещаемость", r_ins: "Что показывают данные", r_rec: "Что улучшить", r_what: "А что если изменить…",
+  r_calc: "Считаем с помощью модели…", r_none: "Добавить нечего, здесь у вас уже всё сильно.", r_more: "Как улучшить →",
+  i_att_high: "У вас очень высокая посещаемость.", i_att_low: "Посещаемость может ограничивать вашу успеваемость.",
+  i_study_high: "Вы стабильно много занимаетесь в неделю.", i_study_low: "Самостоятельной учёбы в неделю относительно мало.",
+  i_sleep_ok: "Ваш сон поддерживает стабильный учебный режим.", i_sleep_low: "Сна относительно мало.",
+  i_prev_high: "У вас сильные прошлые результаты.", i_mot_high: "Вы сообщаете о высокой мотивации.",
+  i_res_low: "Ограниченный доступ к ресурсам может усложнять учёбу.", i_teach_high: "Вы отмечаете сильное преподавание.",
+  i_peer_pos: "Окружение друзей поддерживает вашу учёбу.",
+  c_att: "Повысьте посещаемость и быстро навёрстывайте пропущенное.", c_study: "Выстройте более регулярную самостоятельную учёбу.",
+  c_sleep: "Придерживайтесь более стабильного режима сна.", c_tutor: "Подумайте о репетиторе или помощи по сложным темам.",
+  c_phys: "Добавьте регулярную физическую активность.", c_mot: "Разбейте большие цели на небольшие недельные задачи.",
+  c_res: "Поищите дополнительные ресурсы в школе или онлайн.", c_net: "Используйте офлайн-материалы или ресурсы школы, когда нет интернета.",
+  c_peer: "Защищайте время учёбы от негативного влияния друзей.", c_ok: "Сохраняйте режим и следите за прогрессом.",
+  w_study: "+5 часов учёбы в неделю", w_att: "Ходить на все занятия", w_sleep: "Спать 8 часов", w_tutor: "+2 занятия с репетитором в месяц", w_mot: "Высокая мотивация"
+});
+
+var STEPS = [
+  { k: "s1", f: ["classes_per_week", "classes_attended", "hours_studied", "previous_scores", "tutoring_sessions"] },
+  { k: "s2", f: ["parental_involvement", "access_to_resources", "internet_access", "teacher_quality", "peer_influence", "distance_from_home"] },
+  { k: "s3", f: ["motivation_level", "sleep_hours", "physical_activity", "extracurricular_activities"] }
+];
+var R = {
+  classes_per_week: { min: 1, max: 60, step: 1, v: 30, u: "" },
+  classes_attended: { min: 0, max: 60, step: 1, v: 27, u: "" },
+  hours_studied: { min: 0, max: 60, step: 1, v: 20, u: "h" },
+  previous_scores: { min: 0, max: 100, step: 1, v: 80, u: "" },
+  tutoring_sessions: { min: 0, max: 8, step: 1, v: 2, u: "" },
+  sleep_hours: { min: 3, max: 12, step: 0.5, v: 7.5, u: "h" },
+  physical_activity: { min: 0, max: 6, step: 1, v: 3, u: "d" }
+};
+var L3 = ["Low", "Medium", "High"], YN = ["Yes", "No"];
+var C = {
+  parental_involvement: { o: L3, v: "Medium" }, access_to_resources: { o: L3, v: "Medium" }, internet_access: { o: YN, v: "Yes" },
+  teacher_quality: { o: L3, v: "Medium" }, peer_influence: { o: ["Positive", "Neutral", "Negative"], v: "Neutral" },
+  distance_from_home: { o: ["Near", "Moderate", "Far"], v: "Moderate" }, motivation_level: { o: L3, v: "Medium" },
+  extracurricular_activities: { o: YN, v: "Yes" }
+};
+
+var step = 0, S = {}, res = null;
+Object.keys(R).forEach(function (k) { S[k] = R[k].v; });
+Object.keys(C).forEach(function (k) { S[k] = C[k].v; });
+
+function maxOf(id) { return id === "classes_attended" ? S.classes_per_week : R[id].max; }
+function unit(u) { return u === "h" ? " " + t("u_h") : u === "d" ? " " + t("u_d") : ""; }
+function attendance(x) { return x.classes_per_week <= 0 ? 0 : Math.round(Math.min(100, x.classes_attended / x.classes_per_week * 100) * 10) / 10; }
+function lvl(p) { return p >= 80 ? "excellent" : p >= 70 ? "verygood" : p >= 60 ? "dev" : "need"; }
+
+function fieldHTML(id) {
+  if (R[id]) {
+    var r = R[id];
+    return '<div class="field"><div class="row"><label for="' + id + '">' + t("f_" + id) + '</label><output id="o_' + id + '"></output></div>' +
+      '<input type="range" id="' + id + '" min="' + r.min + '" max="' + maxOf(id) + '" step="' + r.step + '" value="' + S[id] + '">' +
+      '<div class="hint">' + t("h_" + id) + "</div></div>";
+  }
+  var c = C[id];
+  return '<div class="field"><div class="row"><label>' + t("f_" + id) + "</label></div>" +
+    '<div class="seg" data-id="' + id + '">' + c.o.map(function (v) {
+      return '<button type="button" data-v="' + v + '" class="' + (S[id] === v ? "on" : "") + '">' + t("o_" + v) + "</button>";
+    }).join("") + "</div>" +
+    '<div class="hint">' + t("h_" + id) + "</div></div>";
+}
+function syncRange(id) {
+  var i = document.getElementById(id);
+  if (!i) return;
+  var r = R[id], mx = maxOf(id);
+  i.max = mx; i.value = S[id];
+  i.style.setProperty("--p", ((S[id] - r.min) / ((mx - r.min) || 1) * 100) + "%");
+  document.getElementById("o_" + id).textContent = S[id] + unit(r.u);
+}
+function updAtt() { var a = document.getElementById("attVal"); if (a) a.textContent = attendance(S) + "%"; }
+function renderStep() {
+  var st = STEPS[step];
+  document.getElementById("stepper").innerHTML = STEPS.map(function (s, i) {
+    return '<div class="sp ' + (i < step ? "done" : "") + " " + (i === step ? "on" : "") + '"><i></i><span>' + (i + 1) + ". " + t(s.k) + "</span></div>";
+  }).join("");
+  document.getElementById("panel").innerHTML = '<h3 class="st-t">' + t("t_" + st.k) + '</h3><p class="st-d">' + t("d_" + st.k) + "</p>" +
+    '<div class="grid">' + st.f.map(fieldHTML).join("") + "</div>" +
+    (step === 0 ? '<div class="att">' + t("attIs") + ' <b id="attVal"></b></div>' : "");
+  st.f.forEach(function (id) { if (R[id]) syncRange(id); });
+  updAtt();
+  var back = document.getElementById("back"), next = document.getElementById("next");
+  back.textContent = t("back"); back.style.visibility = step === 0 ? "hidden" : "visible";
+  next.textContent = step === STEPS.length - 1 ? t("go") : t("next");
+  document.getElementById("error").innerHTML = "";
+}
+function toTop() { var a = document.getElementById("app"); if (a) a.scrollIntoView({ behavior: "smooth" }); }
+
+async function call(payload, signal) {
+  var r = await fetch(API + "/api/predict", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload), signal: signal });
+  if (!r.ok) throw new Error("HTTP " + r.status);
+  return r.json();
+}
+async function submit() {
+  var ctl = new AbortController(), to = setTimeout(function () { ctl.abort(); }, 100000);
+  document.getElementById("loadT").textContent = t("ld1");
+  document.getElementById("loadS").textContent = "";
+  document.getElementById("loader").hidden = false;
+  var slow = setTimeout(function () { document.getElementById("loadS").textContent = t("ld2"); }, 4000);
+  try {
+    var d = await call(S, ctl.signal);
+    var p = Math.round(d.prediction * 10) / 10;
+    res = { p: p, input: Object.assign({}, S), scen: null };
+    saveLast(res);
+    showResult();
+    loadScen(res);
+  } catch (e) {
+    document.getElementById("error").innerHTML = '<div class="err">' + t("errT") + "</div>";
+  } finally {
+    clearTimeout(to); clearTimeout(slow);
+    document.getElementById("loader").hidden = true;
+  }
+}
+async function loadScen(r) {
+  var x = r.input, list = [];
+  if (x.hours_studied < 55) list.push(["w_study", { hours_studied: x.hours_studied + 5 }]);
+  if (x.classes_attended < x.classes_per_week) list.push(["w_att", { classes_attended: x.classes_per_week }]);
+  if (x.sleep_hours < 8) list.push(["w_sleep", { sleep_hours: 8 }]);
+  if (x.tutoring_sessions < 7) list.push(["w_tutor", { tutoring_sessions: x.tutoring_sessions + 2 }]);
+  if (x.motivation_level !== "High") list.push(["w_mot", { motivation_level: "High" }]);
+  try {
+    var out = await Promise.all(list.map(async function (it) {
+      var d = await call(Object.assign({}, x, it[1]));
+      return { k: it[0], d: d.prediction - r.p };
+    }));
+    r.scen = out.sort(function (a, b) { return b.d - a.d; }).slice(0, 4);
+  } catch (e) { r.scen = []; }
+  if (res === r) renderWhat();
+}
+
+function insights(x, att) {
+  var a = [], c = [];
+  if (att >= 90) a.push("i_att_high"); else if (att < 75) a.push("i_att_low");
+  if (x.hours_studied >= 20) a.push("i_study_high"); else if (x.hours_studied < 10) a.push("i_study_low");
+  if (x.sleep_hours >= 7) a.push("i_sleep_ok"); else if (x.sleep_hours < 6) a.push("i_sleep_low");
+  if (x.previous_scores >= 80) a.push("i_prev_high");
+  if (x.motivation_level === "High") a.push("i_mot_high");
+  if (x.access_to_resources === "Low") a.push("i_res_low");
+  if (x.teacher_quality === "High") a.push("i_teach_high");
+  if (x.peer_influence === "Positive") a.push("i_peer_pos");
+  if (att < 90) c.push("c_att");
+  if (x.hours_studied < 20) c.push("c_study");
+  if (x.sleep_hours < 7) c.push("c_sleep");
+  if (x.tutoring_sessions === 0) c.push("c_tutor");
+  if (x.physical_activity < 2) c.push("c_phys");
+  if (x.motivation_level === "Low") c.push("c_mot");
+  if (x.access_to_resources === "Low") c.push("c_res");
+  if (x.internet_access === "No") c.push("c_net");
+  if (x.peer_influence === "Negative") c.push("c_peer");
+  if (!c.length) c.push("c_ok");
+  return { a: a, c: c };
+}
+function showResult() {
+  document.getElementById("formView").hidden = true;
+  document.getElementById("resultView").hidden = false;
+  renderResult();
+  toTop();
+}
+function renderResult() {
+  if (!res) return;
+  var p = res.p, att = attendance(res.input), ic = insights(res.input, att), pc = Math.max(0, Math.min(100, p));
+  document.getElementById("resultView").innerHTML = '<div class="res"><div class="ringbox">' +
+    '<div class="ring"><svg width="230" height="230" viewBox="0 0 220 220"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b39bff"/><stop offset="1" stop-color="#6c47e8"/></linearGradient></defs>' +
+    '<circle class="bg" cx="110" cy="110" r="92"/><circle class="fg" id="fg" cx="110" cy="110" r="92" stroke-dasharray="578" stroke-dashoffset="578"/></svg>' +
+    '<div class="mid"><b>' + p + "</b><span>" + t("r_score") + "</span></div></div>" +
+    '<span class="pill">' + t("lv_" + lvl(p)) + "</span>" +
+    '<p style="color:var(--muted);font-size:14px;margin:12px 0 20px">' + t("r_att") + ': <b style="color:var(--text)">' + att + "%</b></p>" +
+    '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="btn ghost" id="again">' + t("again") + '</button><a class="btn" href="/improve">' + t("r_more") + "</a></div></div>" +
+    "<div>" +
+    (ic.a.length ? '<div class="box ins"><h4>' + t("r_ins") + "</h4><ul>" + ic.a.map(function (k) { return "<li>" + t(k) + "</li>"; }).join("") + "</ul></div>" : "") +
+    '<div class="box"><h4>' + t("r_rec") + "</h4><ul>" + ic.c.map(function (k) { return "<li>" + t(k) + "</li>"; }).join("") + "</ul></div>" +
+    '<div class="box"><h4>' + t("r_what") + '</h4><div id="what"></div></div></div></div>';
+  setTimeout(function () { var f = document.getElementById("fg"); if (f) f.style.strokeDashoffset = 578 * (1 - pc / 100); }, 60);
+  document.getElementById("again").onclick = function () {
+    document.getElementById("resultView").hidden = true;
+    document.getElementById("formView").hidden = false;
+    step = 0; renderStep(); toTop();
+  };
+  renderWhat();
+}
+function renderWhat() {
+  var w = document.getElementById("what");
+  if (!w || !res) return;
+  if (res.scen === null) { w.innerHTML = '<div class="empty">' + t("r_calc") + "</div>"; return; }
+  if (!res.scen.length) { w.innerHTML = '<div class="empty">' + t("r_none") + "</div>"; return; }
+  w.innerHTML = res.scen.map(function (s) {
+    var d = Math.round(s.d * 10) / 10, cl = d > 0 ? "pos" : d < 0 ? "neg" : "zero";
+    return '<div class="sc"><span>' + t(s.k) + '</span><b class="' + cl + '">' + (d > 0 ? "+" : "") + d + "</b></div>";
+  }).join("");
+}
+function saveLast(r) {
+  try {
+    localStorage.setItem("last", JSON.stringify({ p: r.p, h: r.input.hours_studied, a: attendance(r.input), s: r.input.sleep_hours, m: r.input.motivation_level }));
+  } catch (e) {}
+}
+
+window.onLang = function () { renderStep(); renderResult(); };
+
+document.addEventListener("DOMContentLoaded", function () {
+  var panel = document.getElementById("panel");
+  panel.addEventListener("input", function (e) {
+    var id = e.target.id;
+    if (!R[id]) return;
+    S[id] = +e.target.value;
+    if (id === "classes_per_week") { S.classes_attended = Math.min(S.classes_attended, S.classes_per_week); syncRange("classes_attended"); }
+    syncRange(id); updAtt();
+  });
+  panel.addEventListener("click", function (e) {
+    var b = e.target.closest(".seg button");
+    if (!b) return;
+    var id = b.parentElement.getAttribute("data-id");
+    S[id] = b.getAttribute("data-v");
+    b.parentElement.querySelectorAll("button").forEach(function (x) { x.classList.toggle("on", x === b); });
+  });
+  document.getElementById("back").onclick = function () { if (step > 0) { step--; renderStep(); toTop(); } };
+  document.getElementById("next").onclick = function () {
+    if (step < STEPS.length - 1) { step++; renderStep(); toTop(); } else submit();
+  };
+});
+
+</script>
+</body>
+</html>

@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>How to improve | student-performance-predictor</title>
+<meta name="description" content="Practical study tips for routine, attendance, sleep, motivation, environment and balance, plus a 7-day starter plan.">
+<meta property="og:title" content="How to improve your academic performance">
+<meta property="og:description" content="Practical ideas for each area the model looks at, and a 7-day starter plan.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='9' fill='%236c47e8'/%3E%3Cpath d='M10 22 L22 10 M13 10 H22 V19' stroke='white' stroke-width='3' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("theme")||"dark")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<nav id="nav"></nav>
+
+<main class="wrap">
+  <div class="phead">
+    <span class="crumb" data-i18n="crumb"></span>
+    <h1 data-i18n="i_title"></h1>
+    <p class="lead" data-i18n="i_lead"></p>
+  </div>
+
+  <section>
+    <div class="cards3" id="areas"></div>
+    <p class="note" data-i18n="im_note"></p>
+  </section>
+
+  <section>
+    <h2 data-i18n="plan_t"></h2>
+    <p class="sub" data-i18n="plan_s"></p>
+    <div class="days" id="days"></div>
+  </section>
+
+  <div class="band">
+    <h2 data-i18n="go_t"></h2>
+    <p data-i18n="go_d"></p>
+    <a class="btn white" href="/predict" data-i18n="go_b"></a>
+  </div>
+</main>
+
+<footer id="foot"></footer>
+
+<script>
+/* Shared: dictionary, layout (nav + footer), theme, language */
+(function () {
+  var API = "https://student-performance-predictor-bas2.onrender.com";
+  window.API = API;
+
+  window.T = {
+    en: {
+      n_home: "Home", n_pred: "Predict", n_how: "How it works", n_imp: "Improve", n_about: "About", n_cta: "Analyze",
+      ft_tag: "Predict your exam score from your study habits and see what to change. A data science project from Tashkent.",
+      ft_pages: "PAGES", ft_proj: "PROJECT", ft_gh: "GitHub profile", ft_code: "Prediction server code", ft_web: "Website code",
+      ft_note: "An educational project. Predictions are estimates, not guarantees.",
+      lv_excellent: "Excellent", lv_verygood: "Very Good", lv_dev: "Developing", lv_need: "Needs Improvement",
+      o_Low: "Low", o_Medium: "Medium", o_High: "High", o_Yes: "Yes", o_No: "No",
+      o_Positive: "Positive", o_Neutral: "Neutral", o_Negative: "Negative", o_Near: "Near", o_Moderate: "Moderate", o_Far: "Far",
+      u_h: "h", u_d: "days"
+    },
+    ru: {
+      n_home: "Главная", n_pred: "Прогноз", n_how: "Как это работает", n_imp: "Улучшить", n_about: "О проекте", n_cta: "Анализировать",
+      ft_tag: "Прогнозируйте экзаменационный балл по учебным привычкам и узнайте, что менять. Проект по data science из Ташкента.",
+      ft_pages: "СТРАНИЦЫ", ft_proj: "ПРОЕКТ", ft_gh: "Профиль GitHub", ft_code: "Код сервера прогноза", ft_web: "Код сайта",
+      ft_note: "Учебный проект. Прогнозы приблизительные и не гарантируют результат.",
+      lv_excellent: "Отлично", lv_verygood: "Очень хорошо", lv_dev: "Развивается", lv_need: "Нужно улучшить",
+      o_Low: "Низкий", o_Medium: "Средний", o_High: "Высокий", o_Yes: "Да", o_No: "Нет",
+      o_Positive: "Положит.", o_Neutral: "Нейтр.", o_Negative: "Отрицат.", o_Near: "Близко", o_Moderate: "Средне", o_Far: "Далеко",
+      u_h: "ч", u_d: "дн."
+    }
+  };
+
+  var lang = "ru";
+  try { lang = localStorage.getItem("lang") || (navigator.language.indexOf("ru") === 0 ? "ru" : "en"); } catch (e) {}
+
+  window.getLang = function () { return lang; };
+  window.t = function (k) {
+    var d = window.T[lang];
+    if (d[k] !== undefined) return d[k];
+    if (window.T.en[k] !== undefined) return window.T.en[k];
+    return k;
+  };
+  window.$ = function (s) { return document.querySelector(s); };
+
+  function buildLayout() {
+    var nav = document.getElementById("nav");
+    if (nav) {
+      nav.innerHTML =
+        '<a class="logo" href="/"><i>↗</i><span>student-performance-predictor</span></a>' +
+        '<div class="links" id="links">' +
+        '<a href="/" data-i18n="n_home"></a>' +
+        '<a href="/predict" data-i18n="n_pred"></a>' +
+        '<a href="/how-it-works" data-i18n="n_how"></a>' +
+        '<a href="/improve" data-i18n="n_imp"></a>' +
+        '<a href="/about" data-i18n="n_about"></a></div>' +
+        '<div class="tools">' +
+        '<button class="chip" id="theme" aria-label="Theme"></button>' +
+        '<button class="chip" id="lang"></button>' +
+        '<a class="btn small" href="/predict" data-i18n="n_cta"></a>' +
+        '<button class="chip burger" id="burger" aria-label="Menu">☰</button></div>';
+      var path = location.pathname.replace(/\.html$/, "").replace(/\/+$/, "") || "/";
+      nav.querySelectorAll(".links a").forEach(function (a) {
+        if (a.getAttribute("href") === path) a.classList.add("cur");
+      });
+    }
+    var foot = document.getElementById("foot");
+    if (foot) {
+      foot.innerHTML =
+        '<div class="wrap"><div class="foot-grid">' +
+        '<div><a class="logo" href="/" style="padding:0"><i>↗</i><span style="display:inline">student-performance-predictor</span></a>' +
+        '<p style="margin-top:12px;max-width:360px" data-i18n="ft_tag"></p></div>' +
+        '<div><h5 data-i18n="ft_pages"></h5>' +
+        '<a href="/" data-i18n="n_home"></a><a href="/predict" data-i18n="n_pred"></a>' +
+        '<a href="/how-it-works" data-i18n="n_how"></a><a href="/improve" data-i18n="n_imp"></a>' +
+        '<a href="/about" data-i18n="n_about"></a></div>' +
+        '<div><h5 data-i18n="ft_proj"></h5>' +
+        '<a href="https://github.com/umarkhodjaev-hash" target="_blank" rel="noopener" data-i18n="ft_gh"></a>' +
+        '<a href="https://github.com/umarkhodjaev-hash/student-performance-predictor" target="_blank" rel="noopener" data-i18n="ft_code"></a>' +
+        '<a href="https://github.com/umarkhodjaev-hash/student-performance-web" target="_blank" rel="noopener" data-i18n="ft_web"></a></div>' +
+        '</div><div class="copy">© <span id="yr"></span> student-performance-predictor · Umar<br><span data-i18n="ft_note"></span></div></div>';
+      var y = document.getElementById("yr");
+      if (y) y.textContent = new Date().getFullYear();
+    }
+  }
+
+  function applyLang() {
+    document.documentElement.lang = lang;
+    var d = window.T[lang];
+    if (d.doc_title) document.title = d.doc_title;
+    document.querySelectorAll("[data-i18n]").forEach(function (e) { e.textContent = window.t(e.getAttribute("data-i18n")); });
+    var lb = document.getElementById("lang");
+    if (lb) lb.textContent = lang === "ru" ? "EN" : "RU";
+    if (window.onLang) window.onLang();
+  }
+  window.applyLang = applyLang;
+
+  function setTheme(m) {
+    document.documentElement.setAttribute("data-theme", m);
+    var b = document.getElementById("theme");
+    if (b) b.textContent = m === "dark" ? "☀️" : "🌙";
+    try { localStorage.setItem("theme", m); } catch (e) {}
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    buildLayout();
+    var saved = null;
+    try { saved = localStorage.getItem("theme"); } catch (e) {}
+    setTheme(saved || "dark");
+    document.getElementById("theme").onclick = function () {
+      setTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
+    };
+    document.getElementById("lang").onclick = function () {
+      lang = lang === "ru" ? "en" : "ru";
+      try { localStorage.setItem("lang", lang); } catch (e) {}
+      applyLang();
+    };
+    document.getElementById("burger").onclick = function () {
+      document.getElementById("links").classList.toggle("open");
+    };
+    applyLang();
+    /* wake the free Render server in the background */
+    try { fetch(API + "/robots.txt", { mode: "no-cors" }).catch(function () {}); } catch (e) {}
+  });
+})();
+
+</script>
+<script>
+Object.assign(T.en, {
+  doc_title: "How to improve | student-performance-predictor",
+  crumb: "IMPROVE", i_title: "Turn the prediction into a plan",
+  i_lead: "Small, steady changes usually beat big one-time efforts. Here are practical ideas for each area the model looks at.",
+  a1t: "Study routine",
+  a1_1: "Plan study time in your calendar like a lesson. A fixed slot beats good intentions.",
+  a1_2: "Use short focused blocks, for example 25 minutes of work and a 5 minute break, instead of one long session.",
+  a1_3: "End each session by writing what to study next, so tomorrow starts without hesitation.",
+  a2t: "Attendance",
+  a2_1: "Treat every class as the cheapest study time you have: the explanation is free and happens once.",
+  a2_2: "If you miss a class, get the notes the same day and review them within two days.",
+  a2_3: "Ask your teacher early about missed topics. Waiting makes catching up harder.",
+  a3t: "Sleep",
+  a3_1: "Keep a similar bedtime and wake-up time, including on weekends.",
+  a3_2: "Put the phone away before bed. Screens late in the evening can make it harder to fall asleep.",
+  a3_3: "Aim for the amount of sleep recommended for your age, and avoid all-nighters before exams.",
+  a4t: "Motivation",
+  a4_1: "Split a big goal into weekly targets you can actually tick off.",
+  a4_2: "Write down why this exam matters to you and look at it when motivation drops.",
+  a4_3: "Celebrate small wins and track progress, for example with a simple checklist.",
+  a5t: "Environment and resources",
+  a5_1: "Find a quiet, consistent place to study and keep it free of distractions.",
+  a5_2: "Use your school library, free online courses and past papers when textbooks are limited.",
+  a5_3: "Download materials in advance so a weak internet connection does not stop you.",
+  a6t: "Balance and people",
+  a6_1: "Move regularly. A walk, sport or exercise helps focus and energy.",
+  a6_2: "Keep one or two activities you enjoy. Clubs and hobbies are useful, but protect your study time.",
+  a6_3: "Study with friends who support your goals, and protect focus time from distractions.",
+  im_note: "These are general study tips, not medical advice.",
+  plan_t: "Your 7-day starter plan", plan_s: "One small step a day. Repeat the week and watch your next prediction.",
+  day: "DAY",
+  d1t: "Measure", d1d: "Write down your real study hours, sleep and attendance for the week.",
+  d2t: "Choose", d2d: "Pick the one habit from this page that looks easiest to improve.",
+  d3t: "Schedule", d3d: "Put study blocks and a fixed bedtime into your calendar.",
+  d4t: "Study", d4d: "Do two focused blocks, with breaks, on your hardest subject.",
+  d5t: "Catch up", d5d: "Review notes from missed classes and ask your teacher about gaps.",
+  d6t: "Balance", d6d: "Add movement or a hobby, and spend time with supportive friends.",
+  d7t: "Re-check", d7d: "Run the predictor again and compare it with your first result.",
+  go_t: "Ready to measure the effect?", go_d: "Run the prediction again after a week of changes and compare the results.", go_b: "Open the predictor →"
+});
+Object.assign(T.ru, {
+  doc_title: "Как улучшить | student-performance-predictor",
+  crumb: "УЛУЧШИТЬ", i_title: "Превратите прогноз в план",
+  i_lead: "Небольшие регулярные изменения обычно работают лучше, чем один большой рывок. Вот практические идеи для каждой области, которую учитывает модель.",
+  a1t: "Учебная рутина",
+  a1_1: "Планируйте время учёбы в календаре, как урок. Фиксированный слот лучше благих намерений.",
+  a1_2: "Занимайтесь короткими сфокусированными блоками, например 25 минут работы и 5 минут отдыха, вместо одной длинной сессии.",
+  a1_3: "В конце каждой сессии записывайте, что учить дальше, чтобы завтра начать без колебаний.",
+  a2t: "Посещаемость",
+  a2_1: "Относитесь к каждому занятию как к самому дешёвому времени учёбы: объяснение бесплатное и происходит один раз.",
+  a2_2: "Если пропустили занятие, возьмите конспект в тот же день и повторите его в течение двух дней.",
+  a2_3: "Рано спрашивайте учителя о пропущенных темах. Чем дольше ждёте, тем труднее навёрстывать.",
+  a3t: "Сон",
+  a3_1: "Ложитесь и вставайте примерно в одно время, в том числе в выходные.",
+  a3_2: "Уберите телефон перед сном. Экраны поздним вечером могут мешать засыпать.",
+  a3_3: "Старайтесь спать столько, сколько рекомендуют для вашего возраста, и не сидите всю ночь перед экзаменом.",
+  a4t: "Мотивация",
+  a4_1: "Разбейте большую цель на недельные задачи, которые можно реально отметить галочкой.",
+  a4_2: "Запишите, почему этот экзамен важен для вас, и перечитывайте, когда мотивация падает.",
+  a4_3: "Отмечайте маленькие победы и следите за прогрессом, например простым чек-листом.",
+  a5t: "Среда и ресурсы",
+  a5_1: "Найдите тихое постоянное место для учёбы и уберите оттуда отвлекающие вещи.",
+  a5_2: "Используйте школьную библиотеку, бесплатные онлайн-курсы и прошлые варианты экзаменов, если учебников мало.",
+  a5_3: "Скачивайте материалы заранее, чтобы слабый интернет не останавливал вас.",
+  a6t: "Баланс и окружение",
+  a6_1: "Двигайтесь регулярно. Прогулка, спорт или зарядка помогают концентрации и энергии.",
+  a6_2: "Оставьте одно-два занятия, которые вам нравятся. Кружки и хобби полезны, но берегите время на учёбу.",
+  a6_3: "Занимайтесь с друзьями, которые поддерживают ваши цели, и защищайте время концентрации от отвлечений.",
+  im_note: "Это общие учебные советы, а не медицинские рекомендации.",
+  plan_t: "План на 7 дней для старта", plan_s: "Один небольшой шаг в день. Повторите неделю и посмотрите на следующий прогноз.",
+  day: "ДЕНЬ",
+  d1t: "Измерьте", d1d: "Запишите свои реальные часы учёбы, сон и посещаемость за неделю.",
+  d2t: "Выберите", d2d: "Выберите одну привычку с этой страницы, которую проще всего улучшить.",
+  d3t: "Запланируйте", d3d: "Внесите в календарь блоки учёбы и постоянное время отхода ко сну.",
+  d4t: "Занимайтесь", d4d: "Сделайте два сфокусированных блока с перерывами по самому трудному предмету.",
+  d5t: "Навёрстывайте", d5d: "Повторите конспекты пропущенных занятий и спросите учителя о пробелах.",
+  d6t: "Баланс", d6d: "Добавьте движение или хобби и проведите время с поддерживающими друзьями.",
+  d7t: "Проверьте", d7d: "Запустите предиктор снова и сравните с первым результатом.",
+  go_t: "Готовы измерить эффект?", go_d: "Запустите прогноз снова после недели изменений и сравните результаты.", go_b: "Открыть предиктор →"
+});
+
+var ICONS = ["📚", "✅", "🌙", "🔥", "🏫", "⚖️"];
+window.onLang = function () {
+  var h = "";
+  for (var i = 1; i <= 6; i++) {
+    h += '<div class="card"><div class="ico">' + ICONS[i - 1] + "</div><h3>" + t("a" + i + "t") + '</h3><ul class="points">' +
+      [1, 2, 3].map(function (j) { return "<li>" + t("a" + i + "_" + j) + "</li>"; }).join("") + "</ul></div>";
+  }
+  document.getElementById("areas").innerHTML = h;
+  var d = "";
+  for (var k = 1; k <= 7; k++) {
+    d += '<div class="day"><small>' + t("day") + " " + k + "</small><h3 style=\"font-size:16px;margin-top:4px\">" + t("d" + k + "t") + "</h3><p>" + t("d" + k + "d") + "</p></div>";
+  }
+  document.getElementById("days").innerHTML = d;
+};
+</script>
+</body>
+</html>
