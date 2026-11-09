@@ -348,3 +348,25 @@ nav .links a.only-m{display:none}
 .mascot .tw{transform-box:fill-box;transform-origin:center;animation:tw 1.6s ease-in-out infinite}
 @keyframes tw{50%{transform:scale(.55);opacity:.55}}
 @media (prefers-reduced-motion:reduce){.mascot .head,.mascot .lid,.mascot .tw{animation:none}}
+/* study rooms */
+.tm-form{display:flex;gap:12px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.tm-form .fx-task{flex:1;min-width:200px;max-width:320px;margin:0;text-align:left}
+.tm-invite{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:16px}
+.tm-lab{font-size:13px;color:var(--muted);font-weight:600;width:100%}
+.tm-link{flex:1;min-width:220px;box-sizing:border-box;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--text);font:inherit;font-size:14px}
+.tm-sub{margin:24px 0 6px;font-size:15px}
+.tm-rows{display:grid;gap:0}
+.tm-row{display:flex;align-items:center;gap:12px;padding:12px 10px;border-top:1px solid var(--line);border-radius:12px}
+.tm-row:first-child{border-top:0}
+.tm-row.me{background:color-mix(in srgb,var(--brand) 9%,transparent)}
+.tm-rank{width:22px;text-align:center;font-weight:800;color:var(--muted)}
+.tm-dot{width:11px;height:11px;border-radius:50%;background:var(--line);flex:none}
+.tm-dot.idle{background:#8a8fb0}
+.tm-dot.on{background:var(--ok);animation:fxpulse 2s infinite}
+.tm-nc{display:grid;min-width:0;flex:1}
+.tm-name{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tm-nc small{color:var(--muted);font-size:12px}
+.tm-min{display:grid;text-align:right;line-height:1.25}
+.tm-min b{font-size:22px}
+.tm-min small{color:var(--muted);font-size:12px}
+@media (prefers-reduced-motion:reduce){.tm-dot.on{animation:none}}

@@ -14,6 +14,7 @@ A personal data science project: answer 15 questions about your study routine, e
 - Habits quiz with explanations after each answer
 - Today page: streak, points, level and a daily challenge (stored on the device)
 - Focus room: Pomodoro timer with an anonymous live counter of people studying right now
+- Private study rooms by link: friends see who is studying and weekly minutes (nickname only, no chat)
 - Prediction history and side-by-side comparison, saved only in your own browser
 - Sovi, the study owl mascot
 - Light and dark theme, 3D graduation cap on the home page (Three.js)

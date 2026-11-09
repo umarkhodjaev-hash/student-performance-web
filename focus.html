@@ -69,6 +69,15 @@
         </div>
       </div>
     </div>
+    <div class="card tm" id="tm" style="margin-top:22px">
+      <div class="tm-head">
+        <div>
+          <h3 style="margin:0 0 4px" data-i18n="tm_title"></h3>
+          <p class="note" style="margin:0" id="tmLead"></p>
+        </div>
+      </div>
+      <div id="tmBody"></div>
+    </div>
     <p class="note" style="text-align:center;max-width:640px;margin:22px auto 0" data-i18n="fx_priv"></p>
   </section>
 
@@ -328,6 +337,16 @@
 </script>
 <script>
 Object.assign(T.en, {
+  "tm_title": "Study with friends",
+  "tm_lead": "Create a private room and send the link. Everyone with the link sees who is studying right now and how many minutes each person studied this week. No chat.",
+  "tm_lead_in": "Everyone with this link can join and see your nickname and minutes. Only share it with people you trust.",
+  "tm_invited": "You were invited to a study room",
+  "tm_name": "Your nickname", "tm_create": "Create a room", "tm_join": "Join the room",
+  "tm_invite": "Invite link", "tm_copy": "Copy link", "tm_copied": "Copied!", "tm_tg": "Send in Telegram", "tm_leave": "Leave the room",
+  "tm_members": "In this room", "tm_you": "you", "tm_studying": "studying now", "tm_online": "online", "tm_offline": "offline",
+  "tm_today": "today", "tm_week": "this week", "tm_empty": "Waiting for friends. Send them the link.",
+  "tm_full": "This room is full (30 people).", "tm_err": "Could not reach the room. It may take a minute for the server to wake up.", "tm_wait": "Connecting to the room…",
+  "tm_text": "Study with me: join my study room",
   "go_t": "Now test your own habits", "go_d": "It takes about a minute and needs no account.", "go_b": "Open the predictor →",
   "doc_title": "Focus room | student-performance-predictor",
   "crumb": "FOCUS ROOM",
@@ -344,10 +363,20 @@ Object.assign(T.en, {
   "fx_bdone": "Break is over. Ready for another round?",
   "fx_going": "Focus. Put the phone away.",
   "fx_today": "Today", "fx_min": "Minutes studied", "fx_sessions": "Sessions finished", "fx_streak": "Day streak",
-  "fx_priv": "Privacy: the room only counts anonymous visitors. No names, no messages, no accounts. What you type in the task field and your statistics stay on your device.",
+  "fx_priv": "Privacy: the live counter only counts anonymous visitors. In a private room, people with your link see only the nickname you choose and your study minutes. No chat, no accounts. Your task text stays on your device.",
   "fx_min_u": "min"
 });
 Object.assign(T.ru, {
+  "tm_title": "Учись с друзьями",
+  "tm_lead": "Создай закрытую комнату и отправь ссылку. Все, у кого есть ссылка, видят, кто учится прямо сейчас и сколько минут каждый проучился за неделю. Без чата.",
+  "tm_lead_in": "Все, у кого есть эта ссылка, могут войти и увидеть твой ник и минуты. Отправляй её только тем, кому доверяешь.",
+  "tm_invited": "Тебя пригласили в комнату для учёбы",
+  "tm_name": "Твой ник", "tm_create": "Создать комнату", "tm_join": "Войти в комнату",
+  "tm_invite": "Ссылка-приглашение", "tm_copy": "Скопировать ссылку", "tm_copied": "Скопировано!", "tm_tg": "Отправить в Telegram", "tm_leave": "Выйти из комнаты",
+  "tm_members": "В комнате", "tm_you": "ты", "tm_studying": "учится сейчас", "tm_online": "онлайн", "tm_offline": "не в сети",
+  "tm_today": "сегодня", "tm_week": "за неделю", "tm_empty": "Ждём друзей. Отправь им ссылку.",
+  "tm_full": "Эта комната заполнена (30 человек).", "tm_err": "Не удалось подключиться к комнате. Серверу может понадобиться минута, чтобы проснуться.", "tm_wait": "Подключаемся к комнате…",
+  "tm_text": "Учись со мной: заходи в мою комнату для учёбы",
   "go_t": "Теперь проверьте свои привычки", "go_d": "Это займёт около минуты, аккаунт не нужен.", "go_b": "Открыть предиктор →",
   "doc_title": "Комната фокуса | student-performance-predictor",
   "crumb": "КОМНАТА ФОКУСА",
@@ -364,10 +393,20 @@ Object.assign(T.ru, {
   "fx_bdone": "Перерыв закончился. Готов к новому раунду?",
   "fx_going": "Фокус. Убери телефон.",
   "fx_today": "Сегодня", "fx_min": "Минут учёбы", "fx_sessions": "Завершённых сессий", "fx_streak": "Дней подряд",
-  "fx_priv": "Приватность: комната считает только анонимных посетителей. Никаких имён, сообщений и аккаунтов. Текст задачи и твоя статистика хранятся только на твоём устройстве.",
+  "fx_priv": "Приватность: живой счётчик считает только анонимных посетителей. В закрытой комнате люди с твоей ссылкой видят только выбранный тобой ник и минуты учёбы. Без чата и аккаунтов. Текст задачи остаётся на твоём устройстве.",
   "fx_min_u": "мин"
 });
 Object.assign(T.uz, {
+  "tm_title": "Do'stlar bilan o'qing",
+  "tm_lead": "Yopiq xona yarating va havolani yuboring. Havolasi borlarning hammasi hozir kim o'qiyotganini va har bir kishi shu hafta necha daqiqa o'qiganini ko'radi. Chat yo'q.",
+  "tm_lead_in": "Bu havolasi borlarning hammasi kirib, laqabingiz va daqiqalaringizni ko'ra oladi. Uni faqat ishongan odamlaringizga yuboring.",
+  "tm_invited": "Sizni o'qish xonasiga taklif qilishdi",
+  "tm_name": "Laqabingiz", "tm_create": "Xona yaratish", "tm_join": "Xonaga kirish",
+  "tm_invite": "Taklif havolasi", "tm_copy": "Havolani nusxalash", "tm_copied": "Nusxalandi!", "tm_tg": "Telegramda yuborish", "tm_leave": "Xonadan chiqish",
+  "tm_members": "Xonada", "tm_you": "siz", "tm_studying": "hozir o'qiyapti", "tm_online": "onlayn", "tm_offline": "oflayn",
+  "tm_today": "bugun", "tm_week": "shu hafta", "tm_empty": "Do'stlar kutilmoqda. Havolani yuboring.",
+  "tm_full": "Bu xona to'lgan (30 kishi).", "tm_err": "Xonaga ulanib bo'lmadi. Serverning uyg'onishi bir daqiqa olishi mumkin.", "tm_wait": "Xonaga ulanmoqda…",
+  "tm_text": "Men bilan o'qing: o'qish xonamga kiring",
   "go_t": "Endi o'z odatlaringizni tekshiring", "go_d": "Taxminan bir daqiqa vaqt oladi, akkaunt shart emas.", "go_b": "Bashoratchini ochish →",
   "doc_title": "Fokus xonasi | student-performance-predictor",
   "crumb": "FOKUS XONASI",
@@ -384,7 +423,7 @@ Object.assign(T.uz, {
   "fx_bdone": "Tanaffus tugadi. Yana bir raundga tayyormisiz?",
   "fx_going": "Fokus. Telefonni chetga qo'ying.",
   "fx_today": "Bugun", "fx_min": "O'qilgan daqiqalar", "fx_sessions": "Tugagan sessiyalar", "fx_streak": "Ketma-ket kunlar",
-  "fx_priv": "Maxfiylik: xona faqat anonim tashrif buyuruvchilarni sanaydi. Ism, xabar va akkaunt yo'q. Vazifa matni va statistikangiz faqat qurilmangizda saqlanadi.",
+  "fx_priv": "Maxfiylik: jonli hisoblagich faqat anonim tashrif buyuruvchilarni sanaydi. Yopiq xonada havolangiz borlar faqat siz tanlagan laqab va o'qish daqiqalaringizni ko'radi. Chat va akkaunt yo'q. Vazifa matni qurilmangizda qoladi.",
   "fx_min_u": "daq"
 });
 </script>
@@ -546,6 +585,7 @@ Object.assign(T.uz, {
   $("fxTask").oninput = function () { try { localStorage.setItem("fx_task", this.value); } catch (e) {} };
 
   function ping() {
+    teamPing();
     var studying = running && mode === "focus";
     if (document.hidden && !studying) return;
     try {
@@ -559,6 +599,120 @@ Object.assign(T.uz, {
     } catch (e) { net = "off"; renderNet(); }
   }
 
+
+  /* ---------- private study room by link ---------- */
+  var TEAM_ALPHA = "abcdefghjkmnpqrstuvwxyz23456789";
+  var team = null, teamMembers = null, teamErr = "", invite = null, copyMsg = false;
+  try { team = JSON.parse(localStorage.getItem("fx_team") || "null"); if (team && !/^[a-z0-9]{4,12}$/.test(team.code || "")) team = null; } catch (e) { team = null; }
+  try { var qm = /[?&]room=([a-zA-Z0-9]{4,12})/.exec(location.search); if (qm) invite = qm[1].toLowerCase(); } catch (e) {}
+  if (invite && team && team.code === invite) invite = null;
+  var tmSid = null;
+  try { tmSid = localStorage.getItem("fx_sid"); if (!tmSid) { tmSid = "u" + Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem("fx_sid", tmSid); } } catch (e) { tmSid = "u" + Math.random().toString(36).slice(2) + Date.now().toString(36); }
+  var savedName = ""; try { savedName = localStorage.getItem("fx_name") || ""; } catch (e) {}
+
+  function weekMinutes() {
+    var d = new Date(), dow = (d.getDay() + 6) % 7, sec = 0, i;
+    for (i = 0; i <= dow; i++) { var x = new Date(); x.setDate(x.getDate() - i); sec += stats.days[dayKey(x)] || 0; }
+    return Math.floor(sec / 60);
+  }
+  function todayMinutes() { return Math.floor((stats.days[dayKey()] || 0) / 60); }
+  function cleanName(v) { return (v || "").replace(/[\u0000-\u001f<>&"'`]/g, "").trim().slice(0, 20); }
+  function teamLink() { return location.origin + "/focus?room=" + team.code; }
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
+
+  function teamPing() {
+    if (!team) return;
+    try {
+      fetch(window.API + "/api/team/ping", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: team.code, sid: tmSid, name: team.name, studying: running && mode === "focus", today_min: todayMinutes(), week_min: weekMinutes() })
+      }).then(function (r) {
+        if (r.status === 409) throw new Error("full");
+        if (!r.ok) throw new Error("err");
+        return r.json();
+      }).then(function (d) { teamMembers = d.members; teamErr = ""; renderTeam(); })
+        .catch(function (e) { teamErr = e.message === "full" ? "tm_full" : "tm_err"; renderTeam(); });
+    } catch (e) { teamErr = "tm_err"; renderTeam(); }
+  }
+
+  function joinTeam(code, name) {
+    name = cleanName(name) || "Student";
+    try { localStorage.setItem("fx_name", name); } catch (e) {}
+    savedName = name; team = { code: code, name: name }; invite = null; teamMembers = null; teamErr = "";
+    try { localStorage.setItem("fx_team", JSON.stringify(team)); history.replaceState(null, "", "/focus"); } catch (e) {}
+    renderTeam(); teamPing();
+  }
+  function leaveTeam() {
+    team = null; teamMembers = null; teamErr = "";
+    try { localStorage.removeItem("fx_team"); } catch (e) {}
+    renderTeam();
+  }
+  function newCode() { var c = ""; for (var i = 0; i < 6; i++) c += TEAM_ALPHA.charAt(Math.floor(Math.random() * TEAM_ALPHA.length)); return c; }
+
+  function copyLink(btn) {
+    var link = teamLink();
+    function done() { copyMsg = true; btn.textContent = t("tm_copied"); setTimeout(function () { copyMsg = false; btn.textContent = t("tm_copy"); }, 1800); }
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(link).then(done, function () { fallbackCopy(link, done); }); return; }
+    } catch (e) {}
+    fallbackCopy(link, done);
+  }
+  function fallbackCopy(text, done) {
+    var ta = document.createElement("textarea"); ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); done(); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+
+  function renderTeam() {
+    var body = $("tmBody"); if (!body) return;
+    body.textContent = "";
+    var lead = $("tmLead");
+    if (!team) {
+      lead.textContent = invite ? t("tm_invited") : t("tm_lead");
+      var row = el("div", "tm-form");
+      var inp = el("input", "fx-task"); inp.id = "tmName"; inp.maxLength = 20; inp.placeholder = t("tm_name"); inp.value = savedName; inp.autocomplete = "off";
+      var go = el("button", "btn", invite ? t("tm_join") : t("tm_create"));
+      go.onclick = function () { joinTeam(invite || newCode(), inp.value); };
+      inp.onkeydown = function (ev) { if (ev.key === "Enter") go.click(); };
+      row.appendChild(inp); row.appendChild(go); body.appendChild(row);
+      return;
+    }
+    lead.textContent = t("tm_lead_in");
+    var inv = el("div", "tm-invite");
+    var lab = el("span", "tm-lab", t("tm_invite"));
+    var box = el("input", "tm-link"); box.readOnly = true; box.value = teamLink(); box.onfocus = function () { box.select(); };
+    var cp = el("button", "btn ghost", copyMsg ? t("tm_copied") : t("tm_copy")); cp.onclick = function () { copyLink(cp); };
+    var tg = el("a", "btn", t("tm_tg")); tg.target = "_blank"; tg.rel = "noopener";
+    tg.href = "https://t.me/share/url?url=" + encodeURIComponent(teamLink()) + "&text=" + encodeURIComponent(t("tm_text"));
+    inv.appendChild(lab); inv.appendChild(box); inv.appendChild(cp); inv.appendChild(tg); body.appendChild(inv);
+
+    body.appendChild(el("h4", "tm-sub", t("tm_members")));
+    if (teamErr) body.appendChild(el("p", "note", t(teamErr)));
+    if (!teamMembers) { if (!teamErr) body.appendChild(el("p", "note", t("tm_wait"))); }
+    else {
+      var list = el("div", "tm-rows");
+      teamMembers.forEach(function (m, i) {
+        var r = el("div", "tm-row" + (m.you ? " me" : ""));
+        r.appendChild(el("span", "tm-rank", String(i + 1)));
+        var st = el("span", "tm-dot" + (m.studying ? " on" : m.online ? " idle" : ""));
+        st.title = m.studying ? t("tm_studying") : m.online ? t("tm_online") : t("tm_offline");
+        r.appendChild(st);
+        var nm = el("span", "tm-name", m.name + (m.you ? " (" + t("tm_you") + ")" : ""));
+        var sub = el("small", "", m.studying ? t("tm_studying") : m.online ? t("tm_online") : t("tm_offline"));
+        var nc = el("span", "tm-nc"); nc.appendChild(nm); nc.appendChild(sub); r.appendChild(nc);
+        var mins = el("span", "tm-min"); var b = el("b", "", String(m.week_min)); mins.appendChild(b);
+        mins.appendChild(el("small", "", t("fx_min_u") + " " + t("tm_week")));
+        mins.appendChild(el("small", "", m.today_min + " " + t("fx_min_u") + " " + t("tm_today")));
+        r.appendChild(mins);
+        list.appendChild(r);
+      });
+      body.appendChild(list);
+      if (teamMembers.length < 2) body.appendChild(el("p", "note", t("tm_empty")));
+    }
+    var lv = el("button", "chip", t("tm_leave")); lv.style.marginTop = "16px"; lv.onclick = leaveTeam; body.appendChild(lv);
+  }
+
   setInterval(tick, 250);
   setInterval(ping, 20000);
   document.addEventListener("visibilitychange", function () { if (!document.hidden) { tick(); ping(); } });
@@ -566,8 +720,10 @@ Object.assign(T.uz, {
   window.onLang = function () {
     $("fxTask").placeholder = t("fx_task");
     render();
+    renderTeam();
   };
   render();
+  renderTeam();
   ping();
 })();
 </script>
