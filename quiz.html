@@ -1,0 +1,475 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#6c47e8">
+<title>Habits quiz | student-performance-predictor</title>
+<meta name="description" content="A short quiz about study habits: spaced study, sleep, phone use, attendance and goals, with a clear explanation after each answer.">
+<meta property="og:title" content="Habits quiz: what really works?">
+<meta property="og:description" content="Eight quick questions about study habits with explanations.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="student-performance-predictor">
+<meta property="og:url" content="https://student-performance-predictor-vert-chi.vercel.app/quiz">
+<meta property="og:image" content="https://student-performance-predictor-vert-chi.vercel.app/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://student-performance-predictor-vert-chi.vercel.app/og.png">
+<link rel="canonical" href="https://student-performance-predictor-vert-chi.vercel.app/quiz">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("theme")||"dark")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<nav id="nav"></nav>
+
+<main class="wrap">
+  <div class="phead">
+    <span class="crumb" data-i18n="crumb"></span>
+    <h1 data-i18n="qz_title"></h1>
+    <p class="lead" data-i18n="qz_lead"></p>
+  </div>
+
+  <section>
+    <div class="card" id="qbox" style="max-width:720px;margin:0 auto"></div>
+    <p class="note" style="text-align:center" data-i18n="qz_note"></p>
+  </section>
+
+  <div class="band">
+    <h2 data-i18n="go_t"></h2>
+    <p data-i18n="go_d"></p>
+    <a class="btn white" href="/predict" data-i18n="go_b"></a>
+  </div>
+</main>
+
+<footer id="foot"></footer>
+
+<script>
+/* Shared: dictionary, layout (nav + footer), theme, language */
+(function () {
+  var API = "https://student-performance-predictor-bas2.onrender.com";
+  window.API = API;
+
+  window.T = {
+    en: {
+      n_home: "Home", n_pred: "Predict", n_how: "How it works", n_imp: "Improve", n_about: "About", n_cta: "Analyze", n_quiz: "Quiz",
+      ft_tag: "Predict your exam score from your study habits and see what to change. A data science project from Tashkent.",
+      ft_pages: "PAGES", ft_proj: "PROJECT", ft_gh: "GitHub profile", ft_code: "Prediction server code", ft_web: "Website code",
+      ft_note: "An educational project. Predictions are estimates, not guarantees.",
+      lv_excellent: "Excellent", lv_verygood: "Very Good", lv_dev: "Developing", lv_need: "Needs Improvement",
+      o_Low: "Low", o_Medium: "Medium", o_High: "High", o_Yes: "Yes", o_No: "No",
+      o_Positive: "Positive", o_Neutral: "Neutral", o_Negative: "Negative", o_Near: "Near", o_Moderate: "Moderate", o_Far: "Far",
+      u_h: "h", u_d: "days"
+    },
+    ru: {
+      n_home: "Главная", n_pred: "Прогноз", n_how: "Как это работает", n_imp: "Улучшить", n_about: "О проекте", n_cta: "Анализировать", n_quiz: "Квиз",
+      ft_tag: "Прогнозируйте экзаменационный балл по учебным привычкам и узнайте, что менять. Проект по data science из Ташкента.",
+      ft_pages: "СТРАНИЦЫ", ft_proj: "ПРОЕКТ", ft_gh: "Профиль GitHub", ft_code: "Код сервера прогноза", ft_web: "Код сайта",
+      ft_note: "Учебный проект. Прогнозы приблизительные и не гарантируют результат.",
+      lv_excellent: "Отлично", lv_verygood: "Очень хорошо", lv_dev: "Развивается", lv_need: "Нужно улучшить",
+      o_Low: "Низкий", o_Medium: "Средний", o_High: "Высокий", o_Yes: "Да", o_No: "Нет",
+      o_Positive: "Положит.", o_Neutral: "Нейтр.", o_Negative: "Отрицат.", o_Near: "Близко", o_Moderate: "Средне", o_Far: "Далеко",
+      u_h: "ч", u_d: "дн."
+    }
+  };
+
+  window.T.uz = {
+  "n_home": "Bosh sahifa",
+  "n_pred": "Bashorat",
+  "n_how": "Qanday ishlaydi",
+  "n_imp": "Yaxshilash",
+  "n_about": "Loyiha haqida",
+  "n_cta": "Tahlil qilish",
+  "n_quiz": "Viktorina",
+  "ft_tag": "O'quv odatlaringiz asosida imtihon balingizni bashorat qiling va nimani o'zgartirish kerakligini bilib oling. Toshkentdan data science loyihasi.",
+  "ft_pages": "SAHIFALAR",
+  "ft_proj": "LOYIHA",
+  "ft_gh": "GitHub profili",
+  "ft_code": "Bashorat serveri kodi",
+  "ft_web": "Sayt kodi",
+  "ft_note": "O'quv loyihasi. Bashoratlar taxminiy bo'lib, natijani kafolatlamaydi.",
+  "lv_excellent": "A'lo",
+  "lv_verygood": "Juda yaxshi",
+  "lv_dev": "Rivojlanmoqda",
+  "lv_need": "Yaxshilash kerak",
+  "o_Low": "Past",
+  "o_Medium": "O'rta",
+  "o_High": "Yuqori",
+  "o_Yes": "Ha",
+  "o_No": "Yo'q",
+  "o_Positive": "Ijobiy",
+  "o_Neutral": "Neytral",
+  "o_Negative": "Salbiy",
+  "o_Near": "Yaqin",
+  "o_Moderate": "O'rtacha",
+  "o_Far": "Uzoq",
+  "u_h": "soat",
+  "u_d": "kun"
+};
+
+  var lang = "ru";
+  try {
+    var sl = localStorage.getItem("lang");
+    var nl = (navigator.language || "").slice(0, 2);
+    lang = (sl === "ru" || sl === "en" || sl === "uz") ? sl : (nl === "ru" ? "ru" : nl === "uz" ? "uz" : "en");
+  } catch (e) {}
+
+  window.getLang = function () { return lang; };
+  window.t = function (k) {
+    var d = window.T[lang];
+    if (d[k] !== undefined) return d[k];
+    if (window.T.en[k] !== undefined) return window.T.en[k];
+    return k;
+  };
+  window.$ = function (s) { return document.querySelector(s); };
+
+  window.mascot = function (mood) {
+    var think = mood === "think", cheer = mood === "cheer";
+    var px = think ? [74, 104, 114, 104] : [80, 111, 120, 111];
+    var lw = cheer ? 62 : 8, rw = cheer ? -62 : -8;
+    return '<svg class="mascot" viewBox="0 0 200 200" role="img" aria-label="Sovi">' +
+      '<g transform="rotate(' + lw + ' 56 100)"><ellipse cx="44" cy="128" rx="15" ry="36" fill="#6d49e0"/></g>' +
+      '<g transform="rotate(' + rw + ' 144 100)"><ellipse cx="156" cy="128" rx="15" ry="36" fill="#6d49e0"/></g>' +
+      '<ellipse cx="100" cy="124" rx="60" ry="64" fill="#8b6cff"/>' +
+      '<ellipse cx="100" cy="148" rx="36" ry="38" fill="#efe9ff"/>' +
+      '<path d="M84 140q8 8 16 0M100 140q8 8 16 0M92 158q8 8 16 0" stroke="#c9b9ff" stroke-width="3" fill="none" stroke-linecap="round"/>' +
+      '<circle cx="76" cy="108" r="19" fill="#fff"/><circle cx="124" cy="108" r="19" fill="#fff"/>' +
+      '<circle cx="' + px[0] + '" cy="' + px[1] + '" r="9" fill="#2b1b6b"/><circle cx="' + px[2] + '" cy="' + px[3] + '" r="9" fill="#2b1b6b"/>' +
+      '<circle cx="' + (px[0] + 3) + '" cy="' + (px[1] - 3) + '" r="3" fill="#fff"/><circle cx="' + (px[2] + 3) + '" cy="' + (px[3] - 3) + '" r="3" fill="#fff"/>' +
+      (think ? '<path d="M106 88q14-8 28 0" stroke="#2b1b6b" stroke-width="4" fill="none" stroke-linecap="round"/>' : "") +
+      '<path d="M92 122 L108 122 L100 136 Z" fill="#ffd166"/>' +
+      '<polygon points="100,30 162,56 100,82 38,56" fill="#2b1b6b"/>' +
+      '<path d="M66 68 V84 Q100 100 134 84 V68 L100 82 Z" fill="#3b2a8f"/>' +
+      '<path d="M154 59 V88" stroke="#ffd166" stroke-width="4" stroke-linecap="round"/><circle cx="154" cy="92" r="6" fill="#ffd166"/>' +
+      '<ellipse cx="82" cy="190" rx="12" ry="6" fill="#ffd166"/><ellipse cx="118" cy="190" rx="12" ry="6" fill="#ffd166"/>' +
+      (cheer ? '<path d="M28 44l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" fill="#ffd166"/><path d="M176 30l2 6 6 2-6 2-2 6-2-6-6-2 6-2z" fill="#ffd166"/>' : "") +
+      (think ? '<text x="170" y="48" font-size="34" font-weight="800" fill="#ffd166" font-family="Inter,Arial,sans-serif">?</text>' : "") +
+      "</svg>";
+  };
+
+  function buildLayout() {
+    var nav = document.getElementById("nav");
+    if (nav) {
+      nav.innerHTML =
+        '<a class="logo" href="/"><img src="/favicon.svg" alt="" width="30" height="30"><span>student-performance-predictor</span></a>' +
+        '<div class="links" id="links">' +
+        '<a href="/" data-i18n="n_home"></a>' +
+        '<a href="/predict" data-i18n="n_pred"></a>' +
+        '<a href="/quiz" data-i18n="n_quiz"></a>' +
+        '<a href="/how-it-works" data-i18n="n_how"></a>' +
+        '<a href="/improve" data-i18n="n_imp"></a>' +
+        '<a href="/about" data-i18n="n_about"></a></div>' +
+        '<div class="tools">' +
+        '<button class="chip" id="theme" aria-label="Theme"></button>' +
+        '<select class="chip" id="lang" aria-label="Language"><option value="ru">RU</option><option value="en">EN</option><option value="uz">UZ</option></select>' +
+        '<a class="btn small" href="/predict" data-i18n="n_cta"></a>' +
+        '<button class="chip burger" id="burger" aria-label="Menu">☰</button></div>';
+      var path = location.pathname.replace(/\.html$/, "").replace(/\/+$/, "") || "/";
+      nav.querySelectorAll(".links a").forEach(function (a) {
+        if (a.getAttribute("href") === path) a.classList.add("cur");
+      });
+    }
+    var foot = document.getElementById("foot");
+    if (foot) {
+      foot.innerHTML =
+        '<div class="wrap"><div class="foot-grid">' +
+        '<div><a class="logo" href="/" style="padding:0"><img src="/favicon.svg" alt="" width="30" height="30"><span style="display:inline">student-performance-predictor</span></a>' +
+        '<p style="margin-top:12px;max-width:360px" data-i18n="ft_tag"></p></div>' +
+        '<div><h5 data-i18n="ft_pages"></h5>' +
+        '<a href="/" data-i18n="n_home"></a><a href="/predict" data-i18n="n_pred"></a>' +
+        '<a href="/quiz" data-i18n="n_quiz"></a><a href="/how-it-works" data-i18n="n_how"></a><a href="/improve" data-i18n="n_imp"></a>' +
+        '<a href="/about" data-i18n="n_about"></a></div>' +
+        '<div><h5 data-i18n="ft_proj"></h5>' +
+        '<a href="https://github.com/umarkhodjaev-hash" target="_blank" rel="noopener" data-i18n="ft_gh"></a>' +
+        '<a href="https://github.com/umarkhodjaev-hash/student-performance-predictor" target="_blank" rel="noopener" data-i18n="ft_code"></a>' +
+        '<a href="https://github.com/umarkhodjaev-hash/student-performance-web" target="_blank" rel="noopener" data-i18n="ft_web"></a></div>' +
+        '</div><div class="copy">© <span id="yr"></span> student-performance-predictor · Umar<br><span data-i18n="ft_note"></span></div></div>';
+      var y = document.getElementById("yr");
+      if (y) y.textContent = new Date().getFullYear();
+    }
+  }
+
+  function applyLang() {
+    document.documentElement.lang = lang;
+    var d = window.T[lang];
+    if (d.doc_title) document.title = d.doc_title;
+    document.querySelectorAll("[data-i18n]").forEach(function (e) { e.textContent = window.t(e.getAttribute("data-i18n")); });
+    document.querySelectorAll("[data-mascot]").forEach(function (e) { e.innerHTML = window.mascot(e.getAttribute("data-mascot")); });
+    var lb = document.getElementById("lang");
+    if (lb) lb.value = lang;
+    if (window.onLang) window.onLang();
+  }
+  window.applyLang = applyLang;
+
+  function setTheme(m) {
+    document.documentElement.setAttribute("data-theme", m);
+    var b = document.getElementById("theme");
+    if (b) b.textContent = m === "dark" ? "☀️" : "🌙";
+    try { localStorage.setItem("theme", m); } catch (e) {}
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    buildLayout();
+    var saved = null;
+    try { saved = localStorage.getItem("theme"); } catch (e) {}
+    setTheme(saved || "dark");
+    document.getElementById("theme").onclick = function () {
+      setTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
+    };
+    document.getElementById("lang").onchange = function () {
+      lang = this.value;
+      try { localStorage.setItem("lang", lang); } catch (e) {}
+      applyLang();
+    };
+    document.getElementById("burger").onclick = function () {
+      document.getElementById("links").classList.toggle("open");
+    };
+    applyLang();
+    /* wake the free Render server in the background */
+    try { fetch(API + "/robots.txt", { mode: "no-cors" }).catch(function () {}); } catch (e) {}
+  });
+})();
+
+</script>
+<script>
+Object.assign(T.en, {
+  "doc_title": "Habits quiz | student-performance-predictor",
+  "crumb": "QUIZ",
+  "qz_title": "Habits quiz: what really works?",
+  "qz_lead": "Eight quick questions about study habits, with a short explanation after each answer. Sovi will cheer you on.",
+  "qz_note": "These are general study tips, not a test of your ability.",
+  "qz_prog": "Question {n} of {m}",
+  "qz_next": "Next →",
+  "qz_finish": "See result",
+  "qz_right": "Correct!",
+  "qz_wrong": "Not quite.",
+  "qz_res_t": "Your result",
+  "qz_score": "{s} out of {m}",
+  "qz_t1": "Great habits! You already know what works. Now check how your own routine looks.",
+  "qz_t2": "Good knowledge. A couple of habits can still be improved.",
+  "qz_t3": "A solid start. Read the improve page and try one new habit this week.",
+  "qz_t4": "No worries, this is exactly what the project is for. Start with the improve page.",
+  "qz_again": "Try again",
+  "qz_imp": "Improve page →",
+  "go_t": "Now test your own habits",
+  "go_d": "It takes about a minute and needs no account.",
+  "go_b": "Open the predictor →",
+  "q1": "You have an exam in a week. Which plan usually works better for remembering the material?",
+  "q1a": "Study everything the night before",
+  "q1b": "Study a little each day and review",
+  "q1c": "Read it all once and hope for the best",
+  "q1e": "Spreading study over several days gives your brain time to consolidate what you learn. Cramming the night before is usually forgotten quickly.",
+  "q2": "It's the night before an exam. What helps you most?",
+  "q2a": "Study all night with lots of coffee",
+  "q2b": "Sleep only 4 hours and wake up early to study",
+  "q2c": "Review briefly, then get a normal night of sleep",
+  "q2e": "Sleep supports memory and focus. Skipping it usually costs more than the extra hours of studying give back.",
+  "q3": "Which study method is usually the most effective?",
+  "q3a": "Test yourself without looking at your notes",
+  "q3b": "Re-read your notes several times",
+  "q3c": "Highlight as much text as possible",
+  "q3e": "Trying to recall information (practice questions, flashcards) strengthens memory more than passive re-reading or highlighting.",
+  "q4": "Where should your phone be while you study?",
+  "q4a": "Face up on the desk, on silent",
+  "q4b": "In another room or in your bag",
+  "q4c": "In your hand, for music and quick checks",
+  "q4e": "Even a phone you don't touch can distract you. Out of sight makes it easier to focus.",
+  "q5": "You missed a class. What is the best move?",
+  "q5a": "Skip it, you'll catch up before the exam",
+  "q5b": "Wait and ask the teacher at the end of the term",
+  "q5c": "Get the notes the same day and review them within two days",
+  "q5e": "Small gaps are easy to fix early and hard to fix later. A quick catch-up keeps the next lesson understandable.",
+  "q6": "How long should one focused study block be?",
+  "q6a": "About 25 to 50 minutes, then a short break",
+  "q6b": "Four hours without stopping",
+  "q6c": "Five minutes, then switch tasks",
+  "q6e": "Focus fades over time. Short focused blocks with breaks keep quality high and are easier to repeat every day.",
+  "q7": "Why does attending class matter so much?",
+  "q7a": "It doesn't, the textbook covers everything",
+  "q7b": "Only because the teacher takes attendance",
+  "q7c": "The explanation is free, happens once, and you can ask questions",
+  "q7e": "Class is the cheapest study time you have: you get the explanation and can ask questions right away.",
+  "q8": "Which goal is most likely to help you improve?",
+  "q8a": "I will study more",
+  "q8b": "This week I will do two 40-minute blocks of math, on Monday and Thursday",
+  "q8c": "I will start when I feel motivated",
+  "q8e": "Specific, small, scheduled goals are easier to act on than vague ones. Motivation often follows action, not the other way around."
+});
+Object.assign(T.ru, {
+  "doc_title": "Квиз по привычкам | student-performance-predictor",
+  "crumb": "КВИЗ",
+  "qz_title": "Квиз по привычкам: что действительно работает?",
+  "qz_lead": "Восемь быстрых вопросов об учебных привычках, после каждого ответа короткое объяснение. Сови будет болеть за вас.",
+  "qz_note": "Это общие учебные советы, а не проверка ваших способностей.",
+  "qz_prog": "Вопрос {n} из {m}",
+  "qz_next": "Дальше →",
+  "qz_finish": "Показать результат",
+  "qz_right": "Верно!",
+  "qz_wrong": "Не совсем.",
+  "qz_res_t": "Ваш результат",
+  "qz_score": "{s} из {m}",
+  "qz_t1": "Отличные привычки! Вы уже знаете, что работает. Теперь посмотрите на свою рутину.",
+  "qz_t2": "Хорошие знания. Пару привычек ещё можно улучшить.",
+  "qz_t3": "Хорошее начало. Загляните на страницу «Улучшить» и попробуйте одну новую привычку на этой неделе.",
+  "qz_t4": "Ничего страшного, для этого и сделан проект. Начните со страницы «Улучшить».",
+  "qz_again": "Пройти ещё раз",
+  "qz_imp": "Страница «Улучшить» →",
+  "go_t": "Теперь проверьте свои привычки",
+  "go_d": "Это займёт около минуты, аккаунт не нужен.",
+  "go_b": "Открыть предиктор →",
+  "q1": "Экзамен через неделю. Какой план обычно лучше работает для запоминания материала?",
+  "q1a": "Выучить всё в ночь перед экзаменом",
+  "q1b": "Понемногу каждый день и повторять",
+  "q1c": "Прочитать всё один раз и надеяться на лучшее",
+  "q1e": "Учёба, распределённая на несколько дней, даёт мозгу время закрепить материал. Зубрёжка в последнюю ночь обычно быстро забывается.",
+  "q2": "Ночь перед экзаменом. Что поможет больше всего?",
+  "q2a": "Заниматься всю ночь с кофе",
+  "q2b": "Поспать 4 часа и встать пораньше заниматься",
+  "q2c": "Коротко повторить и нормально выспаться",
+  "q2e": "Сон помогает памяти и концентрации. Его отсутствие обычно стоит дороже, чем дают лишние часы учёбы.",
+  "q3": "Какой способ учёбы обычно самый эффективный?",
+  "q3a": "Проверять себя, не глядя в конспект",
+  "q3b": "Несколько раз перечитывать конспект",
+  "q3c": "Выделять маркером как можно больше текста",
+  "q3e": "Попытка вспомнить информацию (вопросы, карточки) укрепляет память сильнее, чем пассивное перечитывание или выделение.",
+  "q4": "Где должен лежать телефон, пока вы учитесь?",
+  "q4a": "На столе экраном вверх, без звука",
+  "q4b": "В другой комнате или в сумке",
+  "q4c": "В руке, для музыки и быстрых проверок",
+  "q4e": "Даже телефон, к которому вы не прикасаетесь, может отвлекать. Когда его не видно, легче сосредоточиться.",
+  "q5": "Вы пропустили занятие. Что лучше всего сделать?",
+  "q5a": "Ничего, наверстаю перед экзаменом",
+  "q5b": "Подождать и спросить учителя в конце четверти",
+  "q5c": "Взять конспект в тот же день и повторить его за два дня",
+  "q5e": "Небольшие пробелы легко закрыть сразу и трудно закрыть потом. Быстрое наверстывание помогает понимать следующий урок.",
+  "q6": "Сколько должен длиться один сфокусированный блок учёбы?",
+  "q6a": "Около 25–50 минут, потом короткий перерыв",
+  "q6b": "Четыре часа без остановки",
+  "q6c": "Пять минут, а потом другое занятие",
+  "q6e": "Концентрация со временем падает. Короткие блоки с перерывами сохраняют качество, и их проще повторять каждый день.",
+  "q7": "Почему так важно ходить на занятия?",
+  "q7a": "Не важно, всё есть в учебнике",
+  "q7b": "Только потому, что учитель отмечает посещаемость",
+  "q7c": "Объяснение бесплатное, происходит один раз, и можно задать вопрос",
+  "q7e": "Занятие — самое дешёвое время учёбы: вы получаете объяснение и сразу можете задать вопросы.",
+  "q8": "Какая цель вероятнее всего поможет вам улучшиться?",
+  "q8a": "Я буду больше учиться",
+  "q8b": "На этой неделе сделаю два блока по 40 минут по математике, в понедельник и четверг",
+  "q8c": "Начну, когда почувствую мотивацию",
+  "q8e": "Конкретные небольшие цели с расписанием проще выполнять, чем расплывчатые. Мотивация часто приходит после действия, а не до него."
+});
+Object.assign(T.uz, {
+  "doc_title": "Odatlar viktorinasi | student-performance-predictor",
+  "crumb": "VIKTORINA",
+  "qz_title": "Odatlar viktorinasi: nima haqiqatan ishlaydi?",
+  "qz_lead": "O'quv odatlari haqida sakkizta tezkor savol, har bir javobdan keyin qisqa tushuntirish. Sovi sizni qo'llab-quvvatlaydi.",
+  "qz_note": "Bu umumiy o'quv maslahatlari, qobiliyatingizni tekshirish emas.",
+  "qz_prog": "{m} tadan {n}-savol",
+  "qz_next": "Keyingi →",
+  "qz_finish": "Natijani ko'rish",
+  "qz_right": "To'g'ri!",
+  "qz_wrong": "Unchalik emas.",
+  "qz_res_t": "Sizning natijangiz",
+  "qz_score": "{m} dan {s}",
+  "qz_t1": "Ajoyib odatlar! Siz nima ishlashini allaqachon bilasiz. Endi o'z tartibingizni tekshirib ko'ring.",
+  "qz_t2": "Yaxshi bilim. Bir-ikkita odatni hali yaxshilash mumkin.",
+  "qz_t3": "Yaxshi boshlanish. «Yaxshilash» sahifasini o'qing va shu hafta bitta yangi odatni sinab ko'ring.",
+  "qz_t4": "Xavotir olmang, loyiha aynan shu uchun yaratilgan. «Yaxshilash» sahifasidan boshlang.",
+  "qz_again": "Qaytadan topshirish",
+  "qz_imp": "«Yaxshilash» sahifasi →",
+  "go_t": "Endi o'z odatlaringizni tekshiring",
+  "go_d": "Taxminan bir daqiqa vaqt oladi, akkaunt shart emas.",
+  "go_b": "Bashoratchini ochish →",
+  "q1": "Imtihonga bir hafta qoldi. Materialni eslab qolish uchun qaysi reja odatda yaxshiroq ishlaydi?",
+  "q1a": "Hammasini imtihondan oldingi kechasi o'qish",
+  "q1b": "Har kuni ozdan o'qib, takrorlab borish",
+  "q1c": "Hammasini bir marta o'qib, omadga umid qilish",
+  "q1e": "O'qishni bir necha kunga yoyish miyaga o'rganganlarni mustahkamlash uchun vaqt beradi. Oxirgi kechadagi yodlash odatda tez unutiladi.",
+  "q2": "Imtihondan oldingi kecha. Eng ko'p nima yordam beradi?",
+  "q2a": "Kofe ichib tuni bilan o'qish",
+  "q2b": "4 soat uxlab, erta turib o'qish",
+  "q2c": "Qisqacha takrorlab, odatdagidek uxlash",
+  "q2e": "Uyqu xotira va diqqatga yordam beradi. Uni qoldirish odatda qo'shimcha o'qish soatlari beradigan foydadan qimmatroq tushadi.",
+  "q3": "Qaysi o'qish usuli odatda eng samarali?",
+  "q3a": "Konspektga qaramasdan o'zingizni tekshirish",
+  "q3b": "Konspektni bir necha marta qayta o'qish",
+  "q3c": "Iloji boricha ko'proq matnni belgilab chiqish",
+  "q3e": "Ma'lumotni eslashga urinish (savollar, kartochkalar) xotirani passiv qayta o'qish yoki belgilashdan ko'ra ko'proq mustahkamlaydi.",
+  "q4": "O'qiyotganingizda telefon qayerda bo'lishi kerak?",
+  "q4a": "Stol ustida ekrani yuqoriga, ovozsiz",
+  "q4b": "Boshqa xonada yoki sumkada",
+  "q4c": "Qo'lda, musiqa va tezkor tekshiruvlar uchun",
+  "q4e": "Tegmaydigan telefon ham chalg'itishi mumkin. Ko'zdan uzoq bo'lsa, diqqatni jamlash osonroq.",
+  "q5": "Darsni qoldirdingiz. Eng yaxshi harakat qaysi?",
+  "q5a": "Hech narsa, imtihongacha yetib olaman",
+  "q5b": "Kutib, chorak oxirida o'qituvchidan so'rayman",
+  "q5c": "Konspektni o'sha kuni olib, ikki kun ichida takrorlayman",
+  "q5e": "Kichik bo'shliqlarni erta yopish oson, keyin esa qiyin. Tez yetib olish keyingi darsni tushunishga yordam beradi.",
+  "q6": "Bitta diqqatli o'qish bloki qancha davom etishi kerak?",
+  "q6a": "Taxminan 25–50 daqiqa, keyin qisqa tanaffus",
+  "q6b": "To'xtamasdan to'rt soat",
+  "q6c": "Besh daqiqa, keyin boshqa ishga o'tish",
+  "q6e": "Diqqat vaqt o'tishi bilan susayadi. Tanaffusli qisqa bloklar sifatni saqlaydi va har kuni takrorlash osonroq.",
+  "q7": "Nima uchun darslarga qatnashish shunchalik muhim?",
+  "q7a": "Muhim emas, hammasi darslikda bor",
+  "q7b": "Faqat o'qituvchi davomatni belgilagani uchun",
+  "q7c": "Tushuntirish bepul, bir marta bo'ladi va savol berish mumkin",
+  "q7e": "Dars eng arzon o'qish vaqti: tushuntirishni olasiz va darhol savol bera olasiz.",
+  "q8": "Qaysi maqsad sizga yaxshilanishga ko'proq yordam beradi?",
+  "q8a": "Ko'proq o'qiyman",
+  "q8b": "Shu hafta dushanba va payshanba kunlari matematikadan 40 daqiqalik ikkita blok bajaraman",
+  "q8c": "Motivatsiya paydo bo'lganda boshlayman",
+  "q8e": "Aniq, kichik va rejalashtirilgan maqsadlarga amal qilish noaniq maqsadlarga qaraganda osonroq. Motivatsiya ko'pincha harakatdan keyin keladi."
+});
+
+var QN = 8, QCORRECT = [1, 2, 0, 1, 2, 0, 2, 1], qi = 0, score = 0, picked = null;
+
+function qRender() {
+  var box = document.getElementById("qbox");
+  if (qi >= QN) { qResult(box); return; }
+  var n = qi + 1, ok = QCORRECT[qi];
+  var h = '<div class="qprog"><i style="width:' + (qi / QN * 100) + '%"></i></div>' +
+    '<p class="note" style="margin:0 0 8px">' + t("qz_prog").replace("{n}", n).replace("{m}", QN) + "</p>" +
+    '<h2 style="font-size:22px;margin-bottom:16px">' + t("q" + n) + "</h2>";
+  ["a", "b", "c"].forEach(function (k, i) {
+    var cl = "qopt";
+    if (picked !== null) cl += i === ok ? " ok" : i === picked ? " bad" : "";
+    h += '<button class="' + cl + '" data-i="' + i + '"' + (picked !== null ? " disabled" : "") + ">" + t("q" + n + k) + "</button>";
+  });
+  if (picked !== null) {
+    h += '<div class="qexp"><b>' + (picked === ok ? t("qz_right") : t("qz_wrong")) + "</b> " + t("q" + n + "e") + "</div>" +
+      '<button class="btn" id="qnext">' + (qi === QN - 1 ? t("qz_finish") : t("qz_next")) + "</button>";
+  }
+  box.innerHTML = h;
+  box.querySelectorAll(".qopt").forEach(function (b) {
+    b.onclick = function () {
+      if (picked !== null) return;
+      picked = +b.getAttribute("data-i");
+      if (picked === QCORRECT[qi]) score++;
+      qRender();
+    };
+  });
+  var nx = document.getElementById("qnext");
+  if (nx) nx.onclick = function () { qi++; picked = null; qRender(); window.scrollTo({ top: 0, behavior: "smooth" }); };
+}
+
+function qResult(box) {
+  var tier = score >= 7 ? 1 : score >= 5 ? 2 : score >= 3 ? 3 : 4;
+  var mood = tier === 1 ? "cheer" : tier === 4 ? "think" : "happy";
+  box.innerHTML = '<div class="qres"><div class="mres">' + mascot(mood) + "</div>" +
+    '<p class="note" style="margin:0">' + t("qz_res_t") + "</p>" +
+    '<div class="big">' + t("qz_score").replace("{s}", score).replace("{m}", QN) + "</div>" +
+    '<p style="max-width:460px;margin:0 auto 22px">' + t("qz_t" + tier) + "</p>" +
+    '<div class="cta" style="justify-content:center"><button class="btn ghost" id="qagain">' + t("qz_again") + '</button><a class="btn" href="/improve">' + t("qz_imp") + "</a></div></div>";
+  document.getElementById("qagain").onclick = function () { qi = 0; score = 0; picked = null; qRender(); };
+}
+
+window.onLang = qRender;
+</script>
+</body>
+</html>

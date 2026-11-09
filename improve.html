@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#6c47e8">
 <title>How to improve | student-performance-predictor</title>
 <meta name="description" content="Practical study tips for routine, attendance, sleep, motivation, environment and balance, plus a 7-day starter plan.">
 <meta property="og:title" content="How to improve your academic performance">
@@ -62,7 +63,7 @@
 
   window.T = {
     en: {
-      n_home: "Home", n_pred: "Predict", n_how: "How it works", n_imp: "Improve", n_about: "About", n_cta: "Analyze",
+      n_home: "Home", n_pred: "Predict", n_how: "How it works", n_imp: "Improve", n_about: "About", n_cta: "Analyze", n_quiz: "Quiz",
       ft_tag: "Predict your exam score from your study habits and see what to change. A data science project from Tashkent.",
       ft_pages: "PAGES", ft_proj: "PROJECT", ft_gh: "GitHub profile", ft_code: "Prediction server code", ft_web: "Website code",
       ft_note: "An educational project. Predictions are estimates, not guarantees.",
@@ -72,7 +73,7 @@
       u_h: "h", u_d: "days"
     },
     ru: {
-      n_home: "Главная", n_pred: "Прогноз", n_how: "Как это работает", n_imp: "Улучшить", n_about: "О проекте", n_cta: "Анализировать",
+      n_home: "Главная", n_pred: "Прогноз", n_how: "Как это работает", n_imp: "Улучшить", n_about: "О проекте", n_cta: "Анализировать", n_quiz: "Квиз",
       ft_tag: "Прогнозируйте экзаменационный балл по учебным привычкам и узнайте, что менять. Проект по data science из Ташкента.",
       ft_pages: "СТРАНИЦЫ", ft_proj: "ПРОЕКТ", ft_gh: "Профиль GitHub", ft_code: "Код сервера прогноза", ft_web: "Код сайта",
       ft_note: "Учебный проект. Прогнозы приблизительные и не гарантируют результат.",
@@ -90,6 +91,7 @@
   "n_imp": "Yaxshilash",
   "n_about": "Loyiha haqida",
   "n_cta": "Tahlil qilish",
+  "n_quiz": "Viktorina",
   "ft_tag": "O'quv odatlaringiz asosida imtihon balingizni bashorat qiling va nimani o'zgartirish kerakligini bilib oling. Toshkentdan data science loyihasi.",
   "ft_pages": "SAHIFALAR",
   "ft_proj": "LOYIHA",
@@ -132,6 +134,30 @@
   };
   window.$ = function (s) { return document.querySelector(s); };
 
+  window.mascot = function (mood) {
+    var think = mood === "think", cheer = mood === "cheer";
+    var px = think ? [74, 104, 114, 104] : [80, 111, 120, 111];
+    var lw = cheer ? 62 : 8, rw = cheer ? -62 : -8;
+    return '<svg class="mascot" viewBox="0 0 200 200" role="img" aria-label="Sovi">' +
+      '<g transform="rotate(' + lw + ' 56 100)"><ellipse cx="44" cy="128" rx="15" ry="36" fill="#6d49e0"/></g>' +
+      '<g transform="rotate(' + rw + ' 144 100)"><ellipse cx="156" cy="128" rx="15" ry="36" fill="#6d49e0"/></g>' +
+      '<ellipse cx="100" cy="124" rx="60" ry="64" fill="#8b6cff"/>' +
+      '<ellipse cx="100" cy="148" rx="36" ry="38" fill="#efe9ff"/>' +
+      '<path d="M84 140q8 8 16 0M100 140q8 8 16 0M92 158q8 8 16 0" stroke="#c9b9ff" stroke-width="3" fill="none" stroke-linecap="round"/>' +
+      '<circle cx="76" cy="108" r="19" fill="#fff"/><circle cx="124" cy="108" r="19" fill="#fff"/>' +
+      '<circle cx="' + px[0] + '" cy="' + px[1] + '" r="9" fill="#2b1b6b"/><circle cx="' + px[2] + '" cy="' + px[3] + '" r="9" fill="#2b1b6b"/>' +
+      '<circle cx="' + (px[0] + 3) + '" cy="' + (px[1] - 3) + '" r="3" fill="#fff"/><circle cx="' + (px[2] + 3) + '" cy="' + (px[3] - 3) + '" r="3" fill="#fff"/>' +
+      (think ? '<path d="M106 88q14-8 28 0" stroke="#2b1b6b" stroke-width="4" fill="none" stroke-linecap="round"/>' : "") +
+      '<path d="M92 122 L108 122 L100 136 Z" fill="#ffd166"/>' +
+      '<polygon points="100,30 162,56 100,82 38,56" fill="#2b1b6b"/>' +
+      '<path d="M66 68 V84 Q100 100 134 84 V68 L100 82 Z" fill="#3b2a8f"/>' +
+      '<path d="M154 59 V88" stroke="#ffd166" stroke-width="4" stroke-linecap="round"/><circle cx="154" cy="92" r="6" fill="#ffd166"/>' +
+      '<ellipse cx="82" cy="190" rx="12" ry="6" fill="#ffd166"/><ellipse cx="118" cy="190" rx="12" ry="6" fill="#ffd166"/>' +
+      (cheer ? '<path d="M28 44l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" fill="#ffd166"/><path d="M176 30l2 6 6 2-6 2-2 6-2-6-6-2 6-2z" fill="#ffd166"/>' : "") +
+      (think ? '<text x="170" y="48" font-size="34" font-weight="800" fill="#ffd166" font-family="Inter,Arial,sans-serif">?</text>' : "") +
+      "</svg>";
+  };
+
   function buildLayout() {
     var nav = document.getElementById("nav");
     if (nav) {
@@ -140,6 +166,7 @@
         '<div class="links" id="links">' +
         '<a href="/" data-i18n="n_home"></a>' +
         '<a href="/predict" data-i18n="n_pred"></a>' +
+        '<a href="/quiz" data-i18n="n_quiz"></a>' +
         '<a href="/how-it-works" data-i18n="n_how"></a>' +
         '<a href="/improve" data-i18n="n_imp"></a>' +
         '<a href="/about" data-i18n="n_about"></a></div>' +
@@ -161,7 +188,7 @@
         '<p style="margin-top:12px;max-width:360px" data-i18n="ft_tag"></p></div>' +
         '<div><h5 data-i18n="ft_pages"></h5>' +
         '<a href="/" data-i18n="n_home"></a><a href="/predict" data-i18n="n_pred"></a>' +
-        '<a href="/how-it-works" data-i18n="n_how"></a><a href="/improve" data-i18n="n_imp"></a>' +
+        '<a href="/quiz" data-i18n="n_quiz"></a><a href="/how-it-works" data-i18n="n_how"></a><a href="/improve" data-i18n="n_imp"></a>' +
         '<a href="/about" data-i18n="n_about"></a></div>' +
         '<div><h5 data-i18n="ft_proj"></h5>' +
         '<a href="https://github.com/umarkhodjaev-hash" target="_blank" rel="noopener" data-i18n="ft_gh"></a>' +
@@ -178,6 +205,7 @@
     var d = window.T[lang];
     if (d.doc_title) document.title = d.doc_title;
     document.querySelectorAll("[data-i18n]").forEach(function (e) { e.textContent = window.t(e.getAttribute("data-i18n")); });
+    document.querySelectorAll("[data-mascot]").forEach(function (e) { e.innerHTML = window.mascot(e.getAttribute("data-mascot")); });
     var lb = document.getElementById("lang");
     if (lb) lb.value = lang;
     if (window.onLang) window.onLang();

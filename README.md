@@ -9,8 +9,11 @@ A personal data science project: answer 15 questions about your study routine, e
 - Exam score prediction (0 to 100) from 15 factors, computed by a real trained model
 - Insights and recommendations based on your answers
 - "What if" scenarios (e.g. +5 study hours, full attendance), each recalculated by the same model
-- 5 pages: Home, Predict, How it works, Improve, About
+- 6 pages: Home, Predict, Quiz, How it works, Improve, About
 - 3 languages: Russian, English, Uzbek
+- Habits quiz with explanations after each answer
+- Prediction history and side-by-side comparison, saved only in your own browser
+- Sovi, the study owl mascot
 - Light and dark theme, 3D graduation cap on the home page (Three.js)
 
 ## How it works
@@ -28,7 +31,8 @@ Browser (this repo, Vercel)  --JSON-->  FastAPI + scikit-learn model (Render)  -
 | File | Purpose |
 |---|---|
 | `index.html` | Home page with 3D cap |
-| `predict.html` | 3-step form and results |
+| `predict.html` | 3-step form, results, history and comparison |
+| `quiz.html` | Habits quiz |
 | `how-it-works.html` | Explanation, factors, limitations, FAQ |
 | `improve.html` | Study tips and 7-day plan |
 | `about.html` | About the project |

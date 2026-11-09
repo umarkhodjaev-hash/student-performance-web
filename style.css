@@ -189,3 +189,39 @@ select.chip option{background:var(--surface);color:var(--text)}
 
 /* logo image */
 .logo img{width:30px;height:30px;border-radius:9px;flex:none;display:block}
+
+/* mascot */
+.mascot{display:block;width:100%;height:auto;animation:bob 3.2s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@media(prefers-reduced-motion:reduce){.mascot{animation:none}}
+.meet{display:flex;gap:32px;align-items:center;flex-wrap:wrap}
+.meet-m{width:190px;flex:none;margin:0 auto}
+.mres{width:104px;margin:0 auto 8px}
+/* quiz */
+.qprog{height:6px;background:var(--line);border-radius:99px;overflow:hidden;margin-bottom:18px}
+.qprog i{display:block;height:100%;background:linear-gradient(90deg,var(--brand),var(--brand2));transition:width .3s}
+.qopt{display:block;width:100%;text-align:left;padding:14px 16px;margin-bottom:10px;border:1px solid var(--line);border-radius:14px;background:var(--surface);color:var(--text);font-size:15px;line-height:1.45;cursor:pointer;transition:border-color .2s,background .2s}
+.qopt:hover:not(:disabled){border-color:var(--brand)}
+.qopt:disabled{cursor:default}
+.qopt.ok{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,transparent)}
+.qopt.bad{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,transparent)}
+.qexp{margin:6px 0 16px;padding:14px 16px;border-radius:14px;background:color-mix(in srgb,var(--brand) 10%,transparent);font-size:15px}
+.qres{text-align:center}
+.qres .mres{width:150px}
+.qres .big{font-size:44px;font-weight:800;margin:8px 0}
+/* history */
+.hsvg{width:100%;height:auto;display:block}
+.hrow{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:14px;color:var(--muted)}
+.hrow b{color:var(--text);font-size:16px}
+.cmpsel{display:flex;gap:14px;flex-wrap:wrap;margin:10px 0 14px}
+.cmpsel label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+.hsel{padding:9px 10px;border-radius:10px;border:1px solid var(--line);background:var(--surface);color:var(--text);font-family:inherit;font-size:14px}
+table.cmp{width:100%;border-collapse:collapse;font-size:14px}
+table.cmp th,table.cmp td{padding:9px 6px;border-top:1px solid var(--line);text-align:left}
+table.cmp th{border-top:0;color:var(--muted);font-weight:600}
+
+/* nav fit with 6 links */
+nav .links{gap:16px}
+nav .links a{white-space:nowrap}
+@media(max-width:1180px){nav .tools .btn.small{display:none}}
+.mascot{overflow:visible}
