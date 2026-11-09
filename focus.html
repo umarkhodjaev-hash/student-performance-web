@@ -347,6 +347,13 @@ Object.assign(T.en, {
   "tm_today": "today", "tm_week": "this week", "tm_empty": "Waiting for friends. Send them the link.",
   "tm_full": "This room is full (30 people).", "tm_err": "Could not reach the room. It may take a minute for the server to wake up.", "tm_wait": "Connecting to the room…",
   "tm_text": "Study with me: join my study room",
+  "tm_create_class": "Create a class",
+  "tm_class_name": "Class name, e.g. 10-A",
+  "tm_class_hint": "Teachers and class leaders: create a class, send the link to the class chat, and everyone sees the weekly ranking (up to 60 students).",
+  "tm_class_total": "Class total this week",
+  "tm_students": "Students",
+  "tm_class_def": "Class",
+  "tm_text_c": "Join our class study room",
   "go_t": "Now test your own habits", "go_d": "It takes about a minute and needs no account.", "go_b": "Open the predictor →",
   "doc_title": "Focus room | student-performance-predictor",
   "crumb": "FOCUS ROOM",
@@ -377,6 +384,13 @@ Object.assign(T.ru, {
   "tm_today": "сегодня", "tm_week": "за неделю", "tm_empty": "Ждём друзей. Отправь им ссылку.",
   "tm_full": "Эта комната заполнена (30 человек).", "tm_err": "Не удалось подключиться к комнате. Серверу может понадобиться минута, чтобы проснуться.", "tm_wait": "Подключаемся к комнате…",
   "tm_text": "Учись со мной: заходи в мою комнату для учёбы",
+  "tm_create_class": "Создать класс",
+  "tm_class_name": "Название класса, например 10-А",
+  "tm_class_hint": "Учителям и старостам: создайте класс, отправьте ссылку в чат класса, и все увидят рейтинг за неделю (до 60 учеников).",
+  "tm_class_total": "Всего у класса за неделю",
+  "tm_students": "Учеников",
+  "tm_class_def": "Класс",
+  "tm_text_c": "Заходи в комнату нашего класса для учёбы",
   "go_t": "Теперь проверьте свои привычки", "go_d": "Это займёт около минуты, аккаунт не нужен.", "go_b": "Открыть предиктор →",
   "doc_title": "Комната фокуса | student-performance-predictor",
   "crumb": "КОМНАТА ФОКУСА",
@@ -407,6 +421,13 @@ Object.assign(T.uz, {
   "tm_today": "bugun", "tm_week": "shu hafta", "tm_empty": "Do'stlar kutilmoqda. Havolani yuboring.",
   "tm_full": "Bu xona to'lgan (30 kishi).", "tm_err": "Xonaga ulanib bo'lmadi. Serverning uyg'onishi bir daqiqa olishi mumkin.", "tm_wait": "Xonaga ulanmoqda…",
   "tm_text": "Men bilan o'qing: o'qish xonamga kiring",
+  "tm_create_class": "Sinf yaratish",
+  "tm_class_name": "Sinf nomi, masalan 10-A",
+  "tm_class_hint": "O'qituvchilar va sinf sardorlari: sinf yarating, havolani sinf chatiga yuboring, hamma haftalik reytingni ko'radi (60 tagacha o'quvchi).",
+  "tm_class_total": "Sinfning shu haftadagi jami natijasi",
+  "tm_students": "O'quvchilar",
+  "tm_class_def": "Sinf",
+  "tm_text_c": "Sinfimizning o'qish xonasiga kiring",
   "go_t": "Endi o'z odatlaringizni tekshiring", "go_d": "Taxminan bir daqiqa vaqt oladi, akkaunt shart emas.", "go_b": "Bashoratchini ochish →",
   "doc_title": "Fokus xonasi | student-performance-predictor",
   "crumb": "FOKUS XONASI",
@@ -602,7 +623,7 @@ Object.assign(T.uz, {
 
   /* ---------- private study room by link ---------- */
   var TEAM_ALPHA = "abcdefghjkmnpqrstuvwxyz23456789";
-  var team = null, teamMembers = null, teamErr = "", invite = null, copyMsg = false;
+  var team = null, teamInfo = null, teamMembers = null, teamErr = "", invite = null, copyMsg = false;
   try { team = JSON.parse(localStorage.getItem("fx_team") || "null"); if (team && !/^[a-z0-9]{4,12}$/.test(team.code || "")) team = null; } catch (e) { team = null; }
   try { var qm = /[?&]room=([a-zA-Z0-9]{4,12})/.exec(location.search); if (qm) invite = qm[1].toLowerCase(); } catch (e) {}
   if (invite && team && team.code === invite) invite = null;
@@ -616,6 +637,7 @@ Object.assign(T.uz, {
     return Math.floor(sec / 60);
   }
   function todayMinutes() { return Math.floor((stats.days[dayKey()] || 0) / 60); }
+  function cleanTitle(v) { return (v || "").replace(/[\u0000-\u001f<>&"'`]/g, "").trim().slice(0, 30); }
   function cleanName(v) { return (v || "").replace(/[\u0000-\u001f<>&"'`]/g, "").trim().slice(0, 20); }
   function teamLink() { return location.origin + "/focus?room=" + team.code; }
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text !== undefined) e.textContent = text; return e; }
@@ -625,25 +647,25 @@ Object.assign(T.uz, {
     try {
       fetch(window.API + "/api/team/ping", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ code: team.code, sid: tmSid, name: team.name, studying: running && mode === "focus", today_min: todayMinutes(), week_min: weekMinutes() })
+        body: JSON.stringify({ code: team.code, sid: tmSid, name: team.name, studying: running && mode === "focus", today_min: todayMinutes(), week_min: weekMinutes(), title: team.title || "", kind: team.kind || "room" })
       }).then(function (r) {
         if (r.status === 409) throw new Error("full");
         if (!r.ok) throw new Error("err");
         return r.json();
-      }).then(function (d) { teamMembers = d.members; teamErr = ""; renderTeam(); })
+      }).then(function (d) { teamMembers = d.members; teamInfo = { title: d.title || "", kind: d.kind || "room", total: d.total_week || 0, count: d.count || 0 }; teamErr = ""; renderTeam(); })
         .catch(function (e) { teamErr = e.message === "full" ? "tm_full" : "tm_err"; renderTeam(); });
     } catch (e) { teamErr = "tm_err"; renderTeam(); }
   }
 
-  function joinTeam(code, name) {
+  function joinTeam(code, name, kind, title) {
     name = cleanName(name) || "Student";
     try { localStorage.setItem("fx_name", name); } catch (e) {}
-    savedName = name; team = { code: code, name: name }; invite = null; teamMembers = null; teamErr = "";
+    savedName = name; team = { code: code, name: name, kind: kind === "class" ? "class" : "room", title: kind === "class" ? cleanTitle(title) : "" }; invite = null; teamMembers = null; teamInfo = null; teamErr = "";
     try { localStorage.setItem("fx_team", JSON.stringify(team)); history.replaceState(null, "", "/focus"); } catch (e) {}
     renderTeam(); teamPing();
   }
   function leaveTeam() {
-    team = null; teamMembers = null; teamErr = "";
+    team = null; teamMembers = null; teamInfo = null; teamErr = "";
     try { localStorage.removeItem("fx_team"); } catch (e) {}
     renderTeam();
   }
@@ -676,15 +698,30 @@ Object.assign(T.uz, {
       go.onclick = function () { joinTeam(invite || newCode(), inp.value); };
       inp.onkeydown = function (ev) { if (ev.key === "Enter") go.click(); };
       row.appendChild(inp); row.appendChild(go); body.appendChild(row);
+      if (!invite) {
+        var row2 = el("div", "tm-form"); row2.style.marginTop = "10px";
+        var ct = el("input", "fx-task"); ct.id = "tmClass"; ct.maxLength = 30; ct.placeholder = t("tm_class_name"); ct.autocomplete = "off";
+        var gc = el("button", "btn ghost", "🏫 " + t("tm_create_class"));
+        gc.onclick = function () { joinTeam(newCode(), inp.value, "class", ct.value || t("tm_class_def")); };
+        ct.onkeydown = function (ev) { if (ev.key === "Enter") gc.click(); };
+        row2.appendChild(ct); row2.appendChild(gc); body.appendChild(row2);
+        body.appendChild(el("p", "note", t("tm_class_hint")));
+      }
       return;
     }
     lead.textContent = t("tm_lead_in");
+    var isClass = !!(teamInfo ? teamInfo.kind === "class" : team.kind === "class");
+    var ttl = (teamInfo && teamInfo.title) || team.title || "";
+    if (isClass) {
+      var hd = el("h4", "tm-sub", "🏫 " + (ttl || t("tm_class_def"))); hd.style.fontSize = "20px"; body.appendChild(hd);
+      if (teamInfo) body.appendChild(el("p", "note", t("tm_class_total") + ": " + teamInfo.total + " " + t("fx_min_u") + " · " + t("tm_students") + ": " + teamInfo.count));
+    }
     var inv = el("div", "tm-invite");
     var lab = el("span", "tm-lab", t("tm_invite"));
     var box = el("input", "tm-link"); box.readOnly = true; box.value = teamLink(); box.onfocus = function () { box.select(); };
     var cp = el("button", "btn ghost", copyMsg ? t("tm_copied") : t("tm_copy")); cp.onclick = function () { copyLink(cp); };
     var tg = el("a", "btn", t("tm_tg")); tg.target = "_blank"; tg.rel = "noopener";
-    tg.href = "https://t.me/share/url?url=" + encodeURIComponent(teamLink()) + "&text=" + encodeURIComponent(t("tm_text"));
+    tg.href = "https://t.me/share/url?url=" + encodeURIComponent(teamLink()) + "&text=" + encodeURIComponent(isClass ? t("tm_text_c") + (ttl ? ": " + ttl : "") : t("tm_text"));
     inv.appendChild(lab); inv.appendChild(box); inv.appendChild(cp); inv.appendChild(tg); body.appendChild(inv);
 
     body.appendChild(el("h4", "tm-sub", t("tm_members")));
@@ -694,7 +731,7 @@ Object.assign(T.uz, {
       var list = el("div", "tm-rows");
       teamMembers.forEach(function (m, i) {
         var r = el("div", "tm-row" + (m.you ? " me" : ""));
-        r.appendChild(el("span", "tm-rank", String(i + 1)));
+        r.appendChild(el("span", "tm-rank", isClass && i < 3 && m.week_min > 0 ? ["🥇", "🥈", "🥉"][i] : String(i + 1)));
         var st = el("span", "tm-dot" + (m.studying ? " on" : m.online ? " idle" : ""));
         st.title = m.studying ? t("tm_studying") : m.online ? t("tm_online") : t("tm_offline");
         r.appendChild(st);
