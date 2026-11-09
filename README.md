@@ -46,3 +46,9 @@ This is an educational project. Predictions are estimates based on patterns in d
 ## Author
 
 Umar, a student from Tashkent, Uzbekistan. [GitHub](https://github.com/umarkhodjaev-hash)
+
+
+
+
+
+
