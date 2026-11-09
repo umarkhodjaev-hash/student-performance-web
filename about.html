@@ -95,9 +95,29 @@
   var API = "https://student-performance-predictor-bas2.onrender.com";
   window.API = API;
 
+  /* activity log (streak, points) kept on this device only */
+  window.actKey = function (d) { d = d || new Date(); return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); };
+  window.actLoad = function () { try { var a = JSON.parse(localStorage.getItem("act") || "null"); if (a && a.days) return a; } catch (e) {} return { days: {}, xp: 0 }; };
+  window.actDone = function (day) { return !!day && ((day.focus || 0) + (day.quiz || 0) + (day.pred || 0) + (day.ch || 0)) > 0; };
+  window.actStreak = function () {
+    var a = window.actLoad(), d = new Date(), n = 0;
+    if (!window.actDone(a.days[window.actKey(d)])) d.setDate(d.getDate() - 1);
+    while (window.actDone(a.days[window.actKey(d)])) { n++; d.setDate(d.getDate() - 1); }
+    return n;
+  };
+  window.recordAct = function (kind, xp) {
+    try {
+      var a = window.actLoad(), k = window.actKey(), day = a.days[k] || (a.days[k] = { xp: 0 });
+      var caps = { focus: 4, quiz: 1, pred: 3, ch: 1 };
+      day[kind] = (day[kind] || 0) + 1;
+      if (day[kind] <= (caps[kind] || 1)) { day.xp = (day.xp || 0) + xp; a.xp = (a.xp || 0) + xp; }
+      localStorage.setItem("act", JSON.stringify(a));
+    } catch (e) {}
+  };
+
   window.T = {
     en: {
-      n_home: "Home", n_pred: "Predict", n_how: "How it works", n_imp: "Improve", n_about: "About", n_cta: "Analyze", n_quiz: "Quiz", n_focus: "Focus room", install: "Install app",
+      n_home: "Home", n_pred: "Predict", n_how: "How it works", n_imp: "Improve", n_about: "About", n_cta: "Analyze", n_quiz: "Quiz", n_today: "Today", n_focus: "Focus room", install: "Install app",
       ft_tag: "Predict your exam score from your study habits and see what to change. A data science project from Tashkent.",
       ft_pages: "PAGES", ft_proj: "PROJECT", ft_gh: "GitHub profile", ft_code: "Prediction server code", ft_web: "Website code",
       ft_note: "An educational project. Predictions are estimates, not guarantees.",
@@ -107,7 +127,7 @@
       u_h: "h", u_d: "days"
     },
     ru: {
-      n_home: "Главная", n_pred: "Прогноз", n_how: "Как это работает", n_imp: "Улучшить", n_about: "О проекте", n_cta: "Анализировать", n_quiz: "Квиз", n_focus: "Комната фокуса", install: "Установить приложение",
+      n_home: "Главная", n_pred: "Прогноз", n_how: "Как это работает", n_imp: "Улучшить", n_about: "О проекте", n_cta: "Анализировать", n_quiz: "Квиз", n_today: "Сегодня", n_focus: "Комната фокуса", install: "Установить приложение",
       ft_tag: "Прогнозируйте экзаменационный балл по учебным привычкам и узнайте, что менять. Проект по data science из Ташкента.",
       ft_pages: "СТРАНИЦЫ", ft_proj: "ПРОЕКТ", ft_gh: "Профиль GitHub", ft_code: "Код сервера прогноза", ft_web: "Код сайта",
       ft_note: "Учебный проект. Прогнозы приблизительные и не гарантируют результат.",
@@ -126,6 +146,7 @@
   "n_about": "Loyiha haqida",
   "n_cta": "Tahlil qilish",
   "n_quiz": "Viktorina",
+  "n_today": "Bugun",
   "n_focus": "Fokus xonasi",
   "install": "Ilovani o'rnatish",
   "ft_tag": "O'quv odatlaringiz asosida imtihon balingizni bashorat qiling va nimani o'zgartirish kerakligini bilib oling. Toshkentdan data science loyihasi.",
@@ -202,14 +223,14 @@
         '<div class="links" id="links">' +
         '<a href="/" data-i18n="n_home"></a>' +
         '<a href="/predict" data-i18n="n_pred"></a>' +
-        '<a href="/quiz" data-i18n="n_quiz"></a><a href="/focus" data-i18n="n_focus"></a>' +
+        '<a href="/quiz" data-i18n="n_quiz"></a><a href="/focus" data-i18n="n_focus"></a><a class="only-m" href="/today" data-i18n="n_today"></a>' +
         '<a href="/how-it-works" data-i18n="n_how"></a>' +
         '<a href="/improve" data-i18n="n_imp"></a>' +
         '<a href="/about" data-i18n="n_about"></a></div>' +
         '<div class="tools">' +
         '<button class="chip" id="theme" aria-label="Theme"></button>' +
         '<select class="chip" id="lang" aria-label="Language"><option value="ru">RU</option><option value="en">EN</option><option value="uz">UZ</option></select>' +
-        '<a class="btn small" href="/predict" data-i18n="n_cta"></a>' +
+        '<a class="btn small" href="/today" aria-label="Today">🔥 <b id="navStreak">0</b> <span data-i18n="n_today"></span></a>' +
         '<button class="chip burger" id="burger" aria-label="Menu">☰</button></div>';
       var path = location.pathname.replace(/\.html$/, "").replace(/\/+$/, "") || "/";
       nav.querySelectorAll(".links a").forEach(function (a) {
@@ -224,7 +245,7 @@
         '<p style="margin-top:12px;max-width:360px" data-i18n="ft_tag"></p></div>' +
         '<div><h5 data-i18n="ft_pages"></h5>' +
         '<a href="/" data-i18n="n_home"></a><a href="/predict" data-i18n="n_pred"></a>' +
-        '<a href="/quiz" data-i18n="n_quiz"></a><a href="/focus" data-i18n="n_focus"></a><a href="/how-it-works" data-i18n="n_how"></a><a href="/improve" data-i18n="n_imp"></a>' +
+        '<a href="/quiz" data-i18n="n_quiz"></a><a href="/focus" data-i18n="n_focus"></a><a href="/today" data-i18n="n_today"></a><a href="/how-it-works" data-i18n="n_how"></a><a href="/improve" data-i18n="n_imp"></a>' +
         '<a href="/about" data-i18n="n_about"></a></div>' +
         '<div><h5 data-i18n="ft_proj"></h5>' +
         '<a href="https://github.com/umarkhodjaev-hash" target="_blank" rel="noopener" data-i18n="ft_gh"></a>' +
@@ -242,6 +263,8 @@
     if (d.doc_title) document.title = d.doc_title;
     document.querySelectorAll("[data-i18n]").forEach(function (e) { e.textContent = window.t(e.getAttribute("data-i18n")); });
     document.querySelectorAll("[data-mascot]").forEach(function (e) { e.innerHTML = window.mascot(e.getAttribute("data-mascot")); });
+    var ns = document.getElementById("navStreak");
+    if (ns) ns.textContent = window.actStreak();
     var lb = document.getElementById("lang");
     if (lb) lb.value = lang;
     if (window.onLang) window.onLang();

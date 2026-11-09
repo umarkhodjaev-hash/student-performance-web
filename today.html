@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#6c47e8">
+<link rel="manifest" href="/manifest.json">
+<title>Today | student-performance-predictor</title>
+<meta name="description" content="Your daily study page: streak, points, a small daily challenge and the next best step. No account, everything stays on your device.">
+<meta property="og:title" content="Today: streak, points and a daily challenge">
+<meta property="og:description" content="A daily study page with a streak, points and one small challenge.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="student-performance-predictor">
+<meta property="og:url" content="https://www.studentpp.uz/today">
+<meta property="og:image" content="https://www.studentpp.uz/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://www.studentpp.uz/og.png">
+<link rel="canonical" href="https://www.studentpp.uz/today">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("theme")||"dark")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<nav id="nav"></nav>
+
+<main class="wrap">
+  <div class="phead">
+    <span class="crumb" data-i18n="crumb"></span>
+    <h1 data-i18n="td_title"></h1>
+    <p class="lead" data-i18n="td_lead"></p>
+  </div>
+
+  <section>
+    <div class="card td-hero">
+      <div class="td-m" id="tdMas"></div>
+      <div class="td-hero-t">
+        <span class="badge" data-i18n="td_next"></span>
+        <h2 id="tdNextT"></h2>
+        <p id="tdNextD"></p>
+        <a class="btn" id="tdNextB" href="/focus"></a>
+      </div>
+    </div>
+
+    <div class="td-stats">
+      <div class="card td-stat"><div class="td-ico">🔥</div><b id="tdStreak">0</b><span data-i18n="st_streak"></span><small id="tdStreakN"></small></div>
+      <div class="card td-stat"><div class="td-ico">⭐</div><b id="tdLvl">1</b><span data-i18n="st_level"></span><div class="td-xpbar"><i id="tdXpBar"></i></div><small id="tdXp"></small></div>
+      <div class="card td-stat"><div class="td-ico">⏱️</div><b id="tdMin">0</b><span data-i18n="st_min"></span><small><a href="/focus" data-i18n="st_focus_l"></a></small></div>
+    </div>
+
+    <div class="td-grid">
+      <div class="card" id="challenge">
+        <h3 style="margin:0 0 4px" data-i18n="ch_title"></h3>
+        <p class="note" style="margin:0 0 16px" id="chSub"></p>
+        <div class="td-ch" id="chBox"></div>
+      </div>
+      <div class="card">
+        <h3 style="margin:0 0 6px" data-i18n="qa_title"></h3>
+        <div id="tdActs"></div>
+        <p class="note" style="margin:12px 0 0" data-i18n="qa_note"></p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:22px">
+      <h3 style="margin:0 0 4px" data-i18n="wk_title"></h3>
+      <div class="fx-bars" id="tdBars" style="height:110px"></div>
+    </div>
+
+    <p class="note" style="text-align:center;max-width:640px;margin:22px auto 0" data-i18n="td_priv"></p>
+    <p style="text-align:center;margin:10px 0 0"><button class="chip" id="tdReset"></button></p>
+  </section>
+
+  <div class="band">
+    <h2 data-i18n="go_t"></h2>
+    <p data-i18n="go_d"></p>
+    <a class="btn white" href="/predict" data-i18n="go_b"></a>
+  </div>
+</main>
+
+<footer id="foot"></footer>
+
+<script>
+/* Shared: dictionary, layout (nav + footer), theme, language */
+(function () {
+  var API = "https://student-performance-predictor-bas2.onrender.com";
+  window.API = API;
+
+  /* activity log (streak, points) kept on this device only */
+  window.actKey = function (d) { d = d || new Date(); return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); };
+  window.actLoad = function () { try { var a = JSON.parse(localStorage.getItem("act") || "null"); if (a && a.days) return a; } catch (e) {} return { days: {}, xp: 0 }; };
+  window.actDone = function (day) { return !!day && ((day.focus || 0) + (day.quiz || 0) + (day.pred || 0) + (day.ch || 0)) > 0; };
+  window.actStreak = function () {
+    var a = window.actLoad(), d = new Date(), n = 0;
+    if (!window.actDone(a.days[window.actKey(d)])) d.setDate(d.getDate() - 1);
+    while (window.actDone(a.days[window.actKey(d)])) { n++; d.setDate(d.getDate() - 1); }
+    return n;
+  };
+  window.recordAct = function (kind, xp) {
+    try {
+      var a = window.actLoad(), k = window.actKey(), day = a.days[k] || (a.days[k] = { xp: 0 });
+      var caps = { focus: 4, quiz: 1, pred: 3, ch: 1 };
+      day[kind] = (day[kind] || 0) + 1;
+      if (day[kind] <= (caps[kind] || 1)) { day.xp = (day.xp || 0) + xp; a.xp = (a.xp || 0) + xp; }
+      localStorage.setItem("act", JSON.stringify(a));
+    } catch (e) {}
+  };
+
+  window.T = {
+    en: {
+      n_home: "Home", n_pred: "Predict", n_how: "How it works", n_imp: "Improve", n_about: "About", n_cta: "Analyze", n_quiz: "Quiz", n_today: "Today", n_focus: "Focus room", install: "Install app",
+      ft_tag: "Predict your exam score from your study habits and see what to change. A data science project from Tashkent.",
+      ft_pages: "PAGES", ft_proj: "PROJECT", ft_gh: "GitHub profile", ft_code: "Prediction server code", ft_web: "Website code",
+      ft_note: "An educational project. Predictions are estimates, not guarantees.",
+      lv_excellent: "Excellent", lv_verygood: "Very Good", lv_dev: "Developing", lv_need: "Needs Improvement",
+      o_Low: "Low", o_Medium: "Medium", o_High: "High", o_Yes: "Yes", o_No: "No",
+      o_Positive: "Positive", o_Neutral: "Neutral", o_Negative: "Negative", o_Near: "Near", o_Moderate: "Moderate", o_Far: "Far",
+      u_h: "h", u_d: "days"
+    },
+    ru: {
+      n_home: "Главная", n_pred: "Прогноз", n_how: "Как это работает", n_imp: "Улучшить", n_about: "О проекте", n_cta: "Анализировать", n_quiz: "Квиз", n_today: "Сегодня", n_focus: "Комната фокуса", install: "Установить приложение",
+      ft_tag: "Прогнозируйте экзаменационный балл по учебным привычкам и узнайте, что менять. Проект по data science из Ташкента.",
+      ft_pages: "СТРАНИЦЫ", ft_proj: "ПРОЕКТ", ft_gh: "Профиль GitHub", ft_code: "Код сервера прогноза", ft_web: "Код сайта",
+      ft_note: "Учебный проект. Прогнозы приблизительные и не гарантируют результат.",
+      lv_excellent: "Отлично", lv_verygood: "Очень хорошо", lv_dev: "Развивается", lv_need: "Нужно улучшить",
+      o_Low: "Низкий", o_Medium: "Средний", o_High: "Высокий", o_Yes: "Да", o_No: "Нет",
+      o_Positive: "Положит.", o_Neutral: "Нейтр.", o_Negative: "Отрицат.", o_Near: "Близко", o_Moderate: "Средне", o_Far: "Далеко",
+      u_h: "ч", u_d: "дн."
+    }
+  };
+
+  window.T.uz = {
+  "n_home": "Bosh sahifa",
+  "n_pred": "Bashorat",
+  "n_how": "Qanday ishlaydi",
+  "n_imp": "Yaxshilash",
+  "n_about": "Loyiha haqida",
+  "n_cta": "Tahlil qilish",
+  "n_quiz": "Viktorina",
+  "n_today": "Bugun",
+  "n_focus": "Fokus xonasi",
+  "install": "Ilovani o'rnatish",
+  "ft_tag": "O'quv odatlaringiz asosida imtihon balingizni bashorat qiling va nimani o'zgartirish kerakligini bilib oling. Toshkentdan data science loyihasi.",
+  "ft_pages": "SAHIFALAR",
+  "ft_proj": "LOYIHA",
+  "ft_gh": "GitHub profili",
+  "ft_code": "Bashorat serveri kodi",
+  "ft_web": "Sayt kodi",
+  "ft_note": "O'quv loyihasi. Bashoratlar taxminiy bo'lib, natijani kafolatlamaydi.",
+  "lv_excellent": "A'lo",
+  "lv_verygood": "Juda yaxshi",
+  "lv_dev": "Rivojlanmoqda",
+  "lv_need": "Yaxshilash kerak",
+  "o_Low": "Past",
+  "o_Medium": "O'rta",
+  "o_High": "Yuqori",
+  "o_Yes": "Ha",
+  "o_No": "Yo'q",
+  "o_Positive": "Ijobiy",
+  "o_Neutral": "Neytral",
+  "o_Negative": "Salbiy",
+  "o_Near": "Yaqin",
+  "o_Moderate": "O'rtacha",
+  "o_Far": "Uzoq",
+  "u_h": "soat",
+  "u_d": "kun"
+};
+
+  var lang = "ru";
+  try {
+    var sl = localStorage.getItem("lang");
+    var nl = (navigator.language || "").slice(0, 2);
+    lang = (sl === "ru" || sl === "en" || sl === "uz") ? sl : (nl === "ru" ? "ru" : nl === "uz" ? "uz" : "en");
+  } catch (e) {}
+
+  window.getLang = function () { return lang; };
+  window.t = function (k) {
+    var d = window.T[lang];
+    if (d[k] !== undefined) return d[k];
+    if (window.T.en[k] !== undefined) return window.T.en[k];
+    return k;
+  };
+  window.$ = function (s) { return document.querySelector(s); };
+
+  window.mascot = function (mood) {
+    var think = mood === "think", cheer = mood === "cheer";
+    var px = think ? [74, 104, 114, 104] : [80, 111, 120, 111];
+    var lw = cheer ? 62 : 8, rw = cheer ? -62 : -8;
+    return '<svg class="mascot" viewBox="0 0 200 200" role="img" aria-label="Sovi">' +
+      '<g transform="rotate(' + lw + ' 56 100)"><ellipse cx="44" cy="128" rx="15" ry="36" fill="#6d49e0"/></g>' +
+      '<g transform="rotate(' + rw + ' 144 100)"><ellipse cx="156" cy="128" rx="15" ry="36" fill="#6d49e0"/></g>' +
+      '<ellipse cx="100" cy="124" rx="60" ry="64" fill="#8b6cff"/>' +
+      '<ellipse cx="100" cy="148" rx="36" ry="38" fill="#efe9ff"/>' +
+      '<path d="M84 140q8 8 16 0M100 140q8 8 16 0M92 158q8 8 16 0" stroke="#c9b9ff" stroke-width="3" fill="none" stroke-linecap="round"/>' +
+      '<circle cx="76" cy="108" r="19" fill="#fff"/><circle cx="124" cy="108" r="19" fill="#fff"/>' +
+      '<circle cx="' + px[0] + '" cy="' + px[1] + '" r="9" fill="#2b1b6b"/><circle cx="' + px[2] + '" cy="' + px[3] + '" r="9" fill="#2b1b6b"/>' +
+      '<circle cx="' + (px[0] + 3) + '" cy="' + (px[1] - 3) + '" r="3" fill="#fff"/><circle cx="' + (px[2] + 3) + '" cy="' + (px[3] - 3) + '" r="3" fill="#fff"/>' +
+      (think ? '<path d="M106 88q14-8 28 0" stroke="#2b1b6b" stroke-width="4" fill="none" stroke-linecap="round"/>' : "") +
+      '<path d="M92 122 L108 122 L100 136 Z" fill="#ffd166"/>' +
+      '<polygon points="100,30 162,56 100,82 38,56" fill="#2b1b6b"/>' +
+      '<path d="M66 68 V84 Q100 100 134 84 V68 L100 82 Z" fill="#3b2a8f"/>' +
+      '<path d="M154 59 V88" stroke="#ffd166" stroke-width="4" stroke-linecap="round"/><circle cx="154" cy="92" r="6" fill="#ffd166"/>' +
+      '<ellipse cx="82" cy="190" rx="12" ry="6" fill="#ffd166"/><ellipse cx="118" cy="190" rx="12" ry="6" fill="#ffd166"/>' +
+      (cheer ? '<path d="M28 44l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" fill="#ffd166"/><path d="M176 30l2 6 6 2-6 2-2 6-2-6-6-2 6-2z" fill="#ffd166"/>' : "") +
+      (think ? '<text x="170" y="48" font-size="34" font-weight="800" fill="#ffd166" font-family="Inter,Arial,sans-serif">?</text>' : "") +
+      "</svg>";
+  };
+
+  function buildLayout() {
+    var nav = document.getElementById("nav");
+    if (nav) {
+      nav.innerHTML =
+        '<a class="logo" href="/"><img src="/favicon.svg" alt="" width="30" height="30"><span>student-performance-predictor</span></a>' +
+        '<div class="links" id="links">' +
+        '<a href="/" data-i18n="n_home"></a>' +
+        '<a href="/predict" data-i18n="n_pred"></a>' +
+        '<a href="/quiz" data-i18n="n_quiz"></a><a href="/focus" data-i18n="n_focus"></a><a class="only-m" href="/today" data-i18n="n_today"></a>' +
+        '<a href="/how-it-works" data-i18n="n_how"></a>' +
+        '<a href="/improve" data-i18n="n_imp"></a>' +
+        '<a href="/about" data-i18n="n_about"></a></div>' +
+        '<div class="tools">' +
+        '<button class="chip" id="theme" aria-label="Theme"></button>' +
+        '<select class="chip" id="lang" aria-label="Language"><option value="ru">RU</option><option value="en">EN</option><option value="uz">UZ</option></select>' +
+        '<a class="btn small" href="/today" aria-label="Today">🔥 <b id="navStreak">0</b> <span data-i18n="n_today"></span></a>' +
+        '<button class="chip burger" id="burger" aria-label="Menu">☰</button></div>';
+      var path = location.pathname.replace(/\.html$/, "").replace(/\/+$/, "") || "/";
+      nav.querySelectorAll(".links a").forEach(function (a) {
+        if (a.getAttribute("href") === path) a.classList.add("cur");
+      });
+    }
+    var foot = document.getElementById("foot");
+    if (foot) {
+      foot.innerHTML =
+        '<div class="wrap"><div class="foot-grid">' +
+        '<div><a class="logo" href="/" style="padding:0"><img src="/favicon.svg" alt="" width="30" height="30"><span style="display:inline">student-performance-predictor</span></a>' +
+        '<p style="margin-top:12px;max-width:360px" data-i18n="ft_tag"></p></div>' +
+        '<div><h5 data-i18n="ft_pages"></h5>' +
+        '<a href="/" data-i18n="n_home"></a><a href="/predict" data-i18n="n_pred"></a>' +
+        '<a href="/quiz" data-i18n="n_quiz"></a><a href="/focus" data-i18n="n_focus"></a><a href="/today" data-i18n="n_today"></a><a href="/how-it-works" data-i18n="n_how"></a><a href="/improve" data-i18n="n_imp"></a>' +
+        '<a href="/about" data-i18n="n_about"></a></div>' +
+        '<div><h5 data-i18n="ft_proj"></h5>' +
+        '<a href="https://github.com/umarkhodjaev-hash" target="_blank" rel="noopener" data-i18n="ft_gh"></a>' +
+        '<a href="https://github.com/umarkhodjaev-hash/student-performance-predictor" target="_blank" rel="noopener" data-i18n="ft_code"></a>' +
+        '<a href="https://github.com/umarkhodjaev-hash/student-performance-web" target="_blank" rel="noopener" data-i18n="ft_web"></a></div>' +
+        '</div><div class="copy">© <span id="yr"></span> student-performance-predictor · Umar<br><span data-i18n="ft_note"></span><br><button class="chip" id="install" hidden data-i18n="install" style="margin-top:12px"></button></div></div>';
+      var y = document.getElementById("yr");
+      if (y) y.textContent = new Date().getFullYear();
+    }
+  }
+
+  function applyLang() {
+    document.documentElement.lang = lang;
+    var d = window.T[lang];
+    if (d.doc_title) document.title = d.doc_title;
+    document.querySelectorAll("[data-i18n]").forEach(function (e) { e.textContent = window.t(e.getAttribute("data-i18n")); });
+    document.querySelectorAll("[data-mascot]").forEach(function (e) { e.innerHTML = window.mascot(e.getAttribute("data-mascot")); });
+    var ns = document.getElementById("navStreak");
+    if (ns) ns.textContent = window.actStreak();
+    var lb = document.getElementById("lang");
+    if (lb) lb.value = lang;
+    if (window.onLang) window.onLang();
+  }
+  window.applyLang = applyLang;
+
+  function setTheme(m) {
+    document.documentElement.setAttribute("data-theme", m);
+    var b = document.getElementById("theme");
+    if (b) b.textContent = m === "dark" ? "☀️" : "🌙";
+    try { localStorage.setItem("theme", m); } catch (e) {}
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    buildLayout();
+    var saved = null;
+    try { saved = localStorage.getItem("theme"); } catch (e) {}
+    setTheme(saved || "dark");
+    document.getElementById("theme").onclick = function () {
+      setTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
+    };
+    document.getElementById("lang").onchange = function () {
+      lang = this.value;
+      try { localStorage.setItem("lang", lang); } catch (e) {}
+      applyLang();
+    };
+    document.getElementById("burger").onclick = function () {
+      document.getElementById("links").classList.toggle("open");
+    };
+    applyLang();
+    /* wake the free Render server in the background */
+    try { fetch(API + "/robots.txt", { mode: "no-cors" }).catch(function () {}); } catch (e) {}
+  });
+})();
+
+</script>
+<script>
+Object.assign(T.en, {
+  "go_t": "Now test your own habits", "go_d": "It takes about a minute and needs no account.", "go_b": "Open the predictor →",
+  "doc_title": "Today | student-performance-predictor",
+  "crumb": "TODAY",
+  "td_title": "What are we doing today?",
+  "td_lead": "Your daily page: a streak, points and one small challenge. No account needed, everything stays on this device.",
+  "td_next": "NEXT STEP",
+  "nx_focus_t": "Start a focus session", "nx_focus_d": "25 minutes without your phone. It keeps your streak alive and gives +25 points.", "nx_focus_b": "Open the focus room →",
+  "nx_quiz_t": "Take the habits quiz", "nx_quiz_d": "Eight quick questions with explanations. +30 points.", "nx_quiz_b": "Start the quiz →",
+  "nx_pred_t": "Run a prediction", "nx_pred_d": "See how your habits connect to your score and test a what-if. +20 points.", "nx_pred_b": "Open the predictor →",
+  "nx_ch_t": "Finish today's challenge", "nx_ch_d": "One small task, +30 points.", "nx_ch_b": "See the challenge ↓",
+  "nx_done_t": "Everything is done for today", "nx_done_d": "Your streak is safe. Come back tomorrow, or run one more prediction.", "nx_done_b": "Open the predictor →",
+  "st_streak": "day streak", "st_streak0": "Do anything today to start a streak", "st_streak1": "Keep it going: come back tomorrow",
+  "st_level": "Level", "st_pts": "points", "st_next": "to next level", "st_min": "minutes studied today", "st_focus_l": "Open the focus room",
+  "ch_title": "Daily challenge", "ch_sub": "A new one every day. +30 points.",
+  "ch_done": "Done! +30 points earned.", "ch_btn": "Mark as done", "ch_auto": "Completes automatically when you do it.",
+  "chl_focus": "Finish one focus session in the Focus room", "chl_quiz": "Take the habits quiz", "chl_pred": "Run a prediction and read the what-if tips",
+  "chl_m1": "Keep your phone in another room during one study session", "chl_m2": "Write down tomorrow's three study tasks",
+  "chl_m3": "Plan 8 hours of sleep for tonight", "chl_m4": "Spend 15 minutes on one topic you find hard",
+  "qa_title": "Today's activities", "qa_focus": "Focus session", "qa_quiz": "Habits quiz", "qa_pred": "Prediction",
+  "qa_note": "Points per day: focus up to 4 times, quiz once, prediction up to 3 times, challenge once.",
+  "wk_title": "Points, last 7 days",
+  "td_priv": "Everything here is stored only in this browser. Clearing site data or switching device resets it.",
+  "td_reset": "Reset progress", "td_reset2": "Tap again to confirm"
+});
+Object.assign(T.ru, {
+  "go_t": "Теперь проверьте свои привычки", "go_d": "Это займёт около минуты, аккаунт не нужен.", "go_b": "Открыть предиктор →",
+  "doc_title": "Сегодня | student-performance-predictor",
+  "crumb": "СЕГОДНЯ",
+  "td_title": "Что делаем сегодня?",
+  "td_lead": "Твоя страница на каждый день: серия, очки и одно маленькое задание. Аккаунт не нужен, всё хранится на этом устройстве.",
+  "td_next": "СЛЕДУЮЩИЙ ШАГ",
+  "nx_focus_t": "Запусти сессию фокуса", "nx_focus_d": "25 минут без телефона. Это сохраняет серию и даёт +25 очков.", "nx_focus_b": "Открыть комнату фокуса →",
+  "nx_quiz_t": "Пройди квиз по привычкам", "nx_quiz_d": "Восемь коротких вопросов с разбором. +30 очков.", "nx_quiz_b": "Начать квиз →",
+  "nx_pred_t": "Сделай прогноз", "nx_pred_d": "Посмотри, как привычки связаны с баллом, и проверь сценарий «что если». +20 очков.", "nx_pred_b": "Открыть предиктор →",
+  "nx_ch_t": "Выполни задание дня", "nx_ch_d": "Одно маленькое задание, +30 очков.", "nx_ch_b": "Смотреть задание ↓",
+  "nx_done_t": "На сегодня всё сделано", "nx_done_d": "Серия в безопасности. Приходи завтра или сделай ещё один прогноз.", "nx_done_b": "Открыть предиктор →",
+  "st_streak": "дней подряд", "st_streak0": "Сделай что-нибудь сегодня, чтобы начать серию", "st_streak1": "Так держать: приходи завтра",
+  "st_level": "Уровень", "st_pts": "очков", "st_next": "до следующего уровня", "st_min": "минут учёбы сегодня", "st_focus_l": "Открыть комнату фокуса",
+  "ch_title": "Задание дня", "ch_sub": "Каждый день новое. +30 очков.",
+  "ch_done": "Готово! +30 очков получено.", "ch_btn": "Отметить выполненным", "ch_auto": "Засчитается автоматически, когда ты это сделаешь.",
+  "chl_focus": "Заверши одну сессию в комнате фокуса", "chl_quiz": "Пройди квиз по привычкам", "chl_pred": "Сделай прогноз и прочитай советы «что если»",
+  "chl_m1": "Убери телефон в другую комнату на одну сессию учёбы", "chl_m2": "Запиши три задачи на завтра",
+  "chl_m3": "Запланируй сегодня 8 часов сна", "chl_m4": "Потрать 15 минут на одну сложную тему",
+  "qa_title": "Дела на сегодня", "qa_focus": "Сессия фокуса", "qa_quiz": "Квиз по привычкам", "qa_pred": "Прогноз",
+  "qa_note": "Очки за день: фокус до 4 раз, квиз 1 раз, прогноз до 3 раз, задание 1 раз.",
+  "wk_title": "Очки за 7 дней",
+  "td_priv": "Всё здесь хранится только в этом браузере. Если очистить данные сайта или сменить устройство, прогресс сбросится.",
+  "td_reset": "Сбросить прогресс", "td_reset2": "Нажми ещё раз для подтверждения"
+});
+Object.assign(T.uz, {
+  "go_t": "Endi o'z odatlaringizni tekshiring", "go_d": "Taxminan bir daqiqa vaqt oladi, akkaunt shart emas.", "go_b": "Bashoratchini ochish →",
+  "doc_title": "Bugun | student-performance-predictor",
+  "crumb": "BUGUN",
+  "td_title": "Bugun nima qilamiz?",
+  "td_lead": "Har kunlik sahifangiz: seriya, ballar va bitta kichik topshiriq. Akkaunt shart emas, hammasi shu qurilmada saqlanadi.",
+  "td_next": "KEYINGI QADAM",
+  "nx_focus_t": "Fokus sessiyasini boshlang", "nx_focus_d": "Telefonsiz 25 daqiqa. Seriyani saqlaydi va +25 ball beradi.", "nx_focus_b": "Fokus xonasini ochish →",
+  "nx_quiz_t": "Odatlar viktorinasini topshiring", "nx_quiz_d": "Izohli sakkizta qisqa savol. +30 ball.", "nx_quiz_b": "Viktorinani boshlash →",
+  "nx_pred_t": "Bashorat qiling", "nx_pred_d": "Odatlaringiz bahoga qanday bog'liqligini ko'ring va «nima bo'ladi agar» ssenariysini sinab ko'ring. +20 ball.", "nx_pred_b": "Bashoratchini ochish →",
+  "nx_ch_t": "Kun topshirig'ini bajaring", "nx_ch_d": "Bitta kichik topshiriq, +30 ball.", "nx_ch_b": "Topshiriqni ko'rish ↓",
+  "nx_done_t": "Bugun hammasi bajarildi", "nx_done_d": "Seriyangiz xavfsiz. Ertaga qaytib keling yoki yana bitta bashorat qiling.", "nx_done_b": "Bashoratchini ochish →",
+  "st_streak": "kun ketma-ket", "st_streak0": "Seriyani boshlash uchun bugun biror narsa qiling", "st_streak1": "Davom eting: ertaga qaytib keling",
+  "st_level": "Daraja", "st_pts": "ball", "st_next": "keyingi darajagacha", "st_min": "bugun o'qilgan daqiqa", "st_focus_l": "Fokus xonasini ochish",
+  "ch_title": "Kun topshirig'i", "ch_sub": "Har kuni yangisi. +30 ball.",
+  "ch_done": "Tayyor! +30 ball olindi.", "ch_btn": "Bajarildi deb belgilash", "ch_auto": "Buni qilsangiz, avtomatik hisoblanadi.",
+  "chl_focus": "Fokus xonasida bitta sessiyani tugating", "chl_quiz": "Odatlar viktorinasini topshiring", "chl_pred": "Bashorat qiling va «nima bo'ladi agar» maslahatlarini o'qing",
+  "chl_m1": "Bitta o'qish sessiyasi davomida telefonni boshqa xonada qoldiring", "chl_m2": "Ertangi uchta o'qish vazifasini yozib qo'ying",
+  "chl_m3": "Bugun kechasi 8 soat uyqu rejalashtiring", "chl_m4": "Qiyin deb bilgan bitta mavzuga 15 daqiqa ajrating",
+  "qa_title": "Bugungi ishlar", "qa_focus": "Fokus sessiyasi", "qa_quiz": "Odatlar viktorinasi", "qa_pred": "Bashorat",
+  "qa_note": "Kunlik ballar: fokus 4 martagacha, viktorina 1 marta, bashorat 3 martagacha, topshiriq 1 marta.",
+  "wk_title": "So'nggi 7 kundagi ballar",
+  "td_priv": "Bu yerdagi hamma narsa faqat shu brauzerda saqlanadi. Sayt ma'lumotlarini tozalash yoki qurilmani almashtirish progressni o'chiradi.",
+  "td_reset": "Progressni tiklash", "td_reset2": "Tasdiqlash uchun yana bosing"
+});
+</script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var CH = [
+    { k: "chl_focus", auto: "focus" }, { k: "chl_m1" }, { k: "chl_quiz", auto: "quiz" }, { k: "chl_m2" },
+    { k: "chl_pred", auto: "pred" }, { k: "chl_m3" }, { k: "chl_m4" }
+  ];
+  var resetArmed = false;
+
+  function chIndex() { return Math.floor(Date.now() / 86400000 + 3) % CH.length; }
+  function focusMinutes() {
+    try { var s = JSON.parse(localStorage.getItem("fx_stats") || "null"); return Math.floor(((s && s.days && s.days[actKey()]) || 0) / 60); } catch (e) { return 0; }
+  }
+
+  function render() {
+    var a = actLoad(), day = a.days[actKey()] || {}, ch = CH[chIndex()];
+    // auto challenge
+    if (ch.auto && day[ch.auto] > 0 && !(day.ch > 0)) { recordAct("ch", 30); a = actLoad(); day = a.days[actKey()] || {}; }
+    var chDone = day.ch > 0;
+    var streak = actStreak();
+
+    // next step
+    var nx = !(day.focus > 0) ? "focus" : !(day.quiz > 0) ? "quiz" : !(day.pred > 0) ? "pred" : !chDone ? "ch" : "done";
+    $("tdNextT").textContent = t("nx_" + nx + "_t");
+    $("tdNextD").textContent = t("nx_" + nx + "_d");
+    var b = $("tdNextB"); b.textContent = t("nx_" + nx + "_b");
+    b.setAttribute("href", { focus: "/focus", quiz: "/quiz", pred: "/predict", ch: "#challenge", done: "/predict" }[nx]);
+    $("tdMas").innerHTML = window.mascot(nx === "done" || streak > 2 ? "cheer" : "happy");
+
+    // stats
+    $("tdStreak").textContent = streak;
+    $("tdStreakN").textContent = streak > 0 ? t("st_streak1") : t("st_streak0");
+    var xp = a.xp || 0, lvl = Math.floor(xp / 100) + 1;
+    $("tdLvl").textContent = lvl;
+    $("tdXpBar").style.width = (xp % 100) + "%";
+    $("tdXp").textContent = xp + " " + t("st_pts") + " · " + (100 - xp % 100) + " " + t("st_next");
+    $("tdMin").textContent = focusMinutes();
+
+    // challenge
+    $("chSub").textContent = t("ch_sub");
+    $("chBox").innerHTML = '<div class="td-chq">' + t(ch.k) + "</div>" +
+      (chDone ? '<div class="td-chok">✅ ' + t("ch_done") + "</div>"
+        : ch.auto ? '<div class="note">' + t("ch_auto") + "</div>"
+        : '<button class="btn" id="chBtn">' + t("ch_btn") + "</button>");
+    var cb = $("chBtn"); if (cb) cb.onclick = function () { recordAct("ch", 30); render(); };
+
+    // activities
+    var rows = [["focus", "qa_focus", 25, 4], ["quiz", "qa_quiz", 30, 1], ["pred", "qa_pred", 20, 3]];
+    $("tdActs").innerHTML = rows.map(function (r) {
+      var n = day[r[0]] || 0, ok = n > 0;
+      return '<div class="td-act' + (ok ? " ok" : "") + '"><span class="td-chk">' + (ok ? "✓" : "") + "</span><span>" + t(r[1]) + (n > 1 ? " ×" + n : "") + "</span><b>+" + Math.min(n, r[3]) * r[2] + " " + t("st_pts") + "</b></div>";
+    }).join("");
+
+    // week
+    var vals = [], labels = [], max = 60, i, d, lg = document.documentElement.lang || "en", w;
+    for (i = 6; i >= 0; i--) {
+      d = new Date(); d.setDate(d.getDate() - i);
+      var v = ((a.days[actKey(d)] || {}).xp) || 0; vals.push(v); if (v > max) max = v;
+      try { w = d.toLocaleDateString(lg, { weekday: "short" }); } catch (e) { w = ""; }
+      labels.push(w);
+    }
+    $("tdBars").innerHTML = vals.map(function (v, j) {
+      return '<div title="' + v + " " + t("st_pts") + '"><i style="height:' + Math.round(v / max * 84) + 'px"></i>' + labels[j] + "</div>";
+    }).join("");
+
+    var ns = $("navStreak"); if (ns) ns.textContent = streak;
+    $("tdReset").textContent = resetArmed ? t("td_reset2") : t("td_reset");
+  }
+
+  $("tdReset").onclick = function () {
+    if (!resetArmed) { resetArmed = true; render(); setTimeout(function () { resetArmed = false; render(); }, 4000); return; }
+    try { localStorage.removeItem("act"); } catch (e) {}
+    resetArmed = false; render();
+  };
+  window.onLang = render;
+  render();
+})();
+</script>
+<script>
+(function () {
+  if (!("serviceWorker" in navigator)) return;
+  window.addEventListener("load", function () { navigator.serviceWorker.register("/sw.js").catch(function () {}); });
+  var deferred = null;
+  window.addEventListener("beforeinstallprompt", function (e) {
+    e.preventDefault(); deferred = e;
+    var b = document.getElementById("install"); if (b) b.hidden = false;
+  });
+  window.addEventListener("appinstalled", function () {
+    deferred = null; var b = document.getElementById("install"); if (b) b.hidden = true;
+  });
+  document.addEventListener("click", function (ev) {
+    if (!ev.target || ev.target.id !== "install" || !deferred) return;
+    deferred.prompt();
+    deferred.userChoice.then(function () { deferred = null; var b = document.getElementById("install"); if (b) b.hidden = true; });
+  });
+})();
+</script>
+</body>
+</html>
