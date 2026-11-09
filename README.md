@@ -2,7 +2,7 @@
 
 A personal data science project: answer 15 questions about your study routine, environment and lifestyle, and a trained machine-learning model predicts your exam score and suggests what to improve.
 
-**Live demo:** https://student-performance-predictor-vert-chi.vercel.app
+**Live demo:** https://www.studentpp.uz
 
 ## Features
 
@@ -46,9 +46,3 @@ This is an educational project. Predictions are estimates based on patterns in d
 ## Author
 
 Umar, a student from Tashkent, Uzbekistan. [GitHub](https://github.com/umarkhodjaev-hash)
-
-
-
-
-
-

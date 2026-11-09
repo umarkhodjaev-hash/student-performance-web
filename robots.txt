@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://student-performance-predictor-vert-chi.vercel.app/sitemap.xml
+Sitemap: https://www.studentpp.uz/sitemap.xml
