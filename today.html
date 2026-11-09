@@ -71,6 +71,11 @@
       <div class="fx-bars" id="tdBars" style="height:110px"></div>
     </div>
 
+    <div class="card" style="margin-top:22px">
+      <h3 style="margin:0 0 8px" data-i18n="pg_title"></h3>
+      <div id="pgBox"></div>
+    </div>
+
     <p class="note" style="text-align:center;max-width:640px;margin:22px auto 0" data-i18n="td_priv"></p>
     <p style="text-align:center;margin:10px 0 0"><button class="chip" id="tdReset"></button></p>
   </section>
@@ -407,6 +412,122 @@ Object.assign(T.uz, {
 });
 </script>
 <script>
+Object.assign(T.en, {
+ "wf_sleep": "sleep",
+ "wf_att": "attendance",
+ "wf_study": "study time",
+ "wf_mot": "motivation",
+ "wf_gen": "general habits",
+ "pl_badge": "Your focus area: {f}",
+ "pl_sub": "Built from your latest prediction. +30 points.",
+ "ct_sleep1": "Go to bed 30 minutes earlier than usual tonight",
+ "ct_sleep2": "Put your phone away 30 minutes before bed",
+ "ct_sleep3": "Wake up at the same time tomorrow as today",
+ "ct_att1": "Pack your bag and plan your route tonight so you arrive on time",
+ "ct_att2": "Pick the class you like least tomorrow and write one thing you want to learn there",
+ "ct_att3": "Do not skip a single class tomorrow",
+ "ct_study1": "Finish one focus session in the Focus room",
+ "ct_study2": "Write down tomorrow's three study tasks",
+ "ct_study3": "Spend 15 minutes on one topic you find hard",
+ "ct_mot1": "Write one small goal for this week and one step for today",
+ "ct_mot2": "Study 10 minutes on your least favourite subject, then stop",
+ "ct_mot3": "Tell a friend your study goal for this week",
+ "pg_title": "Your progress",
+ "pg_empty": "Run a prediction to start tracking your progress. Recheck once a week to see what changed.",
+ "pg_btn": "Run a prediction →",
+ "pg_one": "One prediction so far: {a}. Run it again in a week to see the change.",
+ "pg_up": "Up {d} since your first prediction ({a} → {b}).",
+ "pg_down": "Down {d} since your first prediction ({a} → {b}).",
+ "pg_same": "No change yet ({a}).",
+ "pg_why": "What changed:",
+ "chg_sleep": "sleep {a} → {b} h",
+ "chg_study": "study {a} → {b} h per week",
+ "chg_att": "attendance {a}% → {b}%",
+ "pg_stale": "It has been {d} days since your last prediction. Time to recheck.",
+ "pg_recheck": "Recheck now →",
+ "pg_ok": "Next check in {d} days.",
+ "nx_recheck_t": "Recheck your prediction",
+ "nx_recheck_d": "A week has passed. See how your score changed. +20 points.",
+ "nx_recheck_b": "Open the predictor →"
+});
+Object.assign(T.ru, {
+ "wf_sleep": "сон",
+ "wf_att": "посещаемость",
+ "wf_study": "время учёбы",
+ "wf_mot": "мотивация",
+ "wf_gen": "общие привычки",
+ "pl_badge": "Твоя зона роста: {f}",
+ "pl_sub": "Подобрано по твоему последнему прогнозу. +30 очков.",
+ "ct_sleep1": "Лечь спать сегодня на 30 минут раньше обычного",
+ "ct_sleep2": "Убрать телефон за 30 минут до сна",
+ "ct_sleep3": "Завтра проснуться в то же время, что и сегодня",
+ "ct_att1": "Собрать сумку и продумать маршрут сегодня вечером, чтобы прийти вовремя",
+ "ct_att2": "Выбрать завтра самый нелюбимый урок и записать одну вещь, которую хочешь на нём узнать",
+ "ct_att3": "Завтра не пропустить ни одного урока",
+ "ct_study1": "Завершить одну фокус-сессию в комнате фокуса",
+ "ct_study2": "Записать три учебные задачи на завтра",
+ "ct_study3": "Уделить 15 минут одной сложной теме",
+ "ct_mot1": "Записать одну маленькую цель на неделю и один шаг на сегодня",
+ "ct_mot2": "Позаниматься 10 минут самым нелюбимым предметом и остановиться",
+ "ct_mot3": "Рассказать другу свою учебную цель на эту неделю",
+ "pg_title": "Твой прогресс",
+ "pg_empty": "Сделай прогноз, чтобы начать отслеживать прогресс. Пересчитывай раз в неделю, чтобы видеть, что изменилось.",
+ "pg_btn": "Сделать прогноз →",
+ "pg_one": "Пока один прогноз: {a}. Повтори через неделю, чтобы увидеть изменение.",
+ "pg_up": "Выросло на {d} с первого прогноза ({a} → {b}).",
+ "pg_down": "Снизилось на {d} с первого прогноза ({a} → {b}).",
+ "pg_same": "Пока без изменений ({a}).",
+ "pg_why": "Что изменилось:",
+ "chg_sleep": "сон {a} → {b} ч",
+ "chg_study": "учёба {a} → {b} ч в неделю",
+ "chg_att": "посещаемость {a}% → {b}%",
+ "pg_stale": "С последнего прогноза прошло {d} дн. Пора пересчитать.",
+ "pg_recheck": "Пересчитать сейчас →",
+ "pg_ok": "Следующая проверка через {d} дн.",
+ "nx_recheck_t": "Пересчитай прогноз",
+ "nx_recheck_d": "Прошла неделя. Посмотри, как изменился твой балл. +20 очков.",
+ "nx_recheck_b": "Открыть предсказатель →"
+});
+Object.assign(T.uz, {
+ "wf_sleep": "uyqu",
+ "wf_att": "davomat",
+ "wf_study": "o'qish vaqti",
+ "wf_mot": "motivatsiya",
+ "wf_gen": "umumiy odatlar",
+ "pl_badge": "Sizning o'sish sohangiz: {f}",
+ "pl_sub": "Oxirgi prognozingiz asosida tanlandi. +30 ball.",
+ "ct_sleep1": "Bugun odatdagidan 30 daqiqa erta uxlang",
+ "ct_sleep2": "Uxlashdan 30 daqiqa oldin telefonni olib qo'ying",
+ "ct_sleep3": "Ertaga bugungi vaqtda uyg'oning",
+ "ct_att1": "Vaqtida yetib borish uchun bugun kechqurun sumkani tayyorlab, yo'lni rejalashtiring",
+ "ct_att2": "Ertaga eng yoqtirmaydigan darsingizni tanlab, undan o'rganmoqchi bo'lgan bitta narsani yozing",
+ "ct_att3": "Ertaga birorta darsni o'tkazib yubormang",
+ "ct_study1": "Diqqat xonasida bitta sessiyani tugating",
+ "ct_study2": "Ertangi uchta o'quv vazifasini yozib qo'ying",
+ "ct_study3": "Qiyin mavzulardan biriga 15 daqiqa ajrating",
+ "ct_mot1": "Shu hafta uchun bitta kichik maqsad va bugun uchun bitta qadamni yozing",
+ "ct_mot2": "Eng yoqtirmaydigan fan bilan 10 daqiqa shug'ullanib, to'xtang",
+ "ct_mot3": "Do'stingizga shu haftalik o'quv maqsadingizni ayting",
+ "pg_title": "Sizning progressingiz",
+ "pg_empty": "Progressni kuzatish uchun prognoz qiling. Nima o'zgarganini ko'rish uchun haftasiga bir marta qayta hisoblang.",
+ "pg_btn": "Prognoz qilish →",
+ "pg_one": "Hozircha bitta prognoz: {a}. O'zgarishni ko'rish uchun bir haftadan keyin takrorlang.",
+ "pg_up": "Birinchi prognozdan beri {d} ga oshdi ({a} → {b}).",
+ "pg_down": "Birinchi prognozdan beri {d} ga kamaydi ({a} → {b}).",
+ "pg_same": "Hozircha o'zgarish yo'q ({a}).",
+ "pg_why": "Nima o'zgardi:",
+ "chg_sleep": "uyqu {a} → {b} soat",
+ "chg_study": "o'qish {a} → {b} soat haftasiga",
+ "chg_att": "davomat {a}% → {b}%",
+ "pg_stale": "Oxirgi prognozdan {d} kun o'tdi. Qayta tekshirish vaqti.",
+ "pg_recheck": "Hozir qayta hisoblash →",
+ "pg_ok": "Keyingi tekshiruv {d} kundan keyin.",
+ "nx_recheck_t": "Prognozni qayta hisoblang",
+ "nx_recheck_d": "Bir hafta o'tdi. Ballingiz qanday o'zgarganini ko'ring. +20 ball.",
+ "nx_recheck_b": "Bashoratchini ochish →"
+});
+</script>
+<script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var CH = [
@@ -414,6 +535,30 @@ Object.assign(T.uz, {
     { k: "chl_pred", auto: "pred" }, { k: "chl_m3" }, { k: "chl_m4" }
   ];
   var resetArmed = false;
+  var PLAN = {
+    sleep: [{ k: "ct_sleep1" }, { k: "ct_sleep2" }, { k: "ct_sleep3" }],
+    att: [{ k: "ct_att1" }, { k: "ct_att2" }, { k: "ct_att3" }],
+    study: [{ k: "ct_study1", auto: "focus" }, { k: "ct_study2" }, { k: "ct_study3" }],
+    mot: [{ k: "ct_mot1" }, { k: "ct_mot2" }, { k: "ct_mot3" }]
+  };
+  function lastPred() { try { return JSON.parse(localStorage.getItem("last") || "null"); } catch (e) { return null; } }
+  function histLoad() { try { return JSON.parse(localStorage.getItem("history") || "[]") || []; } catch (e) { return []; } }
+  function weakest() {
+    var l = lastPred(); if (!l) return null;
+    var g = {
+      sleep: Math.max(0, (8 - (+l.s || 0)) / 3),
+      att: Math.max(0, (90 - (+l.a || 0)) / 40),
+      study: Math.max(0, (12 - (+l.h || 0)) / 12),
+      mot: l.m === "Low" ? 1 : l.m === "Medium" ? 0.4 : 0
+    }, best = null, bv = 0.12;
+    for (var k in g) if (g[k] > bv) { bv = g[k]; best = k; }
+    return best;
+  }
+  function todayChallenge() {
+    var w = weakest(), day = Math.floor(Date.now() / 86400000 + 3);
+    if (w) { var L = PLAN[w]; var c = L[day % L.length]; return { k: c.k, auto: c.auto, f: w }; }
+    var c0 = CH[day % CH.length]; return { k: c0.k, auto: c0.auto, f: null };
+  }
 
   function chIndex() { return Math.floor(Date.now() / 86400000 + 3) % CH.length; }
   function focusMinutes() {
@@ -421,18 +566,20 @@ Object.assign(T.uz, {
   }
 
   function render() {
-    var a = actLoad(), day = a.days[actKey()] || {}, ch = CH[chIndex()];
+    var a = actLoad(), day = a.days[actKey()] || {}, ch = todayChallenge();
     // auto challenge
     if (ch.auto && day[ch.auto] > 0 && !(day.ch > 0)) { recordAct("ch", 30); a = actLoad(); day = a.days[actKey()] || {}; }
     var chDone = day.ch > 0;
     var streak = actStreak();
 
     // next step
-    var nx = !(day.focus > 0) ? "focus" : !(day.quiz > 0) ? "quiz" : !(day.pred > 0) ? "pred" : !chDone ? "ch" : "done";
+    var hist = histLoad(), lastT = hist.length ? hist[hist.length - 1].t : 0, daysAgo = lastT ? Math.floor((Date.now() - lastT) / 86400000) : 0;
+    var stale = hist.length > 0 && daysAgo >= 7 && !(day.pred > 0);
+    var nx = stale ? "recheck" : !(day.focus > 0) ? "focus" : !(day.quiz > 0) ? "quiz" : !(day.pred > 0) ? "pred" : !chDone ? "ch" : "done";
     $("tdNextT").textContent = t("nx_" + nx + "_t");
     $("tdNextD").textContent = t("nx_" + nx + "_d");
     var b = $("tdNextB"); b.textContent = t("nx_" + nx + "_b");
-    b.setAttribute("href", { focus: "/focus", quiz: "/quiz", pred: "/predict", ch: "#challenge", done: "/predict" }[nx]);
+    b.setAttribute("href", { focus: "/focus", quiz: "/quiz", pred: "/predict", ch: "#challenge", done: "/predict", recheck: "/predict" }[nx]);
     $("tdMas").innerHTML = window.mascot(nx === "done" || streak > 2 ? "cheer" : "happy");
 
     // stats
@@ -445,7 +592,7 @@ Object.assign(T.uz, {
     $("tdMin").textContent = focusMinutes();
 
     // challenge
-    $("chSub").textContent = t("ch_sub");
+    $("chSub").textContent = ch.f ? t("pl_badge").replace("{f}", t("wf_" + ch.f)) + ". " + t("pl_sub") : t("ch_sub");
     $("chBox").innerHTML = '<div class="td-chq">' + t(ch.k) + "</div>" +
       (chDone ? '<div class="td-chok">✅ ' + t("ch_done") + "</div>"
         : ch.auto ? '<div class="note">' + t("ch_auto") + "</div>"
@@ -471,8 +618,41 @@ Object.assign(T.uz, {
       return '<div title="' + v + " " + t("st_pts") + '"><i style="height:' + Math.round(v / max * 84) + 'px"></i>' + labels[j] + "</div>";
     }).join("");
 
+    renderProgress(hist, daysAgo);
+
     var ns = $("navStreak"); if (ns) ns.textContent = streak;
     $("tdReset").textContent = resetArmed ? t("td_reset2") : t("td_reset");
+  }
+
+  function renderProgress(h, daysAgo) {
+    var box = $("pgBox");
+    if (!h.length) { box.innerHTML = '<p class="note" style="margin:0 0 12px">' + t("pg_empty") + '</p><a class="btn" href="/predict">' + t("pg_btn") + "</a>"; return; }
+    var first = h[0], last = h[h.length - 1], d = last.p - first.p, msg;
+    if (h.length === 1) msg = t("pg_one").replace("{a}", first.p);
+    else if (d > 0.05) msg = t("pg_up").replace("{d}", Math.round(d * 10) / 10).replace("{a}", first.p).replace("{b}", last.p);
+    else if (d < -0.05) msg = t("pg_down").replace("{d}", Math.round(-d * 10) / 10).replace("{a}", first.p).replace("{b}", last.p);
+    else msg = t("pg_same").replace("{a}", last.p);
+    var why = [];
+    if (h.length > 1 && first.x && last.x) {
+      var fx = first.x, lx = last.x;
+      if (fx.sleep_hours !== lx.sleep_hours && lx.sleep_hours != null) why.push(t("chg_sleep").replace("{a}", fx.sleep_hours).replace("{b}", lx.sleep_hours));
+      if (fx.hours_studied !== lx.hours_studied && lx.hours_studied != null) why.push(t("chg_study").replace("{a}", fx.hours_studied).replace("{b}", lx.hours_studied));
+      var fa = fx.classes_per_week > 0 ? Math.round(Math.min(100, fx.classes_attended / fx.classes_per_week * 100)) : 0;
+      var la = lx.classes_per_week > 0 ? Math.round(Math.min(100, lx.classes_attended / lx.classes_per_week * 100)) : 0;
+      if (fa !== la) why.push(t("chg_att").replace("{a}", fa).replace("{b}", la));
+    }
+    var pts = h.map(function (r) { return r.p; }), mn = Math.min.apply(null, pts), mx = Math.max.apply(null, pts);
+    if (mx - mn < 5) { mx += 3; mn -= 3; }
+    var W = 300, H = 90, n = pts.length, xy = pts.map(function (v, i) {
+      return [n === 1 ? W / 2 : 10 + i * (W - 20) / (n - 1), H - 10 - (v - mn) / (mx - mn) * (H - 20)];
+    });
+    var svg = '<svg viewBox="0 0 ' + W + " " + H + '" style="width:100%;height:110px;display:block" role="img"><polyline fill="none" stroke="var(--brand)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="' +
+      xy.map(function (q) { return q[0].toFixed(1) + "," + q[1].toFixed(1); }).join(" ") + '"/>' +
+      xy.map(function (q, i) { return '<circle cx="' + q[0].toFixed(1) + '" cy="' + q[1].toFixed(1) + '" r="4" fill="var(--brand)"><title>' + pts[i] + "</title></circle>"; }).join("") + "</svg>";
+    var foot = daysAgo >= 7 ? '<p class="note" style="margin:12px 0">' + t("pg_stale").replace("{d}", daysAgo) + '</p><a class="btn" href="/predict">' + t("pg_recheck") + "</a>"
+      : '<p class="note" style="margin:12px 0 0">' + t("pg_ok").replace("{d}", 7 - daysAgo) + "</p>";
+    box.innerHTML = svg + '<p style="margin:10px 0 4px"><b>' + msg + "</b></p>" +
+      (why.length ? '<p class="note" style="margin:0">' + t("pg_why") + " " + why.join("; ") + "</p>" : "") + foot;
   }
 
   $("tdReset").onclick = function () {
