@@ -340,3 +340,11 @@ nav .links a.only-m{display:none}
 .td-act.ok b{color:var(--ok)}
 .td-chk{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:14px;color:#fff;flex:none}
 .td-act.ok .td-chk{background:var(--ok);border-color:var(--ok)}
+/* Sovi 2.0: blink, head tilt, sparkle */
+.mascot .head{transform-box:view-box;transform-origin:100px 150px;animation:tilt 7s ease-in-out infinite}
+@keyframes tilt{0%,100%{transform:rotate(0)}30%{transform:rotate(-2.2deg)}65%{transform:rotate(1.8deg)}}
+.mascot .lid{transform-box:fill-box;transform-origin:50% 0;transform:scaleY(0);animation:blink 5.2s infinite}
+@keyframes blink{0%,92%,100%{transform:scaleY(0)}95%{transform:scaleY(1)}}
+.mascot .tw{transform-box:fill-box;transform-origin:center;animation:tw 1.6s ease-in-out infinite}
+@keyframes tw{50%{transform:scale(.55);opacity:.55}}
+@media (prefers-reduced-motion:reduce){.mascot .head,.mascot .lid,.mascot .tw{animation:none}}
