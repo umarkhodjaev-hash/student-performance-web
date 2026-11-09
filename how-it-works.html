@@ -127,8 +127,45 @@
     }
   };
 
+  window.T.uz = {
+  "n_home": "Bosh sahifa",
+  "n_pred": "Bashorat",
+  "n_how": "Qanday ishlaydi",
+  "n_imp": "Yaxshilash",
+  "n_about": "Loyiha haqida",
+  "n_cta": "Tahlil qilish",
+  "ft_tag": "O'quv odatlaringiz asosida imtihon balingizni bashorat qiling va nimani o'zgartirish kerakligini bilib oling. Toshkentdan data science loyihasi.",
+  "ft_pages": "SAHIFALAR",
+  "ft_proj": "LOYIHA",
+  "ft_gh": "GitHub profili",
+  "ft_code": "Bashorat serveri kodi",
+  "ft_web": "Sayt kodi",
+  "ft_note": "O'quv loyihasi. Bashoratlar taxminiy bo'lib, natijani kafolatlamaydi.",
+  "lv_excellent": "A'lo",
+  "lv_verygood": "Juda yaxshi",
+  "lv_dev": "Rivojlanmoqda",
+  "lv_need": "Yaxshilash kerak",
+  "o_Low": "Past",
+  "o_Medium": "O'rta",
+  "o_High": "Yuqori",
+  "o_Yes": "Ha",
+  "o_No": "Yo'q",
+  "o_Positive": "Ijobiy",
+  "o_Neutral": "Neytral",
+  "o_Negative": "Salbiy",
+  "o_Near": "Yaqin",
+  "o_Moderate": "O'rtacha",
+  "o_Far": "Uzoq",
+  "u_h": "soat",
+  "u_d": "kun"
+};
+
   var lang = "ru";
-  try { lang = localStorage.getItem("lang") || (navigator.language.indexOf("ru") === 0 ? "ru" : "en"); } catch (e) {}
+  try {
+    var sl = localStorage.getItem("lang");
+    var nl = (navigator.language || "").slice(0, 2);
+    lang = (sl === "ru" || sl === "en" || sl === "uz") ? sl : (nl === "ru" ? "ru" : nl === "uz" ? "uz" : "en");
+  } catch (e) {}
 
   window.getLang = function () { return lang; };
   window.t = function (k) {
@@ -152,7 +189,7 @@
         '<a href="/about" data-i18n="n_about"></a></div>' +
         '<div class="tools">' +
         '<button class="chip" id="theme" aria-label="Theme"></button>' +
-        '<button class="chip" id="lang"></button>' +
+        '<select class="chip" id="lang" aria-label="Language"><option value="ru">RU</option><option value="en">EN</option><option value="uz">UZ</option></select>' +
         '<a class="btn small" href="/predict" data-i18n="n_cta"></a>' +
         '<button class="chip burger" id="burger" aria-label="Menu">☰</button></div>';
       var path = location.pathname.replace(/\.html$/, "").replace(/\/+$/, "") || "/";
@@ -186,7 +223,7 @@
     if (d.doc_title) document.title = d.doc_title;
     document.querySelectorAll("[data-i18n]").forEach(function (e) { e.textContent = window.t(e.getAttribute("data-i18n")); });
     var lb = document.getElementById("lang");
-    if (lb) lb.textContent = lang === "ru" ? "EN" : "RU";
+    if (lb) lb.value = lang;
     if (window.onLang) window.onLang();
   }
   window.applyLang = applyLang;
@@ -206,8 +243,8 @@
     document.getElementById("theme").onclick = function () {
       setTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
     };
-    document.getElementById("lang").onclick = function () {
-      lang = lang === "ru" ? "en" : "ru";
+    document.getElementById("lang").onchange = function () {
+      lang = this.value;
       try { localStorage.setItem("lang", lang); } catch (e) {}
       applyLang();
     };
@@ -307,6 +344,72 @@ Object.assign(T.ru, {
   q4: "Можно ли доверять рекомендациям?", a4: "Это общие учебные советы, связанные с вашими ответами, а не персональные или медицинские рекомендации. Если что-то влияет на здоровье, поговорите с врачом, родителями или школьным психологом.",
   q5: "Можно ли пробовать разные ответы?", a5: "Да, сколько угодно раз. Меняйте по одной привычке, чтобы увидеть, как двигается оценка.",
   go_t: "Попробуйте со своими привычками", go_d: "Это займёт около минуты, аккаунт не нужен.", go_b: "Открыть предиктор →"
+});
+
+Object.assign(T.uz, {
+  "doc_title": "Qanday ishlaydi | student-performance-predictor",
+  "crumb": "QANDAY ISHLAYDI",
+  "h_title": "Javoblaringizdan bashoratgacha",
+  "h_lead": "Shakl ortida nimalar sodir bo'lishi, model nimadan foydalanishi va uning cheklovlari haqida tushunarli bayon.",
+  "o_t": "Asosiy g'oya",
+  "o_d": "Model ko'plab o'quvchilar misolidan qonuniyatlarni o'rgandi: ular qancha o'qigan, darslarga qanchalik qatnashgan, qanday uxlagan, ularning muhiti qanday bo'lgan va imtihonda qancha ball olgan. Siz o'z javoblaringizni kiritganingizda, model o'xshash profildagi o'quvchi olishi ehtimoli yuqori bo'lgan ballni baholaydi.",
+  "o_d2": "Model sizni shaxsan tanimaydi. U profilingizni o'rgangan qonuniyatlar bilan solishtiradi, shuning uchun natija hukm emas, balki taxminiy bahodir.",
+  "pl_t": "Jarayon qadamma-qadam",
+  "p1t": "15 ta savolga javob bering",
+  "p1d": "Kundalik tartib, muhit va turmush tarzingizni uchta qisqa qadamda tasvirlaysiz.",
+  "p2t": "Ma'lumotlar tayyorlanadi",
+  "p2d": "Davomat avtomatik hisoblanadi: qatnashilgan darslar haftalik darslar soniga bo'linadi, ko'pi bilan 100%. Hammasi model o'qitilgan aniq formatga keltiriladi.",
+  "p3t": "Model bashorat qiladi",
+  "p3d": "scikit-learn yordamida o'qitilgan regressiya modeli imtihon balini 0 dan 100 gacha baholaydi.",
+  "p4t": "Xulosalar olasiz",
+  "p4d": "Ball darajaga aylanadi, oddiy qoidalar esa javoblaringizdan xulosa va tavsiyalar beradi. 'Agar o'zgartirsam' stsenariylari bir odatni o'zgartirib, o'sha modelni qayta ishga tushiradi.",
+  "fa_t": "Bashoratga ta'sir qiluvchi omillar",
+  "fa_s": "O'n besh javob, to'rt sohaga guruhlangan. Davomat ulardan ikkitasidan hisoblanadi.",
+  "th1": "Soha",
+  "th2": "Nimani so'raymiz",
+  "th3": "Nima uchun muhim",
+  "g1n": "Tartib",
+  "g1a": "Haftalik darslar, qatnashilgan darslar, mustaqil o'qish soatlari, oldingi ball, repetitor mashg'ulotlari",
+  "g1w": "Bular yuklama va sa'y-harakatni ifodalaydi. O'qish vaqti va oldingi natijalar o'zlashtirish ma'lumotlarida ko'pincha kuchli signal bo'ladi.",
+  "g2n": "Muhit",
+  "g2a": "Ota-onaning ishtiroki, resurslardan foydalanish, internet, o'qituvchi sifati, do'stlar ta'siri, maktabgacha masofa",
+  "g2w": "Atrofingizdagi yordam va sharoitlar o'qishni osonlashtirishi yoki qiyinlashtirishi mumkin.",
+  "g3n": "Motivatsiya",
+  "g3a": "O'qishga qanchalik ishtiyoqlisiz",
+  "g3w": "Motivatsiya yaxshi odatlarning natijaga qanchalik barqaror aylanishini belgilaydi.",
+  "g4n": "Turmush tarzi",
+  "g4a": "Tunda uyqu, jismoniy faol kunlar, darsdan tashqari mashg'ulotlar",
+  "g4w": "Dam olish va muvozanat o'quv yili davomida diqqat, energiya va kayfiyatga ta'sir qiladi.",
+  "lv_t": "Darajalar nimani anglatadi",
+  "lv_s": "0 dan 100 gacha bo'lgan ball to'rt darajaga bo'linadi.",
+  "lvAd": "Kuchli natijalar kutiladi. Tartibingizni saqlang va charchab qolmang.",
+  "lvBd": "Yaxshi natijalar. Bir nechta kichik yaxshilanish sizni yanada yuqoriga ko'taradi.",
+  "lvCd": "O'sish uchun imkoniyat bor. Avval bir-ikkita odatni yaxshilashni tanlang.",
+  "lvDr": "60 dan past",
+  "lvDd": "Reja tuzish vaqti. 'Yaxshilash' sahifasidan boshlang va bir vaqtda bitta narsani o'zgartiring.",
+  "wi_t": "'Agar o'zgartirsam' stsenariylari",
+  "wi_d": "Bashoratdan so'ng sayt haftasiga besh soat ko'proq o'qish yoki barcha darslarga qatnashish kabi o'zgarishlarni sinaydi. Har bir stsenariy o'sha modelga yangi so'rov yuboradi, shuning uchun ko'rgan raqamlaringiz qat'iy qoidadan emas, modelning o'zidan olinadi.",
+  "li_t": "Bilishingiz kerak bo'lgan cheklovlar",
+  "li1": "Bu taxminiy baho. Haqiqiy imtihon natijasi shakl ko'ra olmaydigan ko'p narsalarga bog'liq: imtihonning o'zi, sog'liq, omad va sizning maktabingiz.",
+  "li2": "Model qonuniyatlarni ko'rsatadi, sabablarni emas. Ma'lumotlarda yuqori ballar bilan bog'liq odatni o'zgartirish sizning ballingizni xuddi shuncha oshirishini kafolatlamaydi.",
+  "li3": "Model o'qitilgan ma'lumotlarini aks ettiradi. O'quvchilar, maktablar va mamlakatlar farq qiladi, shuning uchun model ba'zi profillarga boshqalariga qaraganda yaxshiroq mos keladi.",
+  "li4": "Bu haqiqiy qarorlar uchun emas. Undan o'quvchilarni baholash, tartiblash yoki hukm qilish, shuningdek qabul uchun foydalanmang.",
+  "pr_t": "Maxfiylik",
+  "pr_d": "Akkauntlar yo'q. Javoblaringiz bashorat serveriga faqat natijani hisoblash uchun yuboriladi va bu loyiha kodi ularni saqlamaydi. So'nggi natijangiz faqat o'zingizning brauzeringizda saqlanadi, shunda bosh sahifa uni ko'rsata oladi.",
+  "fq_t": "Ko'p beriladigan savollar",
+  "q1": "Bashorat qanchalik aniq?",
+  "a1": "Bu o'ylab ko'rish uchun foydali taxminiy yo'l-yo'riq. Model sizning imtihoningiz va o'qituvchingizni bilmaydi, shuning uchun unga albatta ishonish kerak bo'lgan prognoz sifatida emas, fikrlash uchun sabab sifatida qarang.",
+  "q2": "Nima uchun birinchi bashorat shuncha uzoq hisoblandi?",
+  "a2": "Bashorat serveri bepul tarifda ishlaydi va hech kim foydalanmasa uxlab qoladi. Birinchi so'rov uni uyg'otadi, bu bir daqiqagacha vaqt olishi mumkin. Keyin hammasi tez ishlaydi.",
+  "q3": "Javoblarimni saqlaysizlarmi?",
+  "a3": "Bu loyihada akkauntlar ham, ma'lumotlar bazasi ham yo'q. Yuqoridagi maxfiylik bo'limiga qarang.",
+  "q4": "Tavsiyalarga ishonish mumkinmi?",
+  "a4": "Bu javoblaringizga bog'langan umumiy o'quv maslahatlari, shaxsiy yoki tibbiy tavsiyalar emas. Agar biror narsa sog'lig'ingizga ta'sir qilsa, shifokor, ota-ona yoki maktab psixologi bilan gaplashing.",
+  "q5": "Turli javoblarni sinab ko'rsam bo'ladimi?",
+  "a5": "Ha, xohlagancha. Bashorat qanday o'zgarishini ko'rish uchun bir vaqtda bitta odatni o'zgartirib ko'ring.",
+  "go_t": "O'z odatlaringiz bilan sinab ko'ring",
+  "go_d": "Taxminan bir daqiqa vaqt oladi, akkaunt shart emas.",
+  "go_b": "Bashoratchini ochish →"
 });
 
 window.onLang = function () {

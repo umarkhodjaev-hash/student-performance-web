@@ -44,7 +44,7 @@
   <div class="stats">
     <div class="stat"><b data-i18n="s_1v"></b><span data-i18n="s_1l"></span></div>
     <div class="stat"><b data-i18n="s_2v"></b><span data-i18n="s_2l"></span></div>
-    <div class="stat"><b>RU · EN</b><span data-i18n="s_3l"></span></div>
+    <div class="stat"><b>RU · EN · UZ</b><span data-i18n="s_3l"></span></div>
     <div class="stat"><b data-i18n="s_4v"></b><span data-i18n="s_4l"></span></div>
   </div>
 
@@ -104,8 +104,45 @@
     }
   };
 
+  window.T.uz = {
+  "n_home": "Bosh sahifa",
+  "n_pred": "Bashorat",
+  "n_how": "Qanday ishlaydi",
+  "n_imp": "Yaxshilash",
+  "n_about": "Loyiha haqida",
+  "n_cta": "Tahlil qilish",
+  "ft_tag": "O'quv odatlaringiz asosida imtihon balingizni bashorat qiling va nimani o'zgartirish kerakligini bilib oling. Toshkentdan data science loyihasi.",
+  "ft_pages": "SAHIFALAR",
+  "ft_proj": "LOYIHA",
+  "ft_gh": "GitHub profili",
+  "ft_code": "Bashorat serveri kodi",
+  "ft_web": "Sayt kodi",
+  "ft_note": "O'quv loyihasi. Bashoratlar taxminiy bo'lib, natijani kafolatlamaydi.",
+  "lv_excellent": "A'lo",
+  "lv_verygood": "Juda yaxshi",
+  "lv_dev": "Rivojlanmoqda",
+  "lv_need": "Yaxshilash kerak",
+  "o_Low": "Past",
+  "o_Medium": "O'rta",
+  "o_High": "Yuqori",
+  "o_Yes": "Ha",
+  "o_No": "Yo'q",
+  "o_Positive": "Ijobiy",
+  "o_Neutral": "Neytral",
+  "o_Negative": "Salbiy",
+  "o_Near": "Yaqin",
+  "o_Moderate": "O'rtacha",
+  "o_Far": "Uzoq",
+  "u_h": "soat",
+  "u_d": "kun"
+};
+
   var lang = "ru";
-  try { lang = localStorage.getItem("lang") || (navigator.language.indexOf("ru") === 0 ? "ru" : "en"); } catch (e) {}
+  try {
+    var sl = localStorage.getItem("lang");
+    var nl = (navigator.language || "").slice(0, 2);
+    lang = (sl === "ru" || sl === "en" || sl === "uz") ? sl : (nl === "ru" ? "ru" : nl === "uz" ? "uz" : "en");
+  } catch (e) {}
 
   window.getLang = function () { return lang; };
   window.t = function (k) {
@@ -129,7 +166,7 @@
         '<a href="/about" data-i18n="n_about"></a></div>' +
         '<div class="tools">' +
         '<button class="chip" id="theme" aria-label="Theme"></button>' +
-        '<button class="chip" id="lang"></button>' +
+        '<select class="chip" id="lang" aria-label="Language"><option value="ru">RU</option><option value="en">EN</option><option value="uz">UZ</option></select>' +
         '<a class="btn small" href="/predict" data-i18n="n_cta"></a>' +
         '<button class="chip burger" id="burger" aria-label="Menu">☰</button></div>';
       var path = location.pathname.replace(/\.html$/, "").replace(/\/+$/, "") || "/";
@@ -163,7 +200,7 @@
     if (d.doc_title) document.title = d.doc_title;
     document.querySelectorAll("[data-i18n]").forEach(function (e) { e.textContent = window.t(e.getAttribute("data-i18n")); });
     var lb = document.getElementById("lang");
-    if (lb) lb.textContent = lang === "ru" ? "EN" : "RU";
+    if (lb) lb.value = lang;
     if (window.onLang) window.onLang();
   }
   window.applyLang = applyLang;
@@ -183,8 +220,8 @@
     document.getElementById("theme").onclick = function () {
       setTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
     };
-    document.getElementById("lang").onclick = function () {
-      lang = lang === "ru" ? "en" : "ru";
+    document.getElementById("lang").onchange = function () {
+      lang = this.value;
       try { localStorage.setItem("lang", lang); } catch (e) {}
       applyLang();
     };
@@ -207,7 +244,7 @@ Object.assign(T.en, {
   last: "YOUR LAST ANALYSIS", lastT: "Performance analysis", lastEmpty: "Run your first analysis and it will appear here.",
   l_pred: "Predicted score", l_study: "Study time", l_att: "Attendance", l_sleep: "Sleep", l_mot: "Motivation",
   flm: "ML model", fl: "15 factors",
-  s_1v: "15", s_1l: "factors analyzed", s_2v: "~1 min", s_2l: "to get a result", s_3l: "two languages", s_4v: "Free", s_4l: "no sign-up",
+  s_1v: "15", s_1l: "factors analyzed", s_2v: "~1 min", s_2l: "to get a result", s_3l: "three languages", s_4v: "Free", s_4l: "no sign-up",
   wh_t: "What the model looks at", wh_s: "Fifteen answers about your routine, environment and lifestyle, grouped into six areas.",
   f1t: "Study routine", f1d: "Weekly study hours, classes and tutoring sessions show how much effort goes into your studies.",
   f2t: "Attendance", f2d: "Calculated automatically from the classes you have and the classes you actually attend.",
@@ -230,7 +267,7 @@ Object.assign(T.ru, {
   last: "ВАШ ПОСЛЕДНИЙ АНАЛИЗ", lastT: "Анализ успеваемости", lastEmpty: "Пройдите первый анализ, и он появится здесь.",
   l_pred: "Прогнозируемый балл", l_study: "Время на учёбу", l_att: "Посещаемость", l_sleep: "Сон", l_mot: "Мотивация",
   flm: "ML-модель", fl: "15 факторов",
-  s_1v: "15", s_1l: "факторов в анализе", s_2v: "~1 мин", s_2l: "до результата", s_3l: "два языка", s_4v: "Бесплатно", s_4l: "без регистрации",
+  s_1v: "15", s_1l: "факторов в анализе", s_2v: "~1 мин", s_2l: "до результата", s_3l: "три языка", s_4v: "Бесплатно", s_4l: "без регистрации",
   wh_t: "Что учитывает модель", wh_s: "Пятнадцать ответов о рутине, окружении и образе жизни, сгруппированные в шесть областей.",
   f1t: "Учебная рутина", f1d: "Часы учёбы, занятия и репетитор показывают, сколько усилий вы вкладываете в учёбу.",
   f2t: "Посещаемость", f2d: "Считается автоматически: сколько у вас занятий и сколько вы на самом деле посещаете.",
@@ -244,6 +281,59 @@ Object.assign(T.ru, {
   p_3t: "Получите план", p_3d: "Выводы, рекомендации и эффект изменений, посчитанный той же моделью.",
   hw_more: "Читать подробное объяснение →",
   band_t: "Готовы увидеть свой прогноз?", band_d: "Это займёт около минуты, аккаунт не нужен, и можно пробовать сколько угодно разных ответов.", band_b: "Начать анализ →"
+});
+
+Object.assign(T.uz, {
+  "doc_title": "student-performance-predictor | Imtihon balingizni bashorat qiling",
+  "badge": "DATA SCIENCE × TA'LIM",
+  "h1a": "Odatlaringizni kashf eting.",
+  "h1b": "Natijalaringizni yaxshilang.",
+  "lead": "O'qish odatlaringiz, davomat, uyqu, motivatsiya va muhit o'quv natijalaringiz bilan qanday bog'liqligini bilib oling. Bashoratni o'qitilgan mashinaviy o'rganish modeli tuzadi.",
+  "cta1": "O'zlashtirishimni tahlil qilish →",
+  "cta2": "Qanday ishlaydi",
+  "last": "SO'NGGI TAHLILINGIZ",
+  "lastT": "O'zlashtirish tahlili",
+  "lastEmpty": "Birinchi tahlilni o'tkazing, u shu yerda paydo bo'ladi.",
+  "l_pred": "Bashorat qilingan ball",
+  "l_study": "O'qish vaqti",
+  "l_att": "Davomat",
+  "l_sleep": "Uyqu",
+  "l_mot": "Motivatsiya",
+  "flm": "ML model",
+  "fl": "15 omil",
+  "s_1v": "15",
+  "s_1l": "tahlil qilinadigan omil",
+  "s_2v": "~1 daq",
+  "s_2l": "natijagacha",
+  "s_3l": "uch til",
+  "s_4v": "Bepul",
+  "s_4l": "ro'yxatdan o'tmasdan",
+  "wh_t": "Model nimalarni hisobga oladi",
+  "wh_s": "Kundalik tartib, muhit va turmush tarzi haqidagi o'n besh javob, olti sohaga guruhlangan.",
+  "f1t": "O'quv tartibi",
+  "f1d": "Haftalik o'qish soatlari, darslar va repetitor mashg'ulotlari o'qishga qancha kuch sarflayotganingizni ko'rsatadi.",
+  "f2t": "Davomat",
+  "f2d": "Darslaringiz soni va haqiqatan qatnashgan darslaringiz asosida avtomatik hisoblanadi.",
+  "f3t": "Uyqu va turmush tarzi",
+  "f3d": "Uyqu, jismoniy faollik va darsdan tashqari mashg'ulotlar kundalik muvozanatingizni ifodalaydi.",
+  "f4t": "Motivatsiya",
+  "f4d": "O'qishga qanchalik ishtiyoqli ekaningiz odatlaringiz barqarorligiga ta'sir qiladi.",
+  "f5t": "O'quv muhiti",
+  "f5d": "Ota-onaning ishtiroki, o'quv resurslari, internet, o'qituvchi sifati, do'stlar va maktabgacha masofa.",
+  "f6t": "Oldingi natijalar",
+  "f6d": "Oldingi o'quv balingiz bashorat uchun boshlang'ich nuqta hisoblanadi.",
+  "hw_t": "3 qadamda qanday ishlaydi",
+  "hw_s": "Javoblaringizdan bashoratgacha taxminan bir daqiqada.",
+  "p_1t": "Savollarga javob bering",
+  "p_1d": "Kundalik tartib, muhit va turmush tarzi haqida 15 ta qisqa savol.",
+  "p_2t": "Model bashorat qiladi",
+  "p_2d": "O'qitilgan mashinaviy o'rganish modeli imtihon balingizni 0 dan 100 gacha baholaydi.",
+  "p_3t": "Reja oling",
+  "p_3d": "Xulosalar, tavsiyalar va xuddi shu model hisoblagan 'agar o'zgartirsam' natijalari.",
+  "hw_more": "To'liq tushuntirishni o'qish →",
+  "band_t": "Bashoratingizni ko'rishga tayyormisiz?",
+  "band_d": "Bir daqiqa vaqt oladi, akkaunt shart emas va xohlagancha turli javoblarni sinab ko'rishingiz mumkin.",
+  "band_b": "Tahlilni boshlash →"
 });
 
 var ICONS = ["📚", "✅", "🌙", "🔥", "🏫", "📈"];

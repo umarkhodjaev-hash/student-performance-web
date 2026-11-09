@@ -78,8 +78,45 @@
     }
   };
 
+  window.T.uz = {
+  "n_home": "Bosh sahifa",
+  "n_pred": "Bashorat",
+  "n_how": "Qanday ishlaydi",
+  "n_imp": "Yaxshilash",
+  "n_about": "Loyiha haqida",
+  "n_cta": "Tahlil qilish",
+  "ft_tag": "O'quv odatlaringiz asosida imtihon balingizni bashorat qiling va nimani o'zgartirish kerakligini bilib oling. Toshkentdan data science loyihasi.",
+  "ft_pages": "SAHIFALAR",
+  "ft_proj": "LOYIHA",
+  "ft_gh": "GitHub profili",
+  "ft_code": "Bashorat serveri kodi",
+  "ft_web": "Sayt kodi",
+  "ft_note": "O'quv loyihasi. Bashoratlar taxminiy bo'lib, natijani kafolatlamaydi.",
+  "lv_excellent": "A'lo",
+  "lv_verygood": "Juda yaxshi",
+  "lv_dev": "Rivojlanmoqda",
+  "lv_need": "Yaxshilash kerak",
+  "o_Low": "Past",
+  "o_Medium": "O'rta",
+  "o_High": "Yuqori",
+  "o_Yes": "Ha",
+  "o_No": "Yo'q",
+  "o_Positive": "Ijobiy",
+  "o_Neutral": "Neytral",
+  "o_Negative": "Salbiy",
+  "o_Near": "Yaqin",
+  "o_Moderate": "O'rtacha",
+  "o_Far": "Uzoq",
+  "u_h": "soat",
+  "u_d": "kun"
+};
+
   var lang = "ru";
-  try { lang = localStorage.getItem("lang") || (navigator.language.indexOf("ru") === 0 ? "ru" : "en"); } catch (e) {}
+  try {
+    var sl = localStorage.getItem("lang");
+    var nl = (navigator.language || "").slice(0, 2);
+    lang = (sl === "ru" || sl === "en" || sl === "uz") ? sl : (nl === "ru" ? "ru" : nl === "uz" ? "uz" : "en");
+  } catch (e) {}
 
   window.getLang = function () { return lang; };
   window.t = function (k) {
@@ -103,7 +140,7 @@
         '<a href="/about" data-i18n="n_about"></a></div>' +
         '<div class="tools">' +
         '<button class="chip" id="theme" aria-label="Theme"></button>' +
-        '<button class="chip" id="lang"></button>' +
+        '<select class="chip" id="lang" aria-label="Language"><option value="ru">RU</option><option value="en">EN</option><option value="uz">UZ</option></select>' +
         '<a class="btn small" href="/predict" data-i18n="n_cta"></a>' +
         '<button class="chip burger" id="burger" aria-label="Menu">☰</button></div>';
       var path = location.pathname.replace(/\.html$/, "").replace(/\/+$/, "") || "/";
@@ -137,7 +174,7 @@
     if (d.doc_title) document.title = d.doc_title;
     document.querySelectorAll("[data-i18n]").forEach(function (e) { e.textContent = window.t(e.getAttribute("data-i18n")); });
     var lb = document.getElementById("lang");
-    if (lb) lb.textContent = lang === "ru" ? "EN" : "RU";
+    if (lb) lb.value = lang;
     if (window.onLang) window.onLang();
   }
   window.applyLang = applyLang;
@@ -157,8 +194,8 @@
     document.getElementById("theme").onclick = function () {
       setTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
     };
-    document.getElementById("lang").onclick = function () {
-      lang = lang === "ru" ? "en" : "ru";
+    document.getElementById("lang").onchange = function () {
+      lang = this.value;
       try { localStorage.setItem("lang", lang); } catch (e) {}
       applyLang();
     };
@@ -257,6 +294,95 @@ Object.assign(T.ru, {
   c_res: "Поищите дополнительные ресурсы в школе или онлайн.", c_net: "Используйте офлайн-материалы или ресурсы школы, когда нет интернета.",
   c_peer: "Защищайте время учёбы от негативного влияния друзей.", c_ok: "Сохраняйте режим и следите за прогрессом.",
   w_study: "+5 часов учёбы в неделю", w_att: "Ходить на все занятия", w_sleep: "Спать 8 часов", w_tutor: "+2 занятия с репетитором в месяц", w_mot: "Высокая мотивация"
+});
+
+Object.assign(T.uz, {
+  "doc_title": "Imtihon balini bashorat qilish | student-performance-predictor",
+  "crumb": "BASHORAT",
+  "t_pred": "O'quv profilingizni yarating",
+  "s_pred": "Kundalik tartibingiz, muhit va turmush tarzingiz haqidagi bir nechta savolga javob bering. Model imtihon balingizni baholaydi va shaxsiy xulosalar beradi.",
+  "note": "Bashorat o'rganish va o'z-o'zini tahlil qilish uchun taxminiy baho bo'lib, natijani kafolatlamaydi.",
+  "s1": "Tartib",
+  "s2": "Muhit",
+  "s3": "Turmush tarzi",
+  "t_s1": "O'quv tartibi",
+  "d_s1": "Yuklamangiz, davomatingiz va mustaqil o'qish odatlaringiz.",
+  "t_s2": "O'quv muhiti",
+  "d_s2": "O'qishingiz atrofidagi yordam va sharoitlar.",
+  "t_s3": "Motivatsiya va turmush tarzi",
+  "d_s3": "Kundalik odatlar bashoratga ko'proq kontekst beradi.",
+  "f_classes_per_week": "Haftada nechta dars",
+  "h_classes_per_week": "Davomatni to'g'ri hisoblash uchun kerak.",
+  "f_classes_attended": "Haftada nechta darsga qatnashasiz",
+  "h_classes_attended": "Umumiy darslar soniga solishtiriladi.",
+  "f_hours_studied": "Haftasiga mustaqil o'qish soatlari",
+  "h_hours_studied": "Oddiy darslardan tashqari o'qish vaqti.",
+  "f_previous_scores": "Oldingi o'quv balingiz",
+  "h_previous_scores": "So'nggi o'quv natijangiz, ya'ni boshlang'ich nuqta.",
+  "f_tutoring_sessions": "Oyiga repetitor mashg'ulotlari",
+  "h_tutoring_sessions": "Oladigan qo'shimcha o'quv yordami.",
+  "f_parental_involvement": "Ota-onaning ishtiroki",
+  "h_parental_involvement": "Uydagi qo'llab-quvvatlash va e'tibor.",
+  "f_access_to_resources": "O'quv resurslaridan foydalanish",
+  "h_access_to_resources": "Darsliklar, materiallar va o'quv vositalari.",
+  "f_internet_access": "O'qish uchun barqaror internet",
+  "h_internet_access": "Onlayn resurslardan foydalanishga ta'sir qiladi.",
+  "f_teacher_quality": "O'qituvchi sifati",
+  "h_teacher_quality": "O'qitish muhitiga sizning bahongiz.",
+  "f_peer_influence": "Do'stlarning o'qishga ta'siri",
+  "h_peer_influence": "Do'stlar sizni qo'llab-quvvatlaydimi yoki chalg'itadimi?",
+  "f_distance_from_home": "Maktabgacha masofa",
+  "h_distance_from_home": "Yo'l o'qish va dam olish vaqtiga ta'sir qiladi.",
+  "f_motivation_level": "O'qishga motivatsiya",
+  "h_motivation_level": "Hozirgi o'quv motivatsiyangiz darajasi.",
+  "f_sleep_hours": "Tunda uyqu",
+  "h_sleep_hours": "Oddiy o'quv kechasida o'rtacha.",
+  "f_physical_activity": "Haftasiga jismoniy faol kunlar",
+  "h_physical_activity": "Muntazam jismoniy faollik.",
+  "f_extracurricular_activities": "Darsdan tashqari mashg'ulotlar",
+  "h_extracurricular_activities": "To'garaklar, sport, musobaqalar.",
+  "attIs": "Sizning davomatingiz:",
+  "back": "← Orqaga",
+  "next": "Keyingi →",
+  "go": "Tahlil qilish ✨",
+  "again": "Qaytadan boshlash",
+  "ld1": "Profilingiz tahlil qilinmoqda…",
+  "ld2": "Bepul serverning birinchi marta uyg'onishi uchun bir daqiqagacha vaqt kerak bo'lishi mumkin. Iltimos, kuting.",
+  "errT": "Modelga ulanib bo'lmadi. Internetni tekshiring va bir ozdan so'ng qayta urinib ko'ring.",
+  "r_score": "100 dan",
+  "r_att": "Davomat",
+  "r_ins": "Ma'lumotlar nimani ko'rsatadi",
+  "r_rec": "Nimani yaxshilash kerak",
+  "r_what": "Agar o'zgartirsangiz…",
+  "r_calc": "Model yordamida hisoblanmoqda…",
+  "r_none": "Qo'shadigan narsa yo'q, bu yerda profilingiz allaqachon kuchli.",
+  "r_more": "Qanday yaxshilash →",
+  "i_att_high": "Davomatingiz juda yuqori.",
+  "i_att_low": "Davomatingiz o'zlashtirishingizni cheklashi mumkin.",
+  "i_study_high": "Siz haftasiga muntazam ko'p shug'ullanasiz.",
+  "i_study_low": "Haftalik mustaqil o'qish vaqtingiz nisbatan kam.",
+  "i_sleep_ok": "Uyqungiz barqaror o'quv tartibini qo'llab-quvvatlaydi.",
+  "i_sleep_low": "Uyqu davomiyligingiz nisbatan kam.",
+  "i_prev_high": "Oldingi o'quv natijalaringiz kuchli.",
+  "i_mot_high": "Siz yuqori motivatsiyani qayd etdingiz.",
+  "i_res_low": "O'quv resurslarining cheklanganligi o'qishni qiyinlashtirishi mumkin.",
+  "i_teach_high": "Siz kuchli o'qitish muhitini qayd etdingiz.",
+  "i_peer_pos": "Do'stlar muhiti o'qishingizni qo'llab-quvvatlaydi.",
+  "c_att": "Davomatni oshiring va qoldirilgan darslarni tezda o'zlashtiring.",
+  "c_study": "Haftalik mustaqil o'qish tartibini barqarorroq qiling.",
+  "c_sleep": "Uyqu tartibini barqarorroq saqlang.",
+  "c_tutor": "Qiyin mavzular uchun repetitor yoki o'quv yordamini o'ylab ko'ring.",
+  "c_phys": "Haftangizga muntazam jismoniy faollik qo'shing.",
+  "c_mot": "Katta maqsadlarni kichik haftalik vazifalarga bo'ling.",
+  "c_res": "Maktabda yoki onlayn qo'shimcha o'quv resurslarini qidiring.",
+  "c_net": "Internet cheklangan bo'lganda oflayn materiallar yoki maktab resurslaridan foydalaning.",
+  "c_peer": "Diqqat bilan o'qish vaqtini salbiy do'stlik bosimidan himoya qiling.",
+  "c_ok": "Tartibingizni saqlang va rivojlanishni kuzatib boring.",
+  "w_study": "Haftasiga +5 soat o'qish",
+  "w_att": "Barcha darslarga qatnashish",
+  "w_sleep": "8 soat uxlash",
+  "w_tutor": "Oyiga +2 repetitor mashg'uloti",
+  "w_mot": "Yuqori motivatsiya"
 });
 
 var STEPS = [

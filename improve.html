@@ -73,8 +73,45 @@
     }
   };
 
+  window.T.uz = {
+  "n_home": "Bosh sahifa",
+  "n_pred": "Bashorat",
+  "n_how": "Qanday ishlaydi",
+  "n_imp": "Yaxshilash",
+  "n_about": "Loyiha haqida",
+  "n_cta": "Tahlil qilish",
+  "ft_tag": "O'quv odatlaringiz asosida imtihon balingizni bashorat qiling va nimani o'zgartirish kerakligini bilib oling. Toshkentdan data science loyihasi.",
+  "ft_pages": "SAHIFALAR",
+  "ft_proj": "LOYIHA",
+  "ft_gh": "GitHub profili",
+  "ft_code": "Bashorat serveri kodi",
+  "ft_web": "Sayt kodi",
+  "ft_note": "O'quv loyihasi. Bashoratlar taxminiy bo'lib, natijani kafolatlamaydi.",
+  "lv_excellent": "A'lo",
+  "lv_verygood": "Juda yaxshi",
+  "lv_dev": "Rivojlanmoqda",
+  "lv_need": "Yaxshilash kerak",
+  "o_Low": "Past",
+  "o_Medium": "O'rta",
+  "o_High": "Yuqori",
+  "o_Yes": "Ha",
+  "o_No": "Yo'q",
+  "o_Positive": "Ijobiy",
+  "o_Neutral": "Neytral",
+  "o_Negative": "Salbiy",
+  "o_Near": "Yaqin",
+  "o_Moderate": "O'rtacha",
+  "o_Far": "Uzoq",
+  "u_h": "soat",
+  "u_d": "kun"
+};
+
   var lang = "ru";
-  try { lang = localStorage.getItem("lang") || (navigator.language.indexOf("ru") === 0 ? "ru" : "en"); } catch (e) {}
+  try {
+    var sl = localStorage.getItem("lang");
+    var nl = (navigator.language || "").slice(0, 2);
+    lang = (sl === "ru" || sl === "en" || sl === "uz") ? sl : (nl === "ru" ? "ru" : nl === "uz" ? "uz" : "en");
+  } catch (e) {}
 
   window.getLang = function () { return lang; };
   window.t = function (k) {
@@ -98,7 +135,7 @@
         '<a href="/about" data-i18n="n_about"></a></div>' +
         '<div class="tools">' +
         '<button class="chip" id="theme" aria-label="Theme"></button>' +
-        '<button class="chip" id="lang"></button>' +
+        '<select class="chip" id="lang" aria-label="Language"><option value="ru">RU</option><option value="en">EN</option><option value="uz">UZ</option></select>' +
         '<a class="btn small" href="/predict" data-i18n="n_cta"></a>' +
         '<button class="chip burger" id="burger" aria-label="Menu">☰</button></div>';
       var path = location.pathname.replace(/\.html$/, "").replace(/\/+$/, "") || "/";
@@ -132,7 +169,7 @@
     if (d.doc_title) document.title = d.doc_title;
     document.querySelectorAll("[data-i18n]").forEach(function (e) { e.textContent = window.t(e.getAttribute("data-i18n")); });
     var lb = document.getElementById("lang");
-    if (lb) lb.textContent = lang === "ru" ? "EN" : "RU";
+    if (lb) lb.value = lang;
     if (window.onLang) window.onLang();
   }
   window.applyLang = applyLang;
@@ -152,8 +189,8 @@
     document.getElementById("theme").onclick = function () {
       setTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
     };
-    document.getElementById("lang").onclick = function () {
-      lang = lang === "ru" ? "en" : "ru";
+    document.getElementById("lang").onchange = function () {
+      lang = this.value;
       try { localStorage.setItem("lang", lang); } catch (e) {}
       applyLang();
     };
@@ -247,6 +284,58 @@ Object.assign(T.ru, {
   d6t: "Баланс", d6d: "Добавьте движение или хобби и проведите время с поддерживающими друзьями.",
   d7t: "Проверьте", d7d: "Запустите предиктор снова и сравните с первым результатом.",
   go_t: "Готовы измерить эффект?", go_d: "Запустите прогноз снова после недели изменений и сравните результаты.", go_b: "Открыть предиктор →"
+});
+
+Object.assign(T.uz, {
+  "doc_title": "Qanday yaxshilash | student-performance-predictor",
+  "crumb": "YAXSHILASH",
+  "i_title": "Bashoratni rejaga aylantiring",
+  "i_lead": "Kichik, barqaror o'zgarishlar odatda bir martalik katta urinishdan yaxshiroq ishlaydi. Mana model e'tibor beradigan har bir soha uchun amaliy g'oyalar.",
+  "a1t": "O'quv tartibi",
+  "a1_1": "O'qish vaqtini taqvimingizda dars kabi rejalashtiring. Qat'iy vaqt yaxshi niyatdan afzal.",
+  "a1_2": "Bitta uzun mashg'ulot o'rniga qisqa, diqqat bilan bajariladigan bloklardan foydalaning, masalan 25 daqiqa ish va 5 daqiqa tanaffus.",
+  "a1_3": "Har bir mashg'ulotni keyin nima o'qishni yozib tugating, shunda ertangi kun ikkilanishsiz boshlanadi.",
+  "a2t": "Davomat",
+  "a2_1": "Har bir darsni eng arzon o'qish vaqti deb biling: tushuntirish bepul va bir marta bo'ladi.",
+  "a2_2": "Dars qoldirsangiz, konspektni o'sha kuni oling va ikki kun ichida takrorlang.",
+  "a2_3": "Qoldirilgan mavzular haqida o'qituvchidan erta so'rang. Kutish quvib yetishni qiyinlashtiradi.",
+  "a3t": "Uyqu",
+  "a3_1": "Dam olish kunlarida ham yotish va uyg'onish vaqtini bir xil saqlang.",
+  "a3_2": "Uyqudan oldin telefonni chetga qo'ying. Kechqurun ekranlar uxlab qolishni qiyinlashtirishi mumkin.",
+  "a3_3": "Yoshingizga tavsiya etilgan uyqu miqdorini maqsad qiling va imtihon oldidan tunni uxlamay o'tkazmang.",
+  "a4t": "Motivatsiya",
+  "a4_1": "Katta maqsadni haqiqatan belgilab bora oladigan haftalik vazifalarga bo'ling.",
+  "a4_2": "Bu imtihon nima uchun siz uchun muhimligini yozib qo'ying va motivatsiya pasayganda qarab turing.",
+  "a4_3": "Kichik g'alabalarni nishonlang va taraqqiyotni kuzatib boring, masalan oddiy cheklist bilan.",
+  "a5t": "Muhit va resurslar",
+  "a5_1": "O'qish uchun tinch, doimiy joy toping va uni chalg'ituvchi narsalardan xoli saqlang.",
+  "a5_2": "Darsliklar yetarli bo'lmasa, maktab kutubxonasi, bepul onlayn kurslar va oldingi yillardagi imtihon variantlaridan foydalaning.",
+  "a5_3": "Materiallarni oldindan yuklab oling, shunda sust internet sizni to'xtatmaydi.",
+  "a6t": "Muvozanat va atrofdagilar",
+  "a6_1": "Muntazam harakatlaning. Sayr, sport yoki mashqlar diqqat va energiyaga yordam beradi.",
+  "a6_2": "O'zingiz yoqtiradigan bir-ikkita mashg'ulotni saqlang. To'garaklar va sevimli mashg'ulotlar foydali, lekin o'qish vaqtini asrang.",
+  "a6_3": "Maqsadlaringizni qo'llab-quvvatlaydigan do'stlar bilan o'qing va diqqat vaqtini chalg'ishdan himoya qiling.",
+  "im_note": "Bu umumiy o'quv maslahatlari, tibbiy tavsiyalar emas.",
+  "plan_t": "7 kunlik boshlang'ich rejangiz",
+  "plan_s": "Kuniga bitta kichik qadam. Haftani takrorlang va keyingi bashoratingizni kuzatib boring.",
+  "day": "KUN",
+  "d1t": "O'lchang",
+  "d1d": "Hafta davomidagi haqiqiy o'qish soatlari, uyqu va davomatingizni yozib oling.",
+  "d2t": "Tanlang",
+  "d2d": "Shu sahifadagi eng oson yaxshilanadigan bitta odatni tanlang.",
+  "d3t": "Rejalashtiring",
+  "d3d": "O'qish bloklari va aniq uxlash vaqtini taqvimingizga kiriting.",
+  "d4t": "O'qing",
+  "d4d": "Eng qiyin faningiz bo'yicha tanaffuslar bilan ikkita diqqatli blok bajaring.",
+  "d5t": "Quvib yeting",
+  "d5d": "Qoldirilgan darslar konspektini takrorlang va bo'shliqlar haqida o'qituvchidan so'rang.",
+  "d6t": "Muvozanat",
+  "d6d": "Harakat yoki sevimli mashg'ulot qo'shing va qo'llab-quvvatlovchi do'stlar bilan vaqt o'tkazing.",
+  "d7t": "Qayta tekshiring",
+  "d7d": "Bashoratchini yana ishga tushiring va birinchi natijangiz bilan solishtiring.",
+  "go_t": "Ta'sirni o'lchashga tayyormisiz?",
+  "go_d": "Bir haftalik o'zgarishlardan so'ng bashoratni qayta ishga tushiring va natijalarni solishtiring.",
+  "go_b": "Bashoratchini ochish →"
 });
 
 var ICONS = ["📚", "✅", "🌙", "🔥", "🏫", "⚖️"];

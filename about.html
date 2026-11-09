@@ -106,8 +106,45 @@
     }
   };
 
+  window.T.uz = {
+  "n_home": "Bosh sahifa",
+  "n_pred": "Bashorat",
+  "n_how": "Qanday ishlaydi",
+  "n_imp": "Yaxshilash",
+  "n_about": "Loyiha haqida",
+  "n_cta": "Tahlil qilish",
+  "ft_tag": "O'quv odatlaringiz asosida imtihon balingizni bashorat qiling va nimani o'zgartirish kerakligini bilib oling. Toshkentdan data science loyihasi.",
+  "ft_pages": "SAHIFALAR",
+  "ft_proj": "LOYIHA",
+  "ft_gh": "GitHub profili",
+  "ft_code": "Bashorat serveri kodi",
+  "ft_web": "Sayt kodi",
+  "ft_note": "O'quv loyihasi. Bashoratlar taxminiy bo'lib, natijani kafolatlamaydi.",
+  "lv_excellent": "A'lo",
+  "lv_verygood": "Juda yaxshi",
+  "lv_dev": "Rivojlanmoqda",
+  "lv_need": "Yaxshilash kerak",
+  "o_Low": "Past",
+  "o_Medium": "O'rta",
+  "o_High": "Yuqori",
+  "o_Yes": "Ha",
+  "o_No": "Yo'q",
+  "o_Positive": "Ijobiy",
+  "o_Neutral": "Neytral",
+  "o_Negative": "Salbiy",
+  "o_Near": "Yaqin",
+  "o_Moderate": "O'rtacha",
+  "o_Far": "Uzoq",
+  "u_h": "soat",
+  "u_d": "kun"
+};
+
   var lang = "ru";
-  try { lang = localStorage.getItem("lang") || (navigator.language.indexOf("ru") === 0 ? "ru" : "en"); } catch (e) {}
+  try {
+    var sl = localStorage.getItem("lang");
+    var nl = (navigator.language || "").slice(0, 2);
+    lang = (sl === "ru" || sl === "en" || sl === "uz") ? sl : (nl === "ru" ? "ru" : nl === "uz" ? "uz" : "en");
+  } catch (e) {}
 
   window.getLang = function () { return lang; };
   window.t = function (k) {
@@ -131,7 +168,7 @@
         '<a href="/about" data-i18n="n_about"></a></div>' +
         '<div class="tools">' +
         '<button class="chip" id="theme" aria-label="Theme"></button>' +
-        '<button class="chip" id="lang"></button>' +
+        '<select class="chip" id="lang" aria-label="Language"><option value="ru">RU</option><option value="en">EN</option><option value="uz">UZ</option></select>' +
         '<a class="btn small" href="/predict" data-i18n="n_cta"></a>' +
         '<button class="chip burger" id="burger" aria-label="Menu">☰</button></div>';
       var path = location.pathname.replace(/\.html$/, "").replace(/\/+$/, "") || "/";
@@ -165,7 +202,7 @@
     if (d.doc_title) document.title = d.doc_title;
     document.querySelectorAll("[data-i18n]").forEach(function (e) { e.textContent = window.t(e.getAttribute("data-i18n")); });
     var lb = document.getElementById("lang");
-    if (lb) lb.textContent = lang === "ru" ? "EN" : "RU";
+    if (lb) lb.value = lang;
     if (window.onLang) window.onLang();
   }
   window.applyLang = applyLang;
@@ -185,8 +222,8 @@
     document.getElementById("theme").onclick = function () {
       setTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
     };
-    document.getElementById("lang").onclick = function () {
-      lang = lang === "ru" ? "en" : "ru";
+    document.getElementById("lang").onchange = function () {
+      lang = this.value;
       try { localStorage.setItem("lang", lang); } catch (e) {}
       applyLang();
     };
@@ -213,10 +250,10 @@ Object.assign(T.en, {
   w1: "Get a predicted exam score from 15 answers about routine, environment and lifestyle.",
   w2: "See insights and recommendations based on your answers.",
   w3: "Test what-if scenarios computed by the same model.",
-  w4: "Use the site in Russian or English, in light or dark mode.",
+  w4: "Use the site in Russian, English or Uzbek, in light or dark mode.",
   tech_t: "How it is built", tc1: "Website", tc2: "Prediction server", tc3: "Machine learning", tc4: "Hosting and code",
   road_t: "What's next",
-  r1: "Uzbek language", r2: "Compare two scenarios side by side", r3: "Progress history over time", r4: "More visuals and animations",
+  r1: "Voice playback of results", r2: "Compare two scenarios side by side", r3: "Progress history over time", r4: "More visuals and animations",
   links_t: "Links",
   disc_t: "Please note.", disc_d: "This is an educational project. Predictions are estimates based on patterns in data and are not a guarantee of results. Do not use them to make important decisions about yourself or other people.",
   go_t: "Try the predictor", go_d: "It takes about a minute and needs no account.", go_b: "Open the predictor →"
@@ -233,13 +270,45 @@ Object.assign(T.ru, {
   w1: "Получить прогноз экзаменационного балла по 15 ответам о рутине, окружении и образе жизни.",
   w2: "Увидеть выводы и рекомендации по своим ответам.",
   w3: "Проверить сценарии «а что если», посчитанные той же моделью.",
-  w4: "Пользоваться сайтом на русском или английском, в светлой или тёмной теме.",
+  w4: "Пользоваться сайтом на русском, английском или узбекском, в светлой или тёмной теме.",
   tech_t: "Как это сделано", tc1: "Сайт", tc2: "Сервер прогноза", tc3: "Машинное обучение", tc4: "Хостинг и код",
   road_t: "Что дальше",
-  r1: "Узбекский язык", r2: "Сравнение двух сценариев рядом", r3: "История прогресса со временем", r4: "Больше визуализаций и анимаций",
+  r1: "Озвучка результата", r2: "Сравнение двух сценариев рядом", r3: "История прогресса со временем", r4: "Больше визуализаций и анимаций",
   links_t: "Ссылки",
   disc_t: "Важно.", disc_d: "Это учебный проект. Прогнозы — оценки по закономерностям в данных, они не гарантируют результат. Не используйте их для важных решений о себе или других людях.",
   go_t: "Попробуйте предиктор", go_d: "Это займёт около минуты, аккаунт не нужен.", go_b: "Открыть предиктор →"
+});
+
+Object.assign(T.uz, {
+  "doc_title": "Loyiha haqida | student-performance-predictor",
+  "crumb": "LOYIHA HAQIDA",
+  "ab_title": "Loyiha haqida",
+  "ab_lead": "Kundalik odatlar imtihon natijalari bilan qanday bog'liqligi haqidagi shaxsiy data science loyihasi.",
+  "me_t": "Salom, men Umarman",
+  "me_d": "Men O'zbekistonning Toshkent shahridan talabaman, data science va odamlar haqiqatan ham foydalana oladigan vositalar yaratishga qiziqaman. Bu loyiha oddiy savoldan boshlandi: o'qish, uxlash va darsga qatnashish kabi odatlar imtihon ballari bilan aslida qanchalik bog'liq?",
+  "why_t": "Nima uchun yaratdim",
+  "why_d": "Men mashinaviy o'rganish modelini ko'zga ko'rinadigan narsaga aylantirmoqchi edim: har kim ochib, bir nechta savolga javob berib, nimadir o'rganishi mumkin bo'lgan sayt. Maqsad hech kimni baholash emas, o'quvchilarga o'zgartira oladigan odatlarni payqashga yordam berishdir.",
+  "what_t": "Bu yerda nima qilish mumkin",
+  "w1": "Kundalik tartib, muhit va turmush tarzi haqidagi 15 ta javobdan imtihon balini bashorat qilish.",
+  "w2": "Javoblaringiz asosida xulosa va tavsiyalarni ko'rish.",
+  "w3": "Xuddi shu model hisoblagan 'agar o'zgartirsam' stsenariylarini sinash.",
+  "w4": "Saytdan rus, ingliz yoki o'zbek tilida, yorug' yoki qorong'i rejimda foydalanish.",
+  "tech_t": "Qanday qurilgan",
+  "tc1": "Sayt",
+  "tc2": "Bashorat serveri",
+  "tc3": "Mashinaviy o'rganish",
+  "tc4": "Hosting va kod",
+  "road_t": "Keyingi rejalar",
+  "r1": "Natijani ovozli o'qish",
+  "r2": "Ikki stsenariyni yonma-yon solishtirish",
+  "r3": "Vaqt bo'yicha taraqqiyot tarixi",
+  "r4": "Ko'proq vizualizatsiya va animatsiya",
+  "links_t": "Havolalar",
+  "disc_t": "Diqqat.",
+  "disc_d": "Bu o'quv loyihasi. Bashoratlar ma'lumotlardagi qonuniyatlarga asoslangan taxminiy baho bo'lib, natijani kafolatlamaydi. Ularni o'zingiz yoki boshqalar haqida muhim qarorlar qabul qilish uchun ishlatmang.",
+  "go_t": "Bashoratchini sinab ko'ring",
+  "go_d": "Taxminan bir daqiqa vaqt oladi, akkaunt shart emas.",
+  "go_b": "Bashoratchini ochish →"
 });
 
 window.onLang = function () {

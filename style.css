@@ -182,3 +182,7 @@ footer .copy{margin-top:30px;padding-top:20px;border-top:1px solid var(--line);f
 .stage .hcard{margin-top:150px}
 .stage .float.a{top:40px}
 @media(max-width:860px){.stage{min-height:440px}#cap3d{width:260px;height:220px}.stage .hcard{margin-top:120px}}
+
+/* language select */
+select.chip{padding:7px 8px;cursor:pointer;background:var(--surface);color:var(--text)}
+select.chip option{background:var(--surface);color:var(--text)}
