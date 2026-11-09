@@ -30,6 +30,7 @@
     </div>
     <div class="stage">
       <div class="orb"></div>
+      <div id="cap3d" aria-hidden="true"></div>
       <div class="hcard">
         <small data-i18n="last"></small>
         <h3 data-i18n="lastT"></h3>
@@ -73,6 +74,7 @@
 
 <footer id="foot"></footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
 /* Shared: dictionary, layout (nav + footer), theme, language */
 (function () {
@@ -270,6 +272,109 @@ function renderFeatures() {
   document.getElementById("features").innerHTML = h;
 }
 window.onLang = function () { renderLast(); renderFeatures(); };
+</script>
+<script>
+(function () {
+  var host = document.getElementById("cap3d");
+  if (!host || typeof THREE === "undefined") { if (host) host.style.display = "none"; return; }
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var renderer;
+  try { renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); }
+  catch (e) { host.style.display = "none"; return; }
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  host.appendChild(renderer.domElement);
+
+  var scene = new THREE.Scene();
+  var camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
+  camera.position.set(0, 2.4, 8.2);
+  camera.lookAt(0, 0, 0);
+
+  scene.add(new THREE.AmbientLight(0xffffff, 0.65));
+  var key = new THREE.DirectionalLight(0xffffff, 0.95);
+  key.position.set(3, 5, 4);
+  scene.add(key);
+  var rim = new THREE.PointLight(0x9b6bff, 1.2, 20);
+  rim.position.set(-4, 2, 2);
+  scene.add(rim);
+
+  var cap = new THREE.Group();
+  var boardMat = new THREE.MeshStandardMaterial({ color: 0x7f63ff, roughness: 0.45, metalness: 0.1 });
+  var capMat = new THREE.MeshStandardMaterial({ color: 0x4b34c2, roughness: 0.55, metalness: 0.1 });
+  var gold = new THREE.MeshStandardMaterial({ color: 0xf5c04a, roughness: 0.3, metalness: 0.6 });
+
+  var board = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.14, 2.8), boardMat);
+  board.position.y = 0.35;
+  cap.add(board);
+
+  var skull = new THREE.Mesh(new THREE.CylinderGeometry(0.95, 1.05, 0.8, 40), capMat);
+  skull.position.y = -0.12;
+  cap.add(skull);
+
+  var btn = new THREE.Mesh(new THREE.SphereGeometry(0.1, 20, 20), gold);
+  btn.position.set(0, 0.47, 0);
+  cap.add(btn);
+
+  var curve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(0, 0.47, 0),
+    new THREE.Vector3(0.5, 0.5, 0.5),
+    new THREE.Vector3(1.1, 0.47, 1.1),
+    new THREE.Vector3(1.43, 0.4, 1.43),
+    new THREE.Vector3(1.52, 0.02, 1.52)
+  ]);
+  cap.add(new THREE.Mesh(new THREE.TubeGeometry(curve, 40, 0.03, 8, false), gold));
+
+  var knot = new THREE.Mesh(new THREE.SphereGeometry(0.07, 16, 16), gold);
+  knot.position.set(1.52, 0.02, 1.52);
+  cap.add(knot);
+  var tassel = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.11, 0.5, 16), gold);
+  tassel.position.set(1.52, -0.28, 1.52);
+  cap.add(tassel);
+
+  cap.rotation.x = 0.18;
+  scene.add(cap);
+
+  var mx = 0, my = 0, tx = 0, tz = 0, running = false, t0 = performance.now();
+  window.addEventListener("pointermove", function (e) {
+    mx = (e.clientX / window.innerWidth) * 2 - 1;
+    my = (e.clientY / window.innerHeight) * 2 - 1;
+  });
+
+  function resize() {
+    var w = host.clientWidth, h = host.clientHeight;
+    if (!w || !h) return;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  function frame(now) {
+    if (!running) return;
+    var t = (now - t0) / 1000;
+    cap.rotation.y = t * 0.5;
+    cap.position.y = Math.sin(t * 1.2) * 0.12;
+    tx += (my * 0.25 - tx) * 0.06;
+    tz += (-mx * 0.12 - tz) * 0.06;
+    cap.rotation.x = 0.18 + tx;
+    cap.rotation.z = tz;
+    renderer.render(scene, camera);
+    requestAnimationFrame(frame);
+  }
+  function start() { if (running) return; running = true; requestAnimationFrame(frame); }
+  function stop() { running = false; }
+
+  if (reduce) {
+    cap.rotation.y = 0.7;
+    resize();
+    renderer.render(scene, camera);
+    window.addEventListener("resize", function () { resize(); renderer.render(scene, camera); });
+    return;
+  }
+  window.addEventListener("resize", resize);
+  resize();
+  if ("IntersectionObserver" in window) {
+    new IntersectionObserver(function (es) { if (es[0].isIntersecting) start(); else stop(); }).observe(host);
+  } else { start(); }
+  document.addEventListener("visibilitychange", function () { if (document.hidden) stop(); else start(); });
+})();
 </script>
 </body>
 </html>
