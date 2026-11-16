@@ -25,6 +25,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
+<style>
+#fxSnd,#fxAuto{transition:box-shadow .2s,border-color .2s,color .2s}
+#fxSnd.on,#fxAuto.on{border-color:var(--brand);color:var(--text);box-shadow:0 0 0 2px var(--brand),0 0 16px rgba(139,108,255,.55)}
+</style>
 </head>
 <body>
 <nav id="nav"></nav>
@@ -607,6 +611,8 @@ Object.assign(T.uz, {
     $("fxReset").textContent = t("fx_reset");
     $("fxSnd").textContent = t(optSound ? "fx_sound_on" : "fx_sound_off");
     $("fxAuto").textContent = t(optAuto ? "fx_auto_on" : "fx_auto_off");
+    $("fxSnd").classList.toggle("on", optSound);
+    $("fxAuto").classList.toggle("on", optAuto);
     $("fxAutoHint").textContent = optAuto ? t("fx_auto_hint") : "";
     renderAmb();
     $("fxMsg").textContent = running && mode === "focus" ? t("fx_going") : (msgKey ? t(msgKey) : "");
@@ -721,8 +727,10 @@ Object.assign(T.uz, {
     $("fxAmb").querySelectorAll("button").forEach(function (b) { b.onclick = function () { toggleAmb(b.getAttribute("data-a")); }; });
   }
   $("fxVol").value = Math.round(ambVol * 100);
+  $("fxVol").style.setProperty("--p", $("fxVol").value + "%");
   $("fxVol").oninput = function () {
     ambVol = this.value / 100; setAmbVol();
+    this.style.setProperty("--p", this.value + "%");
     try { localStorage.setItem("fx_ambvol", this.value); } catch (e) {}
   };
 
