@@ -692,10 +692,10 @@ Object.assign(T.uz, {"cdl_t": "So'z kartochkalari", "cdl_d": "IELTS va SAT so'zl
 </script>
 <script>
 window.FB_CONFIG = {
-  apiKey: "PASTE_API_KEY",
-  authDomain: "PASTE_PROJECT.firebaseapp.com",
-  projectId: "PASTE_PROJECT_ID",
-  appId: "PASTE_APP_ID"
+  apiKey: "AIzaSyB8CI8qHrkxMgUZDCNH066-TsYNC5FQUgk",
+  authDomain: "studentpp-99f45.firebaseapp.com",
+  projectId: "studentpp-99f45",
+  appId: "1:953656481723:web:731324b607fc1be0edd69e"
 };
 Object.assign(T.en, {
  "ac_title": "Save your progress",
@@ -964,7 +964,7 @@ Object.assign(T.uz, {
   var cfg = window.FB_CONFIG, card = document.getElementById("accCard"), box = document.getElementById("accBox");
   if (!card || (!window.FB_TEST && (!cfg || !cfg.apiKey || /PASTE/.test(cfg.apiKey)))) return;
   card.hidden = false;
-  var KEYS = ["act", "history", "last", "fx_stats", "qbest", "fx_name", "exam", "fx_sub", "fx_subj_list"];
+  var KEYS = ["act", "history", "last", "fx_stats", "qbest", "fx_name", "exam", "fx_sub", "fx_subj_list", "cards_v1"];
   var fb = null, user = null, lastSync = 0, state = "idle", lastStr = "", timer = null;
 
   function load() {
@@ -1016,6 +1016,13 @@ Object.assign(T.uz, {
     }
     var sl = (a.fx_subj_list || []).concat(b.fx_subj_list || []).filter(function (v, i, arr) { return arr.indexOf(v) === i; }).slice(0, 8);
     if (sl.length) o.fx_subj_list = sl;
+    if (a.cards_v1 || b.cards_v1) {
+      var ca = a.cards_v1 || { prog: {}, custom: [] }, cb = b.cards_v1 || { prog: {}, custom: [] }, pr = {}, ids = {}, cu = [];
+      for (k in ca.prog) pr[k] = ca.prog[k];
+      for (k in cb.prog) { var r1 = pr[k], r2 = cb.prog[k]; pr[k] = !r1 ? r2 : (r2.b > r1.b || (r2.b === r1.b && r2.d > r1.d)) ? r2 : r1; }
+      (ca.custom || []).concat(cb.custom || []).forEach(function (c) { if (c && !ids[c.id]) { ids[c.id] = 1; cu.push(c); } });
+      o.cards_v1 = { prog: pr, custom: cu.slice(0, 200), newDay: ca.newDay || cb.newDay || "", newN: ca.newDay ? ca.newN : (cb.newN || 0) };
+    }
     return o;
   }
   function apply(o) {
