@@ -51,3 +51,6 @@ This is an educational project. Predictions are estimates based on patterns in d
 ## Author
 
 Umar, a student from Tashkent, Uzbekistan. [GitHub](https://github.com/umarkhodjaev-hash)
+
+
+- `/cards`: vocabulary flashcards for IELTS and SAT with spaced repetition (Leitner boxes), custom words, everything stored on the device.

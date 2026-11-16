@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#6c47e8">
+<link rel="manifest" href="/manifest.json">
+<title>Vocabulary cards | student-performance-predictor</title>
+<meta name="description" content="Free vocabulary flashcards for IELTS and SAT with spaced repetition. Add your own words. No account, works on your phone.">
+<meta property="og:title" content="Vocabulary cards for IELTS and SAT">
+<meta property="og:description" content="Learn academic English words with spaced repetition and add your own.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="student-performance-predictor">
+<meta property="og:url" content="https://www.studentpp.uz/cards">
+<meta property="og:image" content="https://www.studentpp.uz/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://www.studentpp.uz/og.png">
+<link rel="canonical" href="https://www.studentpp.uz/cards">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<script>try{document.documentElement.setAttribute("data-theme",localStorage.getItem("theme")||"dark")}catch(e){}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+<style>
+.cd-main{text-align:center;padding:28px 18px}
+.cd-mas{width:120px;margin:0 auto 12px}
+.cd-card{margin:6px auto 18px;max-width:520px}
+.cd-word{font-size:clamp(34px,8vw,54px);font-weight:800;margin-bottom:12px;word-break:break-word}
+.cd-back{margin:18px auto 0;font-size:20px;padding:16px;border-radius:16px;background:rgba(139,108,255,.1);max-width:520px}
+.cd-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+</style>
+</head>
+<body>
+<nav id="nav"></nav>
+
+<main class="wrap">
+  <div class="phead">
+    <span class="crumb" data-i18n="crumb"></span>
+    <h1 data-i18n="cd_title"></h1>
+    <p class="lead" data-i18n="cd_lead"></p>
+  </div>
+
+  <section>
+    <div class="td-stats">
+      <div class="card td-stat"><b id="cdDue">0</b><span data-i18n="cd_due"></span></div>
+      <div class="card td-stat"><b id="cdNew">0</b><span data-i18n="cd_new"></span></div>
+      <div class="card td-stat"><b id="cdLearned">0</b><span data-i18n="cd_learned"></span><small id="cdTotal"></small></div>
+    </div>
+
+    <div class="card cd-main" id="cdMain"></div>
+
+    <div class="card" style="margin-top:22px">
+      <h3 style="margin:0 0 10px" data-i18n="cd_add_t"></h3>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        <input class="fx-task" id="cdF" maxlength="40" style="flex:1 1 160px;min-width:0;max-width:none">
+        <input class="fx-task" id="cdB" maxlength="80" style="flex:2 1 220px;min-width:0;max-width:none">
+        <button class="btn" id="cdAdd"></button>
+      </div>
+      <h4 style="margin:18px 0 6px" id="cdMineT"></h4>
+      <div id="cdMine"></div>
+    </div>
+
+    <p class="note" style="text-align:center;max-width:640px;margin:22px auto 0" data-i18n="cd_howto"></p>
+    <p style="text-align:center;margin:10px 0 0"><button class="chip" id="cdReset"></button></p>
+  </section>
+</main>
+
+<footer id="foot"></footer>
+
+<script>
+/* Shared: dictionary, layout (nav + footer), theme, language */
+(function () {
+  var API = "https://student-performance-predictor-bas2.onrender.com";
+  window.API = API;
+
+  /* activity log (streak, points) kept on this device only */
+  window.actKey = function (d) { d = d || new Date(); return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); };
+  window.actLoad = function () { try { var a = JSON.parse(localStorage.getItem("act") || "null"); if (a && a.days) return a; } catch (e) {} return { days: {}, xp: 0 }; };
+  window.actDone = function (day) { return !!day && ((day.focus || 0) + (day.quiz || 0) + (day.pred || 0) + (day.ch || 0) + (day.cards || 0)) > 0; };
+  window.actStreak = function () {
+    var a = window.actLoad(), d = new Date(), n = 0;
+    if (!window.actDone(a.days[window.actKey(d)])) d.setDate(d.getDate() - 1);
+    while (window.actDone(a.days[window.actKey(d)])) { n++; d.setDate(d.getDate() - 1); }
+    return n;
+  };
+  window.recordAct = function (kind, xp) {
+    try {
+      var a = window.actLoad(), k = window.actKey(), day = a.days[k] || (a.days[k] = { xp: 0 });
+      var caps = { focus: 4, quiz: 1, pred: 3, ch: 1, cards: 1 };
+      day[kind] = (day[kind] || 0) + 1;
+      if (day[kind] <= (caps[kind] || 1)) { day.xp = (day.xp || 0) + xp; a.xp = (a.xp || 0) + xp; }
+      localStorage.setItem("act", JSON.stringify(a));
+    } catch (e) {}
+  };
+
+  window.T = {
+    en: {
+      n_home: "Home", n_pred: "Predict", n_how: "How it works", n_imp: "Improve", n_about: "About", n_cta: "Analyze", n_quiz: "Quiz", n_today: "Today", n_focus: "Focus room", n_cards: "Words", install: "Install app",
+      ft_tag: "Predict your exam score from your study habits and see what to change. A data science project from Tashkent.",
+      ft_pages: "PAGES", ft_proj: "PROJECT", ft_gh: "GitHub profile", ft_code: "Prediction server code", ft_web: "Website code",
+      ft_note: "An educational project. Predictions are estimates, not guarantees.",
+      lv_excellent: "Excellent", lv_verygood: "Very Good", lv_dev: "Developing", lv_need: "Needs Improvement",
+      o_Low: "Low", o_Medium: "Medium", o_High: "High", o_Yes: "Yes", o_No: "No",
+      o_Positive: "Positive", o_Neutral: "Neutral", o_Negative: "Negative", o_Near: "Near", o_Moderate: "Moderate", o_Far: "Far",
+      u_h: "h", u_d: "days"
+    },
+    ru: {
+      n_home: "Главная", n_pred: "Прогноз", n_how: "Как это работает", n_imp: "Улучшить", n_about: "О проекте", n_cta: "Анализировать", n_quiz: "Квиз", n_today: "Сегодня", n_focus: "Комната фокуса", n_cards: "Слова", install: "Установить приложение",
+      ft_tag: "Прогнозируйте экзаменационный балл по учебным привычкам и узнайте, что менять. Проект по data science из Ташкента.",
+      ft_pages: "СТРАНИЦЫ", ft_proj: "ПРОЕКТ", ft_gh: "Профиль GitHub", ft_code: "Код сервера прогноза", ft_web: "Код сайта",
+      ft_note: "Учебный проект. Прогнозы приблизительные и не гарантируют результат.",
+      lv_excellent: "Отлично", lv_verygood: "Очень хорошо", lv_dev: "Развивается", lv_need: "Нужно улучшить",
+      o_Low: "Низкий", o_Medium: "Средний", o_High: "Высокий", o_Yes: "Да", o_No: "Нет",
+      o_Positive: "Положит.", o_Neutral: "Нейтр.", o_Negative: "Отрицат.", o_Near: "Близко", o_Moderate: "Средне", o_Far: "Далеко",
+      u_h: "ч", u_d: "дн."
+    }
+  };
+
+  window.T.uz = {
+  "n_home": "Bosh sahifa",
+  "n_pred": "Bashorat",
+  "n_how": "Qanday ishlaydi",
+  "n_imp": "Yaxshilash",
+  "n_about": "Loyiha haqida",
+  "n_cta": "Tahlil qilish",
+  "n_quiz": "Viktorina",
+  "n_today": "Bugun",
+  "n_focus": "Fokus xonasi",
+  "n_cards": "So'zlar",
+  "install": "Ilovani o'rnatish",
+  "ft_tag": "O'quv odatlaringiz asosida imtihon balingizni bashorat qiling va nimani o'zgartirish kerakligini bilib oling. Toshkentdan data science loyihasi.",
+  "ft_pages": "SAHIFALAR",
+  "ft_proj": "LOYIHA",
+  "ft_gh": "GitHub profili",
+  "ft_code": "Bashorat serveri kodi",
+  "ft_web": "Sayt kodi",
+  "ft_note": "O'quv loyihasi. Bashoratlar taxminiy bo'lib, natijani kafolatlamaydi.",
+  "lv_excellent": "A'lo",
+  "lv_verygood": "Juda yaxshi",
+  "lv_dev": "Rivojlanmoqda",
+  "lv_need": "Yaxshilash kerak",
+  "o_Low": "Past",
+  "o_Medium": "O'rta",
+  "o_High": "Yuqori",
+  "o_Yes": "Ha",
+  "o_No": "Yo'q",
+  "o_Positive": "Ijobiy",
+  "o_Neutral": "Neytral",
+  "o_Negative": "Salbiy",
+  "o_Near": "Yaqin",
+  "o_Moderate": "O'rtacha",
+  "o_Far": "Uzoq",
+  "u_h": "soat",
+  "u_d": "kun"
+};
+
+  var lang = "ru";
+  try {
+    var sl = localStorage.getItem("lang");
+    var nl = (navigator.language || "").slice(0, 2);
+    lang = (sl === "ru" || sl === "en" || sl === "uz") ? sl : (nl === "ru" ? "ru" : nl === "uz" ? "uz" : "en");
+  } catch (e) {}
+
+  window.getLang = function () { return lang; };
+  window.t = function (k) {
+    var d = window.T[lang];
+    if (d[k] !== undefined) return d[k];
+    if (window.T.en[k] !== undefined) return window.T.en[k];
+    return k;
+  };
+  window.$ = function (s) { return document.querySelector(s); };
+
+  window.mascot = function (mood) {
+    var think = mood === "think", cheer = mood === "cheer";
+    var u = "m" + (window._mid = (window._mid || 0) + 1);
+    var px = think ? [73, 104, 113, 104] : [79, 111, 119, 111];
+    var lw = cheer ? 62 : 8, rw = cheer ? -62 : -8;
+    var eye = function (cx, cy, ox, oy) {
+      return '<circle cx="' + cx + '" cy="' + cy + '" r="19" fill="url(#' + u + 's)" stroke="rgba(60,30,140,.28)" stroke-width="1.5"/>' +
+        '<circle cx="' + ox + '" cy="' + oy + '" r="11" fill="url(#' + u + 'i)"/>' +
+        '<circle cx="' + ox + '" cy="' + oy + '" r="5.5" fill="#120a38"/>' +
+        '<circle cx="' + (ox + 4) + '" cy="' + (oy - 4) + '" r="3.2" fill="#fff"/><circle cx="' + (ox - 3) + '" cy="' + (oy + 4) + '" r="1.5" fill="#fff" opacity=".7"/>' +
+        '<ellipse class="lid" cx="' + cx + '" cy="' + cy + '" rx="19.6" ry="19.6" fill="#7b5cf0"/>';
+    };
+    var wing = function (cx, rot, ox, oy) {
+      return '<g transform="rotate(' + rot + ' ' + ox + ' ' + oy + ')"><ellipse cx="' + cx + '" cy="128" rx="15" ry="36" fill="url(#' + u + 'w)"/>' +
+        '<path d="M' + (cx - 5) + ' 108q-3 20 0 40M' + (cx + 5) + ' 110q3 20 0 36" stroke="rgba(255,255,255,.2)" stroke-width="2.4" fill="none" stroke-linecap="round"/></g>';
+    };
+    return '<svg class="mascot" viewBox="0 0 200 200" role="img" aria-label="Sovi">' +
+      '<defs>' +
+      '<radialGradient id="' + u + 'b" cx=".35" cy=".28" r=".9"><stop offset="0" stop-color="#ab94ff"/><stop offset=".55" stop-color="#8265f5"/><stop offset="1" stop-color="#5638c4"/></radialGradient>' +
+      '<linearGradient id="' + u + 'w" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7e5ff0"/><stop offset="1" stop-color="#43299f"/></linearGradient>' +
+      '<radialGradient id="' + u + 'v" cx=".5" cy=".3" r=".85"><stop offset="0" stop-color="#fff"/><stop offset=".6" stop-color="#ece4ff"/><stop offset="1" stop-color="#cbbcfb"/></radialGradient>' +
+      '<linearGradient id="' + u + 'g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe493"/><stop offset="1" stop-color="#f2b035"/></linearGradient>' +
+      '<radialGradient id="' + u + 'i" cx=".4" cy=".35" r=".8"><stop offset="0" stop-color="#7c5cf0"/><stop offset="1" stop-color="#2a1a6e"/></radialGradient>' +
+      '<radialGradient id="' + u + 's" cx=".5" cy=".4" r=".7"><stop offset=".6" stop-color="#fff"/><stop offset="1" stop-color="#e3dbff"/></radialGradient>' +
+      '<linearGradient id="' + u + 'c" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4a36ad"/><stop offset="1" stop-color="#1c1250"/></linearGradient>' +
+      '<radialGradient id="' + u + 'h" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="rgba(20,10,60,.42)"/><stop offset="1" stop-color="rgba(20,10,60,0)"/></radialGradient>' +
+      "</defs>" +
+      '<ellipse cx="100" cy="194" rx="56" ry="8" fill="url(#' + u + 'h)"/>' +
+      wing(44, lw, 56, 100) + wing(156, rw, 144, 100) +
+      '<ellipse cx="82" cy="190" rx="12" ry="6" fill="url(#' + u + 'g)"/><ellipse cx="118" cy="190" rx="12" ry="6" fill="url(#' + u + 'g)"/>' +
+      '<path d="M76 190h12M82 186v8M112 190h12M118 186v8" stroke="rgba(150,90,10,.35)" stroke-width="1.6" stroke-linecap="round"/>' +
+      '<ellipse cx="100" cy="124" rx="60" ry="64" fill="url(#' + u + 'b)"/>' +
+      '<ellipse cx="76" cy="98" rx="24" ry="34" fill="#fff" opacity=".07" transform="rotate(-18 76 98)"/>' +
+      '<ellipse cx="100" cy="124" rx="59" ry="63" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="1.6"/>' +
+      '<ellipse cx="100" cy="148" rx="36" ry="38" fill="url(#' + u + 'v)"/>' +
+      '<path d="M82 138q9 9 18 0M100 138q9 9 18 0M91 156q9 9 18 0M73 156q8 8 16 0M111 156q8 8 16 0M100 174q8 7 16 0M84 174q8 7 16 0" stroke="#bfaefc" stroke-width="2.6" fill="none" stroke-linecap="round"/>' +
+      '<g class="head">' +
+      '<path d="M52 74L42 46l32 14z" fill="#6a4dd6"/><path d="M148 74l10-28-32 14z" fill="#6a4dd6"/>' +
+      '<ellipse cx="100" cy="110" rx="52" ry="34" fill="#fff" opacity=".1"/>' +
+      eye(76, 108, px[0], px[1]) + eye(124, 108, px[2], px[3]) +
+      (cheer || !think ? '<circle cx="58" cy="128" r="7" fill="#ff8fc1" opacity=".4"/><circle cx="142" cy="128" r="7" fill="#ff8fc1" opacity=".4"/>' : "") +
+      (think ? '<path d="M106 88q14-8 28 0" stroke="#2b1b6b" stroke-width="4" fill="none" stroke-linecap="round"/>' : "") +
+      '<path d="M90 121q10-5 20 0L100 139z" fill="url(#' + u + 'g)"/><path d="M95 124q5-2 10 0" stroke="#fff" stroke-opacity=".6" stroke-width="2" fill="none" stroke-linecap="round"/>' +
+      '<ellipse cx="100" cy="72" rx="54" ry="9" fill="rgba(10,5,40,.3)"/>' +
+      '<path d="M66 68V84Q100 100 134 84V68L100 82z" fill="#33238a"/>' +
+      '<polygon points="38,56 100,82 100,91 38,65" fill="#150d3d"/><polygon points="162,56 100,82 100,91 162,65" fill="#20145a"/>' +
+      '<polygon points="100,30 162,56 100,82 38,56" fill="url(#' + u + 'c)"/>' +
+      '<path d="M100 31L160 56" stroke="rgba(255,255,255,.22)" stroke-width="1.6" stroke-linecap="round"/>' +
+      '<circle cx="100" cy="56" r="4.5" fill="url(#' + u + 'g)"/>' +
+      '<path d="M100 56L154 60V88" stroke="#f2b035" stroke-width="3.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>' +
+      '<circle cx="154" cy="92" r="6" fill="url(#' + u + 'g)"/><path d="M150 96l-2 8M154 98v9M158 96l2 8" stroke="#f2b035" stroke-width="2.4" stroke-linecap="round"/>' +
+      "</g>" +
+      (cheer ? '<path class="tw" d="M28 44l3 8 8 3-8 3-3 8-3-8-8-3 8-3z" fill="#ffd166"/><path class="tw" style="animation-delay:.5s" d="M176 30l2 6 6 2-6 2-2 6-2-6-6-2 6-2z" fill="#ffd166"/>' : "") +
+      (think ? '<text x="170" y="48" font-size="34" font-weight="800" fill="#ffd166" font-family="Inter,Arial,sans-serif">?</text>' : "") +
+      "</svg>";
+  };
+
+  function buildLayout() {
+    var nav = document.getElementById("nav");
+    if (nav) {
+      nav.innerHTML =
+        '<a class="logo" href="/"><img src="/favicon.svg" alt="" width="30" height="30"><span>student-performance-predictor</span></a>' +
+        '<div class="links" id="links">' +
+        '<a href="/" data-i18n="n_home"></a>' +
+        '<a href="/predict" data-i18n="n_pred"></a>' +
+        '<a href="/quiz" data-i18n="n_quiz"></a><a href="/focus" data-i18n="n_focus"></a><a class="only-m" href="/today" data-i18n="n_today"></a><a class="only-m" href="/cards" data-i18n="n_cards"></a>' +
+        '<a href="/how-it-works" data-i18n="n_how"></a>' +
+        '<a href="/improve" data-i18n="n_imp"></a>' +
+        '<a href="/about" data-i18n="n_about"></a></div>' +
+        '<div class="tools">' +
+        '<button class="chip" id="theme" aria-label="Theme"></button>' +
+        '<select class="chip" id="lang" aria-label="Language"><option value="ru">RU</option><option value="en">EN</option><option value="uz">UZ</option></select>' +
+        '<a class="btn small" href="/today" aria-label="Today">🔥 <b id="navStreak">0</b> <span data-i18n="n_today"></span></a>' +
+        '<button class="chip burger" id="burger" aria-label="Menu">☰</button></div>';
+      var path = location.pathname.replace(/\.html$/, "").replace(/\/+$/, "") || "/";
+      nav.querySelectorAll(".links a").forEach(function (a) {
+        if (a.getAttribute("href") === path) a.classList.add("cur");
+      });
+    }
+    var foot = document.getElementById("foot");
+    if (foot) {
+      foot.innerHTML =
+        '<div class="wrap"><div class="foot-grid">' +
+        '<div><a class="logo" href="/" style="padding:0"><img src="/favicon.svg" alt="" width="30" height="30"><span style="display:inline">student-performance-predictor</span></a>' +
+        '<p style="margin-top:12px;max-width:360px" data-i18n="ft_tag"></p></div>' +
+        '<div><h5 data-i18n="ft_pages"></h5>' +
+        '<a href="/" data-i18n="n_home"></a><a href="/predict" data-i18n="n_pred"></a>' +
+        '<a href="/quiz" data-i18n="n_quiz"></a><a href="/focus" data-i18n="n_focus"></a><a href="/today" data-i18n="n_today"></a><a href="/cards" data-i18n="n_cards"></a><a href="/how-it-works" data-i18n="n_how"></a><a href="/improve" data-i18n="n_imp"></a>' +
+        '<a href="/about" data-i18n="n_about"></a></div>' +
+        '<div><h5 data-i18n="ft_proj"></h5>' +
+        '<a href="https://github.com/umarkhodjaev-hash" target="_blank" rel="noopener" data-i18n="ft_gh"></a>' +
+        '<a href="https://github.com/umarkhodjaev-hash/student-performance-predictor" target="_blank" rel="noopener" data-i18n="ft_code"></a>' +
+        '<a href="https://github.com/umarkhodjaev-hash/student-performance-web" target="_blank" rel="noopener" data-i18n="ft_web"></a></div>' +
+        '</div><div class="copy">© <span id="yr"></span> student-performance-predictor · Umar<br><span data-i18n="ft_note"></span><br><button class="chip" id="install" hidden data-i18n="install" style="margin-top:12px"></button></div></div>';
+      var y = document.getElementById("yr");
+      if (y) y.textContent = new Date().getFullYear();
+    }
+  }
+
+  function applyLang() {
+    document.documentElement.lang = lang;
+    var d = window.T[lang];
+    if (d.doc_title) document.title = d.doc_title;
+    document.querySelectorAll("[data-i18n]").forEach(function (e) { e.textContent = window.t(e.getAttribute("data-i18n")); });
+    document.querySelectorAll("[data-mascot]").forEach(function (e) { e.innerHTML = window.mascot(e.getAttribute("data-mascot")); });
+    var ns = document.getElementById("navStreak");
+    if (ns) ns.textContent = window.actStreak();
+    var lb = document.getElementById("lang");
+    if (lb) lb.value = lang;
+    if (window.onLang) window.onLang();
+  }
+  window.applyLang = applyLang;
+
+  function setTheme(m) {
+    document.documentElement.setAttribute("data-theme", m);
+    var b = document.getElementById("theme");
+    if (b) b.textContent = m === "dark" ? "☀️" : "🌙";
+    try { localStorage.setItem("theme", m); } catch (e) {}
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    buildLayout();
+    var saved = null;
+    try { saved = localStorage.getItem("theme"); } catch (e) {}
+    setTheme(saved || "dark");
+    document.getElementById("theme").onclick = function () {
+      setTheme(document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark");
+    };
+    document.getElementById("lang").onchange = function () {
+      lang = this.value;
+      try { localStorage.setItem("lang", lang); } catch (e) {}
+      applyLang();
+    };
+    document.getElementById("burger").onclick = function () {
+      document.getElementById("links").classList.toggle("open");
+    };
+    applyLang();
+    /* wake the free Render server in the background */
+    try { fetch(API + "/robots.txt", { mode: "no-cors" }).catch(function () {}); } catch (e) {}
+  });
+})();
+
+</script>
+<script>
+Object.assign(T.en, {
+ "crumb": "WORDS",
+ "cd_title": "Vocabulary cards",
+ "cd_lead": "Learn academic English words for IELTS and SAT. Cards come back at the right time, so words stay in your memory. Add your own words too.",
+ "cd_due": "To review",
+ "cd_new": "New today",
+ "cd_learned": "Learned",
+ "cd_total": "Words",
+ "cd_show": "Show answer",
+ "cd_forgot": "Forgot",
+ "cd_hard": "Hard",
+ "cd_know": "Know it",
+ "cd_speak": "Listen",
+ "cd_done_t": "All done for now!",
+ "cd_done_d": "Come back tomorrow, your next cards will be ready.",
+ "cd_more": "Learn 5 more new words",
+ "cd_nomore": "No more new words for today. Great work!",
+ "cd_start": "Start",
+ "cd_left": "{n} left",
+ "cd_session": "{n} cards reviewed this session",
+ "cd_add_t": "Add your own word",
+ "cd_front": "Word",
+ "cd_back": "Meaning",
+ "cd_add": "Add card",
+ "cd_mine": "My words",
+ "cd_mine_empty": "You have not added words yet.",
+ "cd_del": "Delete",
+ "cd_reset": "Reset progress",
+ "cd_reset_ok": "Tap again to confirm",
+ "cd_howto": "How it works: new cards come back after 1, 3, 7, 14 and 30 days if you know them. If you forget one, it comes back soon. Review a few minutes every day.",
+ "cd_pos_adj": "adjective",
+ "cd_pos_verb": "verb",
+ "cd_pos_noun": "noun",
+ "cd_pos_adv": "adverb",
+ "cd_deck": "Academic English, 40 words",
+ "cd_empty_new": "You have no cards to review. Start with new words.",
+ "cd_go_today": "Open Today"
+});
+Object.assign(T.ru, {
+ "crumb": "СЛОВА",
+ "cd_title": "Карточки со словами",
+ "cd_lead": "Учи академические английские слова для IELTS и SAT. Карточки возвращаются в нужное время, поэтому слова остаются в памяти. Можно добавлять и свои слова.",
+ "cd_due": "Повторить",
+ "cd_new": "Новых сегодня",
+ "cd_learned": "Выучено",
+ "cd_total": "Слов",
+ "cd_show": "Показать ответ",
+ "cd_forgot": "Забыл",
+ "cd_hard": "Трудно",
+ "cd_know": "Знаю",
+ "cd_speak": "Послушать",
+ "cd_done_t": "На сегодня всё!",
+ "cd_done_d": "Приходи завтра, новые карточки будут готовы.",
+ "cd_more": "Выучить ещё 5 новых слов",
+ "cd_nomore": "Новых слов на сегодня больше нет. Отличная работа!",
+ "cd_start": "Начать",
+ "cd_left": "Осталось: {n}",
+ "cd_session": "Повторено карточек за сессию: {n}",
+ "cd_add_t": "Добавь своё слово",
+ "cd_front": "Слово",
+ "cd_back": "Значение",
+ "cd_add": "Добавить карточку",
+ "cd_mine": "Мои слова",
+ "cd_mine_empty": "Ты ещё не добавлял слова.",
+ "cd_del": "Удалить",
+ "cd_reset": "Сбросить прогресс",
+ "cd_reset_ok": "Нажми ещё раз для подтверждения",
+ "cd_howto": "Как это работает: если знаешь слово, карточка вернётся через 1, 3, 7, 14 и 30 дней. Если забыл, она вернётся скоро. Повторяй по несколько минут каждый день.",
+ "cd_pos_adj": "прилагательное",
+ "cd_pos_verb": "глагол",
+ "cd_pos_noun": "существительное",
+ "cd_pos_adv": "наречие",
+ "cd_deck": "Академический английский, 40 слов",
+ "cd_empty_new": "Карточек для повторения нет. Начни с новых слов.",
+ "cd_go_today": "Открыть «Сегодня»"
+});
+Object.assign(T.uz, {
+ "crumb": "SO'ZLAR",
+ "cd_title": "So'z kartochkalari",
+ "cd_lead": "IELTS va SAT uchun akademik ingliz so'zlarini o'rganing. Kartochkalar kerakli vaqtda qaytadi, shuning uchun so'zlar xotirada qoladi. O'z so'zlaringizni ham qo'shing.",
+ "cd_due": "Takrorlash",
+ "cd_new": "Bugungi yangilar",
+ "cd_learned": "O'rganilgan",
+ "cd_total": "So'zlar",
+ "cd_show": "Javobni ko'rsatish",
+ "cd_forgot": "Unutdim",
+ "cd_hard": "Qiyin",
+ "cd_know": "Bilaman",
+ "cd_speak": "Tinglash",
+ "cd_done_t": "Hozircha hammasi tayyor!",
+ "cd_done_d": "Ertaga qayting, yangi kartochkalar tayyor bo'ladi.",
+ "cd_more": "Yana 5 ta yangi so'z o'rganish",
+ "cd_nomore": "Bugun yangi so'z qolmadi. Ajoyib!",
+ "cd_start": "Boshlash",
+ "cd_left": "Qoldi: {n}",
+ "cd_session": "Bu sessiyada takrorlangan kartochkalar: {n}",
+ "cd_add_t": "O'z so'zingizni qo'shing",
+ "cd_front": "So'z",
+ "cd_back": "Ma'nosi",
+ "cd_add": "Kartochka qo'shish",
+ "cd_mine": "Mening so'zlarim",
+ "cd_mine_empty": "Hali so'z qo'shmadingiz.",
+ "cd_del": "O'chirish",
+ "cd_reset": "Progressni tiklash",
+ "cd_reset_ok": "Tasdiqlash uchun yana bosing",
+ "cd_howto": "Qanday ishlaydi: so'zni bilsangiz, kartochka 1, 3, 7, 14 va 30 kundan keyin qaytadi. Unutsangiz, tez orada qaytadi. Har kuni bir necha daqiqa takrorlang.",
+ "cd_pos_adj": "sifat",
+ "cd_pos_verb": "fe'l",
+ "cd_pos_noun": "ot",
+ "cd_pos_adv": "ravish",
+ "cd_deck": "Akademik ingliz tili, 40 so'z",
+ "cd_empty_new": "Takrorlash uchun kartochka yo'q. Yangi so'zlardan boshlang.",
+ "cd_go_today": "«Bugun» ni ochish"
+});
+</script>
+
+<script>
+(function () {
+  var WORDS = [{"id": "w1", "w": "ambiguous", "p": "adj", "d": "open to more than one meaning", "ru": "двусмысленный, неоднозначный", "uz": "noaniq, ikki ma'noli"}, {"id": "w2", "w": "mitigate", "p": "verb", "d": "to make something less severe", "ru": "смягчать, уменьшать", "uz": "yengillashtirmoq, kamaytirmoq"}, {"id": "w3", "w": "ubiquitous", "p": "adj", "d": "found everywhere", "ru": "вездесущий, повсеместный", "uz": "hamma joyda uchraydigan"}, {"id": "w4", "w": "scrutinize", "p": "verb", "d": "to examine very carefully", "ru": "тщательно изучать", "uz": "sinchiklab o'rganmoq"}, {"id": "w5", "w": "pragmatic", "p": "adj", "d": "practical and sensible", "ru": "практичный, прагматичный", "uz": "amaliy, pragmatik"}, {"id": "w6", "w": "benevolent", "p": "adj", "d": "kind and generous", "ru": "доброжелательный, добрый", "uz": "mehribon, saxiy"}, {"id": "w7", "w": "meticulous", "p": "adj", "d": "very careful about small details", "ru": "дотошный, скрупулёзный", "uz": "puxta, har bir tafsilotga e'tiborli"}, {"id": "w8", "w": "resilient", "p": "adj", "d": "able to recover quickly from difficulties", "ru": "стойкий, устойчивый", "uz": "chidamli, tez tiklanadigan"}, {"id": "w9", "w": "inevitable", "p": "adj", "d": "certain to happen", "ru": "неизбежный", "uz": "muqarrar, qochib bo'lmaydigan"}, {"id": "w10", "w": "substantial", "p": "adj", "d": "large in amount or importance", "ru": "значительный", "uz": "sezilarli, katta"}, {"id": "w11", "w": "diminish", "p": "verb", "d": "to become or make smaller", "ru": "уменьшаться, ослаблять", "uz": "kamaymoq, pasaymoq"}, {"id": "w12", "w": "coherent", "p": "adj", "d": "logical and consistent", "ru": "связный, логичный", "uz": "izchil, mantiqli"}, {"id": "w13", "w": "advocate", "p": "verb", "d": "to publicly support an idea", "ru": "выступать за, отстаивать", "uz": "qo'llab-quvvatlamoq, himoya qilmoq"}, {"id": "w14", "w": "fluctuate", "p": "verb", "d": "to change often, up and down", "ru": "колебаться", "uz": "o'zgarib turmoq, tebranmoq"}, {"id": "w15", "w": "plausible", "p": "adj", "d": "seeming reasonable or likely", "ru": "правдоподобный", "uz": "ishonarli"}, {"id": "w16", "w": "reluctant", "p": "adj", "d": "unwilling, hesitant", "ru": "неохотный", "uz": "istamaydigan, ikkilanayotgan"}, {"id": "w17", "w": "comprehensive", "p": "adj", "d": "including everything important", "ru": "всесторонний, полный", "uz": "to'liq, keng qamrovli"}, {"id": "w18", "w": "mundane", "p": "adj", "d": "ordinary and not exciting", "ru": "обыденный, будничный", "uz": "oddiy, kundalik"}, {"id": "w19", "w": "contemplate", "p": "verb", "d": "to think deeply about something", "ru": "размышлять, обдумывать", "uz": "chuqur o'ylamoq"}, {"id": "w20", "w": "exacerbate", "p": "verb", "d": "to make a problem worse", "ru": "усугублять", "uz": "og'irlashtirmoq"}, {"id": "w21", "w": "empirical", "p": "adj", "d": "based on observation or experiment", "ru": "эмпирический, опытный", "uz": "tajribaga asoslangan"}, {"id": "w22", "w": "discrepancy", "p": "noun", "d": "a difference between things that should match", "ru": "расхождение, несоответствие", "uz": "nomuvofiqlik, farq"}, {"id": "w23", "w": "alleviate", "p": "verb", "d": "to make pain or a problem less serious", "ru": "облегчать, смягчать", "uz": "yengillatmoq"}, {"id": "w24", "w": "inherent", "p": "adj", "d": "existing as a natural, basic part", "ru": "присущий, неотъемлемый", "uz": "tabiiy, ajralmas"}, {"id": "w25", "w": "ephemeral", "p": "adj", "d": "lasting a very short time", "ru": "недолговечный, мимолётный", "uz": "o'tkinchi, qisqa muddatli"}, {"id": "w26", "w": "candid", "p": "adj", "d": "honest and direct", "ru": "откровенный, искренний", "uz": "ochiq, samimiy"}, {"id": "w27", "w": "rigorous", "p": "adj", "d": "thorough, strict and careful", "ru": "строгий, тщательный", "uz": "qat'iy, puxta"}, {"id": "w28", "w": "hinder", "p": "verb", "d": "to make something difficult", "ru": "мешать, препятствовать", "uz": "to'sqinlik qilmoq"}, {"id": "w29", "w": "thrive", "p": "verb", "d": "to grow and do well", "ru": "процветать, преуспевать", "uz": "gullab-yashnamoq, rivojlanmoq"}, {"id": "w30", "w": "subtle", "p": "adj", "d": "delicate, not obvious", "ru": "тонкий, едва заметный", "uz": "nozik, sezilarsiz"}, {"id": "w31", "w": "indispensable", "p": "adj", "d": "absolutely necessary", "ru": "незаменимый, необходимый", "uz": "ajralmas, zarur"}, {"id": "w32", "w": "ponder", "p": "verb", "d": "to think carefully about", "ru": "обдумывать, взвешивать", "uz": "mulohaza qilmoq"}, {"id": "w33", "w": "arbitrary", "p": "adj", "d": "based on chance, not reason", "ru": "произвольный", "uz": "o'zboshimcha, tasodifiy"}, {"id": "w34", "w": "elaborate", "p": "verb", "d": "to explain in more detail", "ru": "подробно разъяснять", "uz": "batafsil bayon qilmoq"}, {"id": "w35", "w": "skeptical", "p": "adj", "d": "doubtful, not easily convinced", "ru": "скептический", "uz": "shubhali, ishonmaydigan"}, {"id": "w36", "w": "consequently", "p": "adv", "d": "as a result", "ru": "следовательно, в результате", "uz": "natijada, shu sababli"}, {"id": "w37", "w": "sustain", "p": "verb", "d": "to keep something going", "ru": "поддерживать, продолжать", "uz": "davom ettirmoq, qo'llab-quvvatlamoq"}, {"id": "w38", "w": "obsolete", "p": "adj", "d": "no longer used, out of date", "ru": "устаревший", "uz": "eskirgan"}, {"id": "w39", "w": "vivid", "p": "adj", "d": "very clear, bright and detailed", "ru": "яркий, живой", "uz": "yorqin, jonli"}, {"id": "w40", "w": "tedious", "p": "adj", "d": "long, boring and tiring", "ru": "утомительный, скучный", "uz": "zerikarli, charchatuvchi"}];
+  var INT = [0, 1, 3, 7, 14, 30]; // days until next review for box 1..6 (box 1 = same session)
+  var NEW_LIMIT = 10;
+  var $ = function (id) { return document.getElementById(id); };
+  function esc(v) { return String(v).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function dayKey(d) { return window.actKey(d); }
+  function addDays(n) { var d = new Date(); d.setDate(d.getDate() + n); return dayKey(d); }
+  function lang() { return window.getLang ? window.getLang() : "en"; }
+
+  var data = (function () {
+    try { var d = JSON.parse(localStorage.getItem("cards_v1") || "null"); if (d && d.prog) return d; } catch (e) {}
+    return { prog: {}, custom: [], newDay: "", newN: 0 };
+  })();
+  if (!Array.isArray(data.custom)) data.custom = [];
+  function save() { try { localStorage.setItem("cards_v1", JSON.stringify(data)); } catch (e) {} }
+
+  var queue = [], cur = null, shown = false, reviewed = 0, started = false, awarded = false;
+
+  function allCards() {
+    return WORDS.map(function (w) { return { id: w.id, w: w.w, p: w.p, d: w.d, ru: w.ru, uz: w.uz, own: false }; })
+      .concat(data.custom.map(function (c) { return { id: c.id, w: c.f, b: c.k, own: true }; }));
+  }
+  function rec(id) { return data.prog[id]; }
+  function today() { return dayKey(); }
+  function newLeft() { return Math.max(0, NEW_LIMIT - (data.newDay === today() ? data.newN : 0)); }
+
+  function dueCards() {
+    var t0 = today();
+    return allCards().filter(function (c) { var r = rec(c.id); return r && r.d <= t0; })
+      .sort(function (a, b) { return rec(a.id).b - rec(b.id).b; });
+  }
+  function unseen() { return allCards().filter(function (c) { return !rec(c.id); }); }
+
+  function stats() {
+    var all = allCards(), learned = 0, i;
+    all.forEach(function (c) { var r = rec(c.id); if (r && r.b >= 4) learned++; });
+    $("cdDue").textContent = dueCards().length;
+    $("cdNew").textContent = Math.min(newLeft(), unseen().length);
+    $("cdLearned").textContent = learned;
+    $("cdTotal").textContent = t("cd_total") + ": " + all.length;
+  }
+
+  function buildQueue(extraNew) {
+    queue = dueCards();
+    var n = extraNew === undefined ? newLeft() : extraNew;
+    unseen().slice(0, n).forEach(function (c) { queue.push(c); });
+    return queue.length;
+  }
+
+  function speak(word) {
+    try {
+      if (!window.speechSynthesis) return;
+      var u = new SpeechSynthesisUtterance(word); u.lang = "en-US"; u.rate = 0.9;
+      window.speechSynthesis.cancel(); window.speechSynthesis.speak(u);
+    } catch (e) {}
+  }
+
+  function back(c) {
+    if (c.own) return esc(c.b);
+    var l = lang(), tr = l === "uz" ? c.uz : l === "ru" ? c.ru : c.d;
+    return "<b>" + esc(tr) + "</b>" + (l === "en" ? "" : '<div class="note" style="margin-top:8px">' + esc(c.d) + "</div>");
+  }
+
+  function render() {
+    stats();
+    var box = $("cdMain");
+    if (!cur) {
+      var due = dueCards().length, nw = Math.min(newLeft(), unseen().length);
+      if (!started && due + nw > 0) {
+        box.innerHTML = '<div class="cd-mas">' + window.mascot("happy") + '</div><p class="note" style="margin:0 0 14px">' + t("cd_deck") + '</p><button class="btn lg" id="cdStart">' + t("cd_start") + " (" + (due + nw) + ")</button>";
+        $("cdStart").onclick = function () { started = true; reviewed = 0; awarded = false; buildQueue(); next(); };
+        return;
+      }
+      var canMore = unseen().length > 0;
+      box.innerHTML = '<div class="cd-mas">' + window.mascot(reviewed > 0 ? "cheer" : "think") + "</div><h2 style=\"margin:0 0 6px\">" + t("cd_done_t") + "</h2><p class=\"note\" style=\"margin:0 0 14px\">" +
+        (reviewed > 0 ? t("cd_session").replace("{n}", reviewed) + " " : "") + t("cd_done_d") + "</p>" +
+        (canMore ? '<button class="btn" id="cdMore">' + t("cd_more") + "</button> " : '<p class="note">' + t("cd_nomore") + "</p>") +
+        ' <a class="btn ghost" href="/today">' + t("cd_go_today") + "</a>";
+      var m = $("cdMore"); if (m) m.onclick = function () { started = true; buildQueue(5); next(); };
+      return;
+    }
+    var c = cur, pos = c.p ? '<span class="note" style="margin-left:8px">' + t("cd_pos_" + c.p) + "</span>" : "";
+    box.innerHTML = '<p class="note" style="margin:0 0 10px">' + t("cd_left").replace("{n}", queue.length + 1) + '</p><div class="cd-card"><div class="cd-word">' + esc(c.w) + pos + "</div>" +
+      (c.own ? "" : '<button class="chip" id="cdSpk">🔊 ' + t("cd_speak") + "</button>") +
+      (shown ? '<div class="cd-back">' + back(c) + "</div>" : "") + "</div>" +
+      (shown ? '<div class="cd-btns"><button class="btn ghost" data-r="0">😕 ' + t("cd_forgot") + '</button><button class="btn ghost" data-r="1">🤔 ' + t("cd_hard") + '</button><button class="btn" data-r="2">✅ ' + t("cd_know") + "</button></div>"
+             : '<button class="btn lg" id="cdShow">' + t("cd_show") + "</button>");
+    var sp = $("cdSpk"); if (sp) sp.onclick = function () { speak(c.w); };
+    var sh = $("cdShow"); if (sh) sh.onclick = function () { shown = true; render(); };
+    box.querySelectorAll("[data-r]").forEach(function (b) { b.onclick = function () { rate(+b.getAttribute("data-r")); }; });
+  }
+
+  function next() { cur = queue.shift() || null; shown = false; render(); }
+
+  function rate(r) {
+    var c = cur, rc = rec(c.id), isNew = !rc, b = rc ? rc.b : 1;
+    if (isNew && data.newDay !== today()) { data.newDay = today(); data.newN = 0; }
+    if (isNew) data.newN++;
+    if (r === 0) { b = 1; data.prog[c.id] = { b: 1, d: today() }; queue.push(c); }
+    else if (r === 1) { data.prog[c.id] = { b: b, d: addDays(Math.max(1, INT[b - 1] || 1)) }; }
+    else { b = Math.min(6, b + 1); data.prog[c.id] = { b: b, d: addDays(INT[b - 1]) }; }
+    reviewed++;
+    save();
+    if (reviewed >= 5 && !awarded) { awarded = true; if (window.recordAct) recordAct("cards", 20); }
+    next();
+  }
+
+  // my words
+  function renderMine() {
+    $("cdMineT").textContent = t("cd_mine");
+    var h = data.custom.map(function (c) {
+      return '<div class="tk-row" data-id="' + c.id + '" style="display:flex;gap:10px;align-items:center;padding:8px 0;border-top:1px solid var(--line)"><span style="flex:1;min-width:0;word-break:break-word"><b>' + esc(c.f) + "</b> — " + esc(c.k) + '</span><button class="chip rm">' + t("cd_del") + "</button></div>";
+    }).join("");
+    $("cdMine").innerHTML = h || '<p class="note" style="margin:0">' + t("cd_mine_empty") + "</p>";
+    $("cdMine").querySelectorAll(".tk-row").forEach(function (r) {
+      r.querySelector(".rm").onclick = function () {
+        var id = r.getAttribute("data-id");
+        data.custom = data.custom.filter(function (x) { return x.id !== id; }); delete data.prog[id]; save(); queue = queue.filter(function (x) { return x.id !== id; });
+        if (cur && cur.id === id) next(); else render();
+        renderMine();
+      };
+    });
+  }
+  function addCard() {
+    var clean = function (v, n) { return v.replace(/[\u0000-\u001f]/g, "").trim().slice(0, n); };
+    var f = clean($("cdF").value, 40), k = clean($("cdB").value, 80);
+    if (!f || !k || data.custom.length >= 200) return;
+    data.custom.push({ id: "c" + Date.now().toString(36) + Math.random().toString(36).slice(2, 4), f: f, k: k });
+    $("cdF").value = ""; $("cdB").value = ""; save(); renderMine(); render();
+  }
+  $("cdAdd").onclick = addCard;
+  $("cdB").onkeydown = function (ev) { if (ev.key === "Enter") addCard(); };
+
+  var armed = false;
+  $("cdReset").onclick = function () {
+    if (!armed) { armed = true; this.textContent = t("cd_reset_ok"); var me = this; setTimeout(function () { armed = false; me.textContent = t("cd_reset"); }, 3500); return; }
+    armed = false; data.prog = {}; data.newDay = ""; data.newN = 0; save(); cur = null; started = false; queue = []; reviewed = 0; labels(); render();
+  };
+
+  function labels() {
+    $("cdF").placeholder = t("cd_front"); $("cdB").placeholder = t("cd_back"); $("cdAdd").textContent = t("cd_add"); $("cdReset").textContent = t("cd_reset");
+  }
+  window.onLang = function () { labels(); renderMine(); render(); };
+  labels(); renderMine(); render();
+})();
+</script>
+<script>
+(function () {
+  if (!("serviceWorker" in navigator)) return;
+  window.addEventListener("load", function () { navigator.serviceWorker.register("/sw.js").catch(function () {}); });
+  var deferred = null;
+  window.addEventListener("beforeinstallprompt", function (e) {
+    e.preventDefault(); deferred = e;
+    var b = document.getElementById("install"); if (b) b.hidden = false;
+  });
+  window.addEventListener("appinstalled", function () {
+    deferred = null; var b = document.getElementById("install"); if (b) b.hidden = true;
+  });
+  document.addEventListener("click", function (ev) {
+    if (!ev.target || ev.target.id !== "install" || !deferred) return;
+    deferred.prompt();
+    deferred.userChoice.then(function () { deferred = null; var b = document.getElementById("install"); if (b) b.hidden = true; });
+  });
+})();
+</script>
+</body>
+</html>
