@@ -25,12 +25,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
-<style>
-.fx-opts{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
-.fx-opts .chip{opacity:.65}
-.fx-opts .chip.on{opacity:1;border-color:var(--brand);color:var(--brand)}
-.fx-cycle{color:var(--muted);font-size:13px;margin:-6px 0 12px}
-</style>
 </head>
 <body>
 <nav id="nav"></nav>
@@ -50,14 +44,20 @@
           <svg class="fx-ring" viewBox="0 0 200 200" aria-hidden="true"><circle class="bg" cx="100" cy="100" r="88"/><circle class="fg" id="fxArc" cx="100" cy="100" r="88"/></svg>
           <div class="fx-time" id="fxTime" role="timer" aria-live="off">25:00</div>
         </div>
-        <div class="fx-cycle" id="fxCycle"></div>
         <div class="fx-durs" id="fxDurs"></div>
         <input class="fx-task" id="fxTask" maxlength="60" data-ph="fx_task" autocomplete="off">
         <div class="fx-btns">
           <button class="btn" id="fxGo"></button>
           <button class="btn ghost" id="fxReset"></button>
         </div>
-        <div class="fx-opts" id="fxOpts"></div>
+        <div class="fx-btns" style="margin-top:12px"><button class="chip" id="fxSnd"></button><button class="chip" id="fxAuto"></button></div>
+        <p class="note" id="fxAutoHint" style="margin:10px 0 0;font-size:13px"></p>
+        <div class="fx-amb" style="margin-top:20px">
+          <h3 id="fxAmbT" style="margin:0 0 10px;font-size:16px"></h3>
+          <div class="fx-durs" id="fxAmb"></div>
+          <label class="note" style="display:flex;gap:10px;align-items:center;justify-content:center;margin:12px 0 0"><span id="fxVolT"></span><input type="range" id="fxVol" min="0" max="100" style="width:160px"></label>
+          <p class="note" id="fxAmbHint" style="margin:8px 0 0;font-size:13px"></p>
+        </div>
         <p class="fx-msg" id="fxMsg" aria-live="polite"></p>
       </div>
       <div class="fx-side">
@@ -377,8 +377,6 @@ Object.assign(T.en, {
   "fx_done": "Session complete! Time for a short break.",
   "fx_bdone": "Break is over. Ready for another round?",
   "fx_going": "Focus. Put the phone away.",
-  "fx_snd": "Sound", "fx_auto": "Auto-start", "fx_ldone": "4 sessions done! Time for a long break.",
-  "fx_cycle": "Round {n} of 4", "fx_n_focus": "Focus is over. Time for a break ☕", "fx_n_break": "Break is over. Back to studying 📚",
   "fx_today": "Today", "fx_min": "Minutes studied", "fx_sessions": "Sessions finished", "fx_streak": "Day streak",
   "fx_priv": "Privacy: the live counter only counts anonymous visitors. In a private room, people with your link see only the nickname you choose and your study minutes. No chat, no accounts. Your task text stays on your device.",
   "fx_min_u": "min"
@@ -416,8 +414,6 @@ Object.assign(T.ru, {
   "fx_done": "Сессия завершена! Время для короткого перерыва.",
   "fx_bdone": "Перерыв закончился. Готов к новому раунду?",
   "fx_going": "Фокус. Убери телефон.",
-  "fx_snd": "Звук", "fx_auto": "Автопереход", "fx_ldone": "4 сессии позади! Время для длинного перерыва.",
-  "fx_cycle": "Раунд {n} из 4", "fx_n_focus": "Фокус закончился. Время отдохнуть ☕", "fx_n_break": "Перерыв закончился. Возвращаемся к учёбе 📚",
   "fx_today": "Сегодня", "fx_min": "Минут учёбы", "fx_sessions": "Завершённых сессий", "fx_streak": "Дней подряд",
   "fx_priv": "Приватность: живой счётчик считает только анонимных посетителей. В закрытой комнате люди с твоей ссылкой видят только выбранный тобой ник и минуты учёбы. Без чата и аккаунтов. Текст задачи остаётся на твоём устройстве.",
   "fx_min_u": "мин"
@@ -455,11 +451,73 @@ Object.assign(T.uz, {
   "fx_done": "Sessiya tugadi! Qisqa tanaffus vaqti.",
   "fx_bdone": "Tanaffus tugadi. Yana bir raundga tayyormisiz?",
   "fx_going": "Fokus. Telefonni chetga qo'ying.",
-  "fx_snd": "Ovoz", "fx_auto": "Avto-o'tish", "fx_ldone": "4 ta sessiya tugadi! Uzun tanaffus vaqti.",
-  "fx_cycle": "{n}-raund, jami 4", "fx_n_focus": "Fokus tugadi. Dam olish vaqti ☕", "fx_n_break": "Tanaffus tugadi. O'qishga qaytamiz 📚",
   "fx_today": "Bugun", "fx_min": "O'qilgan daqiqalar", "fx_sessions": "Tugagan sessiyalar", "fx_streak": "Ketma-ket kunlar",
   "fx_priv": "Maxfiylik: jonli hisoblagich faqat anonim tashrif buyuruvchilarni sanaydi. Yopiq xonada havolangiz borlar faqat siz tanlagan laqab va o'qish daqiqalaringizni ko'radi. Chat va akkaunt yo'q. Vazifa matni qurilmangizda qoladi.",
   "fx_min_u": "daq"
+});
+</script>
+<script>
+Object.assign(T.en, {
+ "fx_sound_on": "🔔 Sound: on",
+ "fx_sound_off": "🔕 Sound: off",
+ "fx_auto_on": "🔁 Auto-continue: on",
+ "fx_auto_off": "⏸ Auto-continue: off",
+ "fx_done_long": "Session complete! Time for a long break.",
+ "fx_bdone_auto": "Break is over. Next focus has started.",
+ "fx_auto_hint": "Focus, break and the next focus start on their own. After 4 focus sessions you get a long break."
+});
+Object.assign(T.ru, {
+ "fx_sound_on": "🔔 Звук: вкл",
+ "fx_sound_off": "🔕 Звук: выкл",
+ "fx_auto_on": "🔁 Автопереход: вкл",
+ "fx_auto_off": "⏸ Автопереход: выкл",
+ "fx_done_long": "Сессия завершена! Время для длинного перерыва.",
+ "fx_bdone_auto": "Перерыв закончился. Следующий фокус уже начался.",
+ "fx_auto_hint": "Фокус, перерыв и следующий фокус запускаются сами. После 4 фокус-сессий будет длинный перерыв."
+});
+Object.assign(T.uz, {
+ "fx_sound_on": "🔔 Ovoz: yoqilgan",
+ "fx_sound_off": "🔕 Ovoz: o'chiq",
+ "fx_auto_on": "🔁 Avto-o'tish: yoqilgan",
+ "fx_auto_off": "⏸ Avto-o'tish: o'chiq",
+ "fx_done_long": "Sessiya tugadi! Uzoq tanaffus vaqti.",
+ "fx_bdone_auto": "Tanaffus tugadi. Keyingi fokus boshlandi.",
+ "fx_auto_hint": "Fokus, tanaffus va keyingi fokus o'zi boshlanadi. 4 ta fokus sessiyadan keyin uzoq tanaffus bo'ladi."
+});
+</script>
+<script>
+Object.assign(T.en, {
+ "amb_title": "Sounds for studying",
+ "amb_rain": "🌧 Rain",
+ "amb_storm": "⛈ Heavy rain",
+ "amb_ocean": "🌊 Ocean",
+ "amb_wind": "🍃 Wind",
+ "amb_brown": "🌫 Brown noise",
+ "amb_pad": "🎹 Calm music",
+ "amb_vol": "Volume",
+ "amb_hint": "Tap a sound to play it, tap again to stop. It keeps playing between focus and break."
+});
+Object.assign(T.ru, {
+ "amb_title": "Звуки для учёбы",
+ "amb_rain": "🌧 Дождь",
+ "amb_storm": "⛈ Ливень",
+ "amb_ocean": "🌊 Океан",
+ "amb_wind": "🍃 Ветер",
+ "amb_brown": "🌫 Коричневый шум",
+ "amb_pad": "🎹 Спокойная музыка",
+ "amb_vol": "Громкость",
+ "amb_hint": "Нажми на звук, чтобы включить, и ещё раз, чтобы выключить. Он играет и между фокусом и перерывом."
+});
+Object.assign(T.uz, {
+ "amb_title": "O'qish uchun tovushlar",
+ "amb_rain": "🌧 Yomg'ir",
+ "amb_storm": "⛈ Jala",
+ "amb_ocean": "🌊 Okean",
+ "amb_wind": "🍃 Shamol",
+ "amb_brown": "🌫 Jigarrang shovqin",
+ "amb_pad": "🎹 Sokin musiqa",
+ "amb_vol": "Ovoz balandligi",
+ "amb_hint": "Tovushni yoqish uchun bosing, o'chirish uchun yana bosing. U fokus va tanaffus orasida ham davom etadi."
 });
 </script>
 <script>
@@ -468,8 +526,8 @@ Object.assign(T.uz, {
   var DUR = { focus: 25 * 60, short: 5 * 60, long: 15 * 60 };
   var mode = "focus", focusMin = 25, running = false, endAt = 0, remain = DUR.focus, mood = "happy", msgKey = "";
   var live = null, total = null, net = "conn", audio = null;
-  var sound = true, auto = true, cycle = 0, autoTimer = null;
-  try { sound = localStorage.getItem("fx_sound") !== "0"; auto = localStorage.getItem("fx_auto") !== "0"; } catch (e) {}
+  var optSound = true, optAuto = true;
+  try { optSound = localStorage.getItem("fx_sound") !== "0"; optAuto = localStorage.getItem("fx_auto") !== "0"; } catch (e) {}
   var $ = function (id) { return document.getElementById(id); };
   var sid = Math.random().toString(36).slice(2) + Date.now().toString(36);
 
@@ -528,17 +586,6 @@ Object.assign(T.uz, {
       d += '<button data-d="' + m + '" class="' + (m === focusMin ? "cur" : "") + '"' + (running ? " disabled" : "") + ">" + m + " " + t("fx_min_u") + "</button>";
     });
     $("fxDurs").innerHTML = d;
-    $("fxOpts").innerHTML =
-      '<button class="chip' + (sound ? " on" : "") + '" id="fxSnd" aria-pressed="' + sound + '">' + (sound ? "🔔 " : "🔕 ") + t("fx_snd") + "</button>" +
-      '<button class="chip' + (auto ? " on" : "") + '" id="fxAuto" aria-pressed="' + auto + '">🔁 ' + t("fx_auto") + "</button>";
-    $("fxSnd").onclick = function () {
-      sound = !sound; try { localStorage.setItem("fx_sound", sound ? "1" : "0"); } catch (e) {}
-      unlockAudio(); if (sound) play("start"); render();
-    };
-    $("fxAuto").onclick = function () {
-      auto = !auto; try { localStorage.setItem("fx_auto", auto ? "1" : "0"); } catch (e) {}
-      if (!auto) clearAuto(); render();
-    };
     $("fxDurs").querySelectorAll("button").forEach(function (b) {
       b.onclick = function () {
         if (running) return;
@@ -555,10 +602,13 @@ Object.assign(T.uz, {
     $("fxArc").style.strokeDasharray = C;
     $("fxArc").style.strokeDashoffset = C * (1 - remain / tot);
     $("fxTime").textContent = fmt(remain);
-    $("fxCycle").textContent = t("fx_cycle").replace("{n}", mode === "focus" ? (cycle % 4) + 1 : (cycle % 4 || 4));
     var started = remain < tot;
     $("fxGo").textContent = running ? t("fx_pause") : (started ? t("fx_resume") : t("fx_start"));
     $("fxReset").textContent = t("fx_reset");
+    $("fxSnd").textContent = t(optSound ? "fx_sound_on" : "fx_sound_off");
+    $("fxAuto").textContent = t(optAuto ? "fx_auto_on" : "fx_auto_off");
+    $("fxAutoHint").textContent = optAuto ? t("fx_auto_hint") : "";
+    renderAmb();
     $("fxMsg").textContent = running && mode === "focus" ? t("fx_going") : (msgKey ? t(msgKey) : "");
     $("fxMas").innerHTML = window.mascot(running && mode === "focus" ? "think" : mood);
     document.title = running ? fmt(remain) + " · " + t("fx_m_" + mode) : t("doc_title");
@@ -574,7 +624,7 @@ Object.assign(T.uz, {
   }
 
   function setMode(m) {
-    clearAuto(); running = false; mode = m; remain = DUR[m]; msgKey = ""; mood = "happy";
+    running = false; mode = m; remain = DUR[m]; msgKey = ""; mood = "happy";
     render(); ping();
   }
 
@@ -582,42 +632,116 @@ Object.assign(T.uz, {
     if (!audio) { try { audio = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} }
     if (audio && audio.state === "suspended") { try { audio.resume(); } catch (e) {} }
   }
+  // notes: [frequency Hz, start offset s, length s]
+  var SOUNDS = {
+    start: [[523, 0, 0.18], [784, 0.16, 0.28]],
+    focusEnd: [[784, 0, 0.3], [988, 0.3, 0.3], [1318, 0.6, 0.6]],
+    breakEnd: [[1318, 0, 0.22], [988, 0.24, 0.22], [1318, 0.48, 0.22], [1568, 0.72, 0.5]]
+  };
 
-  function tone(freq, at, len, vol) {
-    var o = audio.createOscillator(), g = audio.createGain(), t0 = audio.currentTime + at;
-    o.type = "sine"; o.frequency.value = freq;
-    g.gain.setValueAtTime(0.0001, t0);
-    g.gain.exponentialRampToValueAtTime(vol, t0 + 0.03);
-    g.gain.exponentialRampToValueAtTime(0.0001, t0 + len);
-    o.connect(g); g.connect(audio.destination);
-    o.start(t0); o.stop(t0 + len + 0.05);
+  /* ---------- ambient sounds (generated in the browser, no files) ---------- */
+  var AMB_IDS = ["rain", "storm", "ocean", "wind", "brown", "pad"];
+  var amb = { id: "", nodes: [], timer: null, master: null, duck: null }, ambVol = 0.5, ambKey = "", NOISE = {};
+  try { var av = +localStorage.getItem("fx_ambvol"); if (localStorage.getItem("fx_ambvol") !== null && av >= 0 && av <= 100) ambVol = av / 100; } catch (e) {}
+  function noiseBuf(kind) {
+    if (NOISE[kind]) return NOISE[kind];
+    var len = audio.sampleRate * 8, b = audio.createBuffer(1, len, audio.sampleRate), d = b.getChannelData(0), last = 0, i, w;
+    for (i = 0; i < len; i++) {
+      w = Math.random() * 2 - 1;
+      if (kind === "brown") { last = (last + 0.02 * w) / 1.02; d[i] = last * 3.5; } else d[i] = w;
+    }
+    return (NOISE[kind] = b);
   }
+  function noiseSrc(kind) {
+    var n = audio.createBufferSource(); n.buffer = noiseBuf(kind); n.loop = true; n.start(0, Math.random() * 6); amb.nodes.push(n); return n;
+  }
+  function filt(type, f, q) { var x = audio.createBiquadFilter(); x.type = type; x.frequency.value = f; if (q) x.Q.value = q; return x; }
+  function gainN(v) { var g = audio.createGain(); g.gain.value = v; return g; }
+  function lfo(rate, depth, target) {
+    var o = audio.createOscillator(), g = gainN(depth); o.frequency.value = rate; o.connect(g); g.connect(target); o.start(); amb.nodes.push(o);
+  }
+  function chain(src, list, out) { var n = src; list.forEach(function (x) { n.connect(x); n = x; }); n.connect(out); }
+  function setAmbVol() { if (amb.master) amb.master.gain.setTargetAtTime(ambVol * ambVol * 0.9, audio.currentTime, 0.05); }
+  function stopAmb() {
+    var nodes = amb.nodes, m = amb.master, timer = amb.timer;
+    if (timer) clearInterval(timer);
+    if (m) { try { m.gain.setTargetAtTime(0, audio.currentTime, 0.08); } catch (e) {} }
+    setTimeout(function () { nodes.forEach(function (n) { try { n.stop(); } catch (e) {} try { n.disconnect(); } catch (e) {} }); if (m) { try { m.disconnect(); } catch (e) {} } }, 400);
+    amb = { id: "", nodes: [], timer: null, master: amb.master ? null : null, duck: amb.duck };
+  }
+  function startAmb(id) {
+    unlockAudio(); if (!audio) return;
+    if (!amb.duck) { amb.duck = audio.createGain(); amb.duck.connect(audio.destination); }
+    var old = amb.id; if (old) stopAmb();
+    amb.id = id; amb.nodes = [];
+    var m = amb.master = gainN(0); m.connect(amb.duck);
+    m.gain.setTargetAtTime(ambVol * ambVol * 0.9, audio.currentTime, 0.4);
+    if (id === "rain") {
+      chain(noiseSrc("white"), [filt("highpass", 800), filt("lowpass", 7000), gainN(0.45)], m);
+    } else if (id === "storm") {
+      chain(noiseSrc("white"), [filt("highpass", 250), filt("lowpass", 3500), gainN(0.8)], m);
+      chain(noiseSrc("brown"), [filt("lowpass", 180), gainN(0.9)], m);
+    } else if (id === "ocean") {
+      var g = gainN(0.55); chain(noiseSrc("brown"), [filt("lowpass", 1100)], g); g.connect(m); lfo(0.11, 0.4, g.gain);
+    } else if (id === "wind") {
+      var f = filt("bandpass", 550, 0.9), g2 = gainN(0.55); noiseSrc("white").connect(f); f.connect(g2); g2.connect(m);
+      lfo(0.07, 260, f.frequency); lfo(0.13, 0.25, g2.gain);
+    } else if (id === "brown") {
+      chain(noiseSrc("brown"), [filt("lowpass", 700), gainN(1)], m);
+    } else if (id === "pad") {
+      var CH = [[130.8, 196, 261.6, 329.6, 392], [110, 164.8, 220, 261.6, 329.6], [87.3, 130.8, 174.6, 261.6, 349.2], [98, 146.8, 196, 293.7, 392]];
+      var lp = filt("lowpass", 1100), pg = gainN(0.16); lp.connect(pg); pg.connect(m);
+      lfo(0.15, 0.05, pg.gain);
+      var oscs = CH[0].map(function (fr, i) {
+        var o = audio.createOscillator(); o.type = i % 2 ? "triangle" : "sine"; o.frequency.value = fr; o.connect(lp); o.start(); amb.nodes.push(o); return o;
+      }), ci = 0;
+      amb.timer = setInterval(function () {
+        ci = (ci + 1) % CH.length;
+        oscs.forEach(function (o, i) { try { o.frequency.setTargetAtTime(CH[ci][i], audio.currentTime, 2.5); } catch (e) {} });
+      }, 11000);
+    }
+    renderAmb();
+  }
+  function toggleAmb(id) {
+    if (amb.id === id) { stopAmb(); renderAmb(); return; }
+    startAmb(id);
+    try { localStorage.setItem("fx_amb", id); } catch (e) {}
+  }
+  function duckAmb() {
+    if (!amb.duck || !audio) return;
+    var n = audio.currentTime, g = amb.duck.gain;
+    try { g.cancelScheduledValues(n); g.setTargetAtTime(0.25, n, 0.05); g.setTargetAtTime(1, n + 2, 0.4); } catch (e) {}
+  }
+  function renderAmb() {
+    var key = amb.id + "|" + t("amb_rain");
+    $("fxAmbT").textContent = t("amb_title"); $("fxVolT").textContent = t("amb_vol"); $("fxAmbHint").textContent = t("amb_hint");
+    if (key === ambKey && $("fxAmb").children.length) return;
+    ambKey = key;
+    $("fxAmb").innerHTML = AMB_IDS.map(function (id) { return '<button data-a="' + id + '" class="' + (amb.id === id ? "cur" : "") + '">' + t("amb_" + id) + "</button>"; }).join("");
+    $("fxAmb").querySelectorAll("button").forEach(function (b) { b.onclick = function () { toggleAmb(b.getAttribute("data-a")); }; });
+  }
+  $("fxVol").value = Math.round(ambVol * 100);
+  $("fxVol").oninput = function () {
+    ambVol = this.value / 100; setAmbVol();
+    try { localStorage.setItem("fx_ambvol", this.value); } catch (e) {}
+  };
 
-  // start: short rising ding; focus end: 3 double rings ("rest"); break end: rising melody ("back to work")
-  function play(kind) {
+  function playSound(kind) {
+    if (!optSound) return;
+    duckAmb();
     try {
-      if (!sound || !audio) return;
-      if (kind === "start") { tone(660, 0, 0.18, 0.3); tone(990, 0.16, 0.3, 0.3); }
-      else if (kind === "focusEnd") { [0, 0.6, 1.2].forEach(function (s) { tone(880, s, 0.35, 0.5); tone(1320, s + 0.15, 0.4, 0.45); }); }
-      else { [523, 659, 784, 1047].forEach(function (f, i) { tone(f, i * 0.2, 0.4, 0.45); }); tone(1047, 0.9, 0.7, 0.45); }
+      if (navigator.vibrate && kind !== "start") navigator.vibrate([200, 100, 200]);
+      if (!audio) return;
+      (SOUNDS[kind] || []).forEach(function (n) {
+        var o = audio.createOscillator(), g = audio.createGain(), t0 = audio.currentTime + n[1];
+        o.type = "sine"; o.frequency.value = n[0];
+        g.gain.setValueAtTime(0.0001, t0);
+        g.gain.exponentialRampToValueAtTime(0.3, t0 + 0.03);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + n[2]);
+        o.connect(g); g.connect(audio.destination);
+        o.start(t0); o.stop(t0 + n[2] + 0.05);
+      });
     } catch (e) {}
-  }
-
-  function notify(text) {
-    try {
-      if (document.hidden && "Notification" in window && Notification.permission === "granted")
-        new Notification("StudentPP", { body: text, icon: "/icon-192.png", tag: "fx" });
-    } catch (e) {}
-  }
-
-  function clearAuto() { if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; } }
-
-  function startTimer() {
-    clearAuto(); unlockAudio();
-    try { if ("Notification" in window && Notification.permission === "default") Notification.requestPermission(); } catch (e) {}
-    running = true; endAt = Date.now() + remain * 1000; msgKey = ""; mood = "happy";
-    play("start");
-    render(); ping();
   }
 
   function addSeconds(s) {
@@ -628,24 +752,18 @@ Object.assign(T.uz, {
   function complete() {
     running = false;
     if (mode === "focus") {
-      play("focusEnd"); notify(t("fx_n_focus"));
       var k = dayKey(); stats.ses[k] = (stats.ses[k] || 0) + 1; saveStats();
       if (window.recordAct) recordAct("focus", 25);
-      cycle++;
-      if (cycle % 4 === 0) { mode = "long"; msgKey = "fx_ldone"; } else { mode = "short"; msgKey = "fx_done"; }
-      mood = "cheer";
+      var longBreak = stats.ses[k] % 4 === 0;
+      mode = longBreak ? "long" : "short"; msgKey = longBreak ? "fx_done_long" : "fx_done"; mood = "cheer";
+      playSound("focusEnd");
     } else {
-      play("breakEnd"); notify(t("fx_n_break"));
-      if (mode === "long") cycle = 0;
-      mode = "focus"; msgKey = "fx_bdone"; mood = "happy";
+      mode = "focus"; msgKey = optAuto ? "fx_bdone_auto" : "fx_bdone"; mood = "happy";
+      playSound("breakEnd");
     }
     remain = DUR[mode];
+    if (optAuto) { running = true; endAt = Date.now() + remain * 1000; }
     render(); ping();
-    // auto-start the next phase after the sound has played
-    if (auto) {
-      var keep = msgKey;
-      autoTimer = setTimeout(function () { autoTimer = null; if (!running) { startTimer(); msgKey = keep; render(); } }, 2500);
-    }
   }
 
   function tick() {
@@ -659,11 +777,21 @@ Object.assign(T.uz, {
 
   $("fxGo").onclick = function () {
     unlockAudio();
-    if (running) { running = false; clearAuto(); render(); ping(); }
-    else startTimer();
+    if (running) { running = false; }
+    else { running = true; endAt = Date.now() + remain * 1000; msgKey = ""; mood = "happy"; playSound("start"); }
+    render(); ping();
+  };
+  $("fxSnd").onclick = function () {
+    optSound = !optSound; try { localStorage.setItem("fx_sound", optSound ? "1" : "0"); } catch (e) {}
+    unlockAudio(); if (optSound) playSound("start");
+    render();
+  };
+  $("fxAuto").onclick = function () {
+    optAuto = !optAuto; try { localStorage.setItem("fx_auto", optAuto ? "1" : "0"); } catch (e) {}
+    render();
   };
   $("fxReset").onclick = function () {
-    clearAuto(); running = false; remain = DUR[mode]; msgKey = ""; mood = "happy"; render(); ping();
+    running = false; remain = DUR[mode]; msgKey = ""; mood = "happy"; render(); ping();
   };
   $("fxTask").oninput = function () { try { localStorage.setItem("fx_task", this.value); } catch (e) {} };
 
