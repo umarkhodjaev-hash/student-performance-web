@@ -25,6 +25,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
+<style>
+.fx-opts{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.fx-opts .chip{opacity:.65}
+.fx-opts .chip.on{opacity:1;border-color:var(--brand);color:var(--brand)}
+.fx-cycle{color:var(--muted);font-size:13px;margin:-6px 0 12px}
+</style>
 </head>
 <body>
 <nav id="nav"></nav>
@@ -44,12 +50,14 @@
           <svg class="fx-ring" viewBox="0 0 200 200" aria-hidden="true"><circle class="bg" cx="100" cy="100" r="88"/><circle class="fg" id="fxArc" cx="100" cy="100" r="88"/></svg>
           <div class="fx-time" id="fxTime" role="timer" aria-live="off">25:00</div>
         </div>
+        <div class="fx-cycle" id="fxCycle"></div>
         <div class="fx-durs" id="fxDurs"></div>
         <input class="fx-task" id="fxTask" maxlength="60" data-ph="fx_task" autocomplete="off">
         <div class="fx-btns">
           <button class="btn" id="fxGo"></button>
           <button class="btn ghost" id="fxReset"></button>
         </div>
+        <div class="fx-opts" id="fxOpts"></div>
         <p class="fx-msg" id="fxMsg" aria-live="polite"></p>
       </div>
       <div class="fx-side">
@@ -369,6 +377,8 @@ Object.assign(T.en, {
   "fx_done": "Session complete! Time for a short break.",
   "fx_bdone": "Break is over. Ready for another round?",
   "fx_going": "Focus. Put the phone away.",
+  "fx_snd": "Sound", "fx_auto": "Auto-start", "fx_ldone": "4 sessions done! Time for a long break.",
+  "fx_cycle": "Round {n} of 4", "fx_n_focus": "Focus is over. Time for a break ☕", "fx_n_break": "Break is over. Back to studying 📚",
   "fx_today": "Today", "fx_min": "Minutes studied", "fx_sessions": "Sessions finished", "fx_streak": "Day streak",
   "fx_priv": "Privacy: the live counter only counts anonymous visitors. In a private room, people with your link see only the nickname you choose and your study minutes. No chat, no accounts. Your task text stays on your device.",
   "fx_min_u": "min"
@@ -406,6 +416,8 @@ Object.assign(T.ru, {
   "fx_done": "Сессия завершена! Время для короткого перерыва.",
   "fx_bdone": "Перерыв закончился. Готов к новому раунду?",
   "fx_going": "Фокус. Убери телефон.",
+  "fx_snd": "Звук", "fx_auto": "Автопереход", "fx_ldone": "4 сессии позади! Время для длинного перерыва.",
+  "fx_cycle": "Раунд {n} из 4", "fx_n_focus": "Фокус закончился. Время отдохнуть ☕", "fx_n_break": "Перерыв закончился. Возвращаемся к учёбе 📚",
   "fx_today": "Сегодня", "fx_min": "Минут учёбы", "fx_sessions": "Завершённых сессий", "fx_streak": "Дней подряд",
   "fx_priv": "Приватность: живой счётчик считает только анонимных посетителей. В закрытой комнате люди с твоей ссылкой видят только выбранный тобой ник и минуты учёбы. Без чата и аккаунтов. Текст задачи остаётся на твоём устройстве.",
   "fx_min_u": "мин"
@@ -443,6 +455,8 @@ Object.assign(T.uz, {
   "fx_done": "Sessiya tugadi! Qisqa tanaffus vaqti.",
   "fx_bdone": "Tanaffus tugadi. Yana bir raundga tayyormisiz?",
   "fx_going": "Fokus. Telefonni chetga qo'ying.",
+  "fx_snd": "Ovoz", "fx_auto": "Avto-o'tish", "fx_ldone": "4 ta sessiya tugadi! Uzun tanaffus vaqti.",
+  "fx_cycle": "{n}-raund, jami 4", "fx_n_focus": "Fokus tugadi. Dam olish vaqti ☕", "fx_n_break": "Tanaffus tugadi. O'qishga qaytamiz 📚",
   "fx_today": "Bugun", "fx_min": "O'qilgan daqiqalar", "fx_sessions": "Tugagan sessiyalar", "fx_streak": "Ketma-ket kunlar",
   "fx_priv": "Maxfiylik: jonli hisoblagich faqat anonim tashrif buyuruvchilarni sanaydi. Yopiq xonada havolangiz borlar faqat siz tanlagan laqab va o'qish daqiqalaringizni ko'radi. Chat va akkaunt yo'q. Vazifa matni qurilmangizda qoladi.",
   "fx_min_u": "daq"
@@ -454,6 +468,8 @@ Object.assign(T.uz, {
   var DUR = { focus: 25 * 60, short: 5 * 60, long: 15 * 60 };
   var mode = "focus", focusMin = 25, running = false, endAt = 0, remain = DUR.focus, mood = "happy", msgKey = "";
   var live = null, total = null, net = "conn", audio = null;
+  var sound = true, auto = true, cycle = 0, autoTimer = null;
+  try { sound = localStorage.getItem("fx_sound") !== "0"; auto = localStorage.getItem("fx_auto") !== "0"; } catch (e) {}
   var $ = function (id) { return document.getElementById(id); };
   var sid = Math.random().toString(36).slice(2) + Date.now().toString(36);
 
@@ -512,6 +528,17 @@ Object.assign(T.uz, {
       d += '<button data-d="' + m + '" class="' + (m === focusMin ? "cur" : "") + '"' + (running ? " disabled" : "") + ">" + m + " " + t("fx_min_u") + "</button>";
     });
     $("fxDurs").innerHTML = d;
+    $("fxOpts").innerHTML =
+      '<button class="chip' + (sound ? " on" : "") + '" id="fxSnd" aria-pressed="' + sound + '">' + (sound ? "🔔 " : "🔕 ") + t("fx_snd") + "</button>" +
+      '<button class="chip' + (auto ? " on" : "") + '" id="fxAuto" aria-pressed="' + auto + '">🔁 ' + t("fx_auto") + "</button>";
+    $("fxSnd").onclick = function () {
+      sound = !sound; try { localStorage.setItem("fx_sound", sound ? "1" : "0"); } catch (e) {}
+      unlockAudio(); if (sound) play("start"); render();
+    };
+    $("fxAuto").onclick = function () {
+      auto = !auto; try { localStorage.setItem("fx_auto", auto ? "1" : "0"); } catch (e) {}
+      if (!auto) clearAuto(); render();
+    };
     $("fxDurs").querySelectorAll("button").forEach(function (b) {
       b.onclick = function () {
         if (running) return;
@@ -528,6 +555,7 @@ Object.assign(T.uz, {
     $("fxArc").style.strokeDasharray = C;
     $("fxArc").style.strokeDashoffset = C * (1 - remain / tot);
     $("fxTime").textContent = fmt(remain);
+    $("fxCycle").textContent = t("fx_cycle").replace("{n}", mode === "focus" ? (cycle % 4) + 1 : (cycle % 4 || 4));
     var started = remain < tot;
     $("fxGo").textContent = running ? t("fx_pause") : (started ? t("fx_resume") : t("fx_start"));
     $("fxReset").textContent = t("fx_reset");
@@ -546,23 +574,50 @@ Object.assign(T.uz, {
   }
 
   function setMode(m) {
-    running = false; mode = m; remain = DUR[m]; msgKey = ""; mood = "happy";
+    clearAuto(); running = false; mode = m; remain = DUR[m]; msgKey = ""; mood = "happy";
     render(); ping();
   }
 
-  function beep() {
+  function unlockAudio() {
+    if (!audio) { try { audio = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} }
+    if (audio && audio.state === "suspended") { try { audio.resume(); } catch (e) {} }
+  }
+
+  function tone(freq, at, len, vol) {
+    var o = audio.createOscillator(), g = audio.createGain(), t0 = audio.currentTime + at;
+    o.type = "sine"; o.frequency.value = freq;
+    g.gain.setValueAtTime(0.0001, t0);
+    g.gain.exponentialRampToValueAtTime(vol, t0 + 0.03);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + len);
+    o.connect(g); g.connect(audio.destination);
+    o.start(t0); o.stop(t0 + len + 0.05);
+  }
+
+  // start: short rising ding; focus end: 3 double rings ("rest"); break end: rising melody ("back to work")
+  function play(kind) {
     try {
-      if (!audio) return;
-      [0, 0.28].forEach(function (off, i) {
-        var o = audio.createOscillator(), g = audio.createGain();
-        o.type = "sine"; o.frequency.value = i ? 880 : 660;
-        g.gain.setValueAtTime(0.0001, audio.currentTime + off);
-        g.gain.exponentialRampToValueAtTime(0.25, audio.currentTime + off + 0.03);
-        g.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + off + 0.25);
-        o.connect(g); g.connect(audio.destination);
-        o.start(audio.currentTime + off); o.stop(audio.currentTime + off + 0.3);
-      });
+      if (!sound || !audio) return;
+      if (kind === "start") { tone(660, 0, 0.18, 0.3); tone(990, 0.16, 0.3, 0.3); }
+      else if (kind === "focusEnd") { [0, 0.6, 1.2].forEach(function (s) { tone(880, s, 0.35, 0.5); tone(1320, s + 0.15, 0.4, 0.45); }); }
+      else { [523, 659, 784, 1047].forEach(function (f, i) { tone(f, i * 0.2, 0.4, 0.45); }); tone(1047, 0.9, 0.7, 0.45); }
     } catch (e) {}
+  }
+
+  function notify(text) {
+    try {
+      if (document.hidden && "Notification" in window && Notification.permission === "granted")
+        new Notification("StudentPP", { body: text, icon: "/icon-192.png", tag: "fx" });
+    } catch (e) {}
+  }
+
+  function clearAuto() { if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; } }
+
+  function startTimer() {
+    clearAuto(); unlockAudio();
+    try { if ("Notification" in window && Notification.permission === "default") Notification.requestPermission(); } catch (e) {}
+    running = true; endAt = Date.now() + remain * 1000; msgKey = ""; mood = "happy";
+    play("start");
+    render(); ping();
   }
 
   function addSeconds(s) {
@@ -572,16 +627,25 @@ Object.assign(T.uz, {
 
   function complete() {
     running = false;
-    beep();
     if (mode === "focus") {
+      play("focusEnd"); notify(t("fx_n_focus"));
       var k = dayKey(); stats.ses[k] = (stats.ses[k] || 0) + 1; saveStats();
       if (window.recordAct) recordAct("focus", 25);
-      mode = "short"; msgKey = "fx_done"; mood = "cheer";
+      cycle++;
+      if (cycle % 4 === 0) { mode = "long"; msgKey = "fx_ldone"; } else { mode = "short"; msgKey = "fx_done"; }
+      mood = "cheer";
     } else {
+      play("breakEnd"); notify(t("fx_n_break"));
+      if (mode === "long") cycle = 0;
       mode = "focus"; msgKey = "fx_bdone"; mood = "happy";
     }
     remain = DUR[mode];
     render(); ping();
+    // auto-start the next phase after the sound has played
+    if (auto) {
+      var keep = msgKey;
+      autoTimer = setTimeout(function () { autoTimer = null; if (!running) { startTimer(); msgKey = keep; render(); } }, 2500);
+    }
   }
 
   function tick() {
@@ -594,14 +658,12 @@ Object.assign(T.uz, {
   }
 
   $("fxGo").onclick = function () {
-    if (!audio) { try { audio = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} }
-    if (audio && audio.state === "suspended") { try { audio.resume(); } catch (e) {} }
-    if (running) { running = false; }
-    else { running = true; endAt = Date.now() + remain * 1000; msgKey = ""; mood = "happy"; }
-    render(); ping();
+    unlockAudio();
+    if (running) { running = false; clearAuto(); render(); ping(); }
+    else startTimer();
   };
   $("fxReset").onclick = function () {
-    running = false; remain = DUR[mode]; msgKey = ""; mood = "happy"; render(); ping();
+    clearAuto(); running = false; remain = DUR[mode]; msgKey = ""; mood = "happy"; render(); ping();
   };
   $("fxTask").oninput = function () { try { localStorage.setItem("fx_task", this.value); } catch (e) {} };
 
