@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pomodoro — тест</title>
+<style>
+  body { font-family: system-ui, sans-serif; display: flex; justify-content: center; padding: 40px 16px; background: #f5f6fa; }
+  .card { background: #fff; border-radius: 16px; padding: 28px; width: 100%; max-width: 380px; box-shadow: 0 4px 20px rgba(0,0,0,.06); text-align: center; }
+  .tabs button { border: none; background: #eef0f6; padding: 8px 12px; border-radius: 8px; margin: 2px; cursor: pointer; }
+  .tabs button.active { background: #4f46e5; color: #fff; }
+  #time { font-size: 64px; font-weight: 700; margin: 20px 0 6px; font-variant-numeric: tabular-nums; }
+  #label { color: #666; margin-bottom: 20px; }
+  .controls button { padding: 10px 18px; border-radius: 10px; border: none; margin: 4px; cursor: pointer; font-size: 15px; }
+  #startBtn { background: #4f46e5; color: #fff; min-width: 110px; }
+  .settings { text-align: left; margin-top: 24px; border-top: 1px solid #eee; padding-top: 16px; font-size: 14px; }
+  .settings label { display: flex; justify-content: space-between; align-items: center; margin: 10px 0; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="tabs">
+    <button data-mode="focus">Фокус</button>
+    <button data-mode="shortBreak">Отдых</button>
+    <button data-mode="longBreak">Длинный отдых</button>
+  </div>
+
+  <div id="time">25:00</div>
+  <div id="label">Фокус · завершено: 0</div>
+
+  <div class="controls">
+    <button id="startBtn">Старт</button>
+    <button id="resetBtn">Сброс</button>
+    <button id="skipBtn">Пропустить ⏭</button>
+  </div>
+
+  <div class="settings">
+    <label>Автопереход <input type="checkbox" id="autoStart"></label>
+    <label>Звук <input type="checkbox" id="sound"></label>
+    <label>Громкость <input type="range" id="volume" min="0" max="1" step="0.1"></label>
+    <label>Уведомления <input type="checkbox" id="notify"></label>
+  </div>
+</div>
+
+<script src="pomodoro.js"></script>
+<script>
+  const $ = id => document.getElementById(id);
+  const NAMES = { focus: "Фокус", shortBreak: "Отдых", longBreak: "Длинный отдых" };
+
+  // Отрисовка при каждом изменении
+  Pomodoro.onChange(s => {
+    const m = String(Math.floor(s.remaining / 60)).padStart(2, "0");
+    const sec = String(s.remaining % 60).padStart(2, "0");
+    $("time").textContent = `${m}:${sec}`;
+    $("label").textContent = `${NAMES[s.mode]} · завершено: ${s.completedFocus}`;
+    $("startBtn").textContent = s.running ? "Пауза" : "Старт";
+    document.title = `${m}:${sec} — ${NAMES[s.mode]}`;   // время видно во вкладке
+    document.querySelectorAll(".tabs button").forEach(b =>
+      b.classList.toggle("active", b.dataset.mode === s.mode));
+
+    $("autoStart").checked = s.settings.autoStart;
+    $("sound").checked = s.settings.sound;
+    $("volume").value = s.settings.volume;
+    $("notify").checked = s.settings.notify;
+  });
+
+  // Кнопки
+  $("startBtn").onclick = () => Pomodoro.getState().running ? Pomodoro.pause() : Pomodoro.start();
+  $("resetBtn").onclick = Pomodoro.reset;
+  $("skipBtn").onclick = Pomodoro.skip;
+  document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => Pomodoro.setMode(b.dataset.mode));
+
+  // Настройки
+  $("autoStart").onchange = e => Pomodoro.saveSettings({ autoStart: e.target.checked });
+  $("sound").onchange     = e => Pomodoro.saveSettings({ sound: e.target.checked });
+  $("volume").oninput     = e => Pomodoro.saveSettings({ volume: +e.target.value });
+  $("notify").onchange    = e => Pomodoro.saveSettings({ notify: e.target.checked });
+</script>
+</body>
+</html>
