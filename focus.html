@@ -26,8 +26,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
 <style>
-#fxSnd,#fxAuto{transition:box-shadow .2s,border-color .2s,color .2s}
-#fxSnd.on,#fxAuto.on{border-color:var(--brand);color:var(--text);box-shadow:0 0 0 2px var(--brand),0 0 16px rgba(139,108,255,.55)}
+#fxSnd,#fxAuto,#fxNotif{transition:box-shadow .2s,border-color .2s,color .2s}
+#fxSnd.on,#fxAuto.on,#fxNotif.on{border-color:var(--brand);color:var(--text);box-shadow:0 0 0 2px var(--brand),0 0 16px rgba(139,108,255,.55)}
 </style>
 </head>
 <body>
@@ -49,12 +49,20 @@
           <div class="fx-time" id="fxTime" role="timer" aria-live="off">25:00</div>
         </div>
         <div class="fx-durs" id="fxDurs"></div>
+        <details class="fx-cust" id="fxCust" style="margin:10px 0 0;text-align:center">
+          <summary class="note" id="fxCustT" style="cursor:pointer;margin:0"></summary>
+          <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px">
+            <label class="note" style="margin:0"><span id="fxCfL"></span><br><input class="fx-task" id="fxCf" type="number" min="1" max="180" style="width:84px;text-align:center"></label>
+            <label class="note" style="margin:0"><span id="fxCsL"></span><br><input class="fx-task" id="fxCs" type="number" min="1" max="60" style="width:84px;text-align:center"></label>
+            <label class="note" style="margin:0"><span id="fxClL"></span><br><input class="fx-task" id="fxCl" type="number" min="1" max="90" style="width:84px;text-align:center"></label>
+          </div>
+        </details>
         <input class="fx-task" id="fxTask" maxlength="60" data-ph="fx_task" autocomplete="off">
         <div class="fx-btns">
           <button class="btn" id="fxGo"></button>
           <button class="btn ghost" id="fxReset"></button>
         </div>
-        <div class="fx-btns" style="margin-top:12px"><button class="chip" id="fxSnd"></button><button class="chip" id="fxAuto"></button></div>
+        <div class="fx-btns" style="margin-top:12px"><button class="chip" id="fxSnd"></button><button class="chip" id="fxAuto"></button><button class="chip" id="fxNotif"></button></div>
         <p class="note" id="fxAutoHint" style="margin:10px 0 0;font-size:13px"></p>
         <div class="fx-amb" style="margin-top:20px">
           <h3 id="fxAmbT" style="margin:0 0 10px;font-size:16px"></h3>
@@ -525,6 +533,47 @@ Object.assign(T.uz, {
 });
 </script>
 <script>
+Object.assign(T.en, {
+ "fx_notif_on": "📲 Alerts: on",
+ "fx_notif_off": "📲 Alerts: off",
+ "fx_notif_denied": "Notifications are blocked. Allow them in your browser settings for this site.",
+ "fx_nf_t": "Focus complete!",
+ "fx_nf_b": "Time for a break.",
+ "fx_nb_t": "Break is over",
+ "fx_nb_b": "Ready for the next focus?",
+ "fx_cust_t": "⚙️ Custom durations",
+ "fx_cust_f": "Focus",
+ "fx_cust_s": "Break",
+ "fx_cust_l": "Long break"
+});
+Object.assign(T.ru, {
+ "fx_notif_on": "📲 Уведомления: вкл",
+ "fx_notif_off": "📲 Уведомления: выкл",
+ "fx_notif_denied": "Уведомления заблокированы. Разреши их для этого сайта в настройках браузера.",
+ "fx_nf_t": "Фокус завершён!",
+ "fx_nf_b": "Время отдохнуть.",
+ "fx_nb_t": "Перерыв закончился",
+ "fx_nb_b": "Готов к следующему фокусу?",
+ "fx_cust_t": "⚙️ Свои длительности",
+ "fx_cust_f": "Фокус",
+ "fx_cust_s": "Перерыв",
+ "fx_cust_l": "Длинный перерыв"
+});
+Object.assign(T.uz, {
+ "fx_notif_on": "📲 Bildirishnoma: yoqilgan",
+ "fx_notif_off": "📲 Bildirishnoma: o'chiq",
+ "fx_notif_denied": "Bildirishnomalar bloklangan. Brauzer sozlamalarida bu sayt uchun ruxsat bering.",
+ "fx_nf_t": "Fokus tugadi!",
+ "fx_nf_b": "Dam olish vaqti.",
+ "fx_nb_t": "Tanaffus tugadi",
+ "fx_nb_b": "Keyingi fokusga tayyormisiz?",
+ "fx_cust_t": "⚙️ O'z davomiyliklarim",
+ "fx_cust_f": "Fokus",
+ "fx_cust_s": "Tanaffus",
+ "fx_cust_l": "Uzun tanaffus"
+});
+</script>
+<script>
 (function () {
   var C = 2 * Math.PI * 88;
   var DUR = { focus: 25 * 60, short: 5 * 60, long: 15 * 60 };
@@ -545,7 +594,13 @@ Object.assign(T.uz, {
   }
   function saveStats() { try { localStorage.setItem("fx_stats", JSON.stringify(stats)); } catch (e) {} }
   var stats = loadStats();
-  try { var fm = +localStorage.getItem("fx_focusmin"); if (fm === 15 || fm === 25 || fm === 50) { focusMin = fm; DUR.focus = fm * 60; remain = DUR.focus; } } catch (e) {}
+  function clampMin(v, lo, hi, d) { v = Math.round(+v); return v >= lo && v <= hi ? v : d; }
+  try {
+    var cu = JSON.parse(localStorage.getItem("fx_durs") || "null");
+    if (cu) { focusMin = clampMin(cu.f, 1, 180, 25); DUR.focus = focusMin * 60; DUR.short = clampMin(cu.s, 1, 60, 5) * 60; DUR.long = clampMin(cu.l, 1, 90, 15) * 60; remain = DUR.focus; }
+    else { var fm = +localStorage.getItem("fx_focusmin"); if (fm === 15 || fm === 25 || fm === 50) { focusMin = fm; DUR.focus = fm * 60; remain = DUR.focus; } }
+  } catch (e) {}
+  function saveDurs() { try { localStorage.setItem("fx_durs", JSON.stringify({ f: DUR.focus / 60, s: DUR.short / 60, l: DUR.long / 60 })); localStorage.setItem("fx_focusmin", focusMin); } catch (e) {} }
   try { $("fxTask").value = localStorage.getItem("fx_task") || ""; } catch (e) {}
 
   function fmt(s) { return ("0" + Math.floor(s / 60)).slice(-2) + ":" + ("0" + (s % 60)).slice(-2); }
@@ -594,7 +649,7 @@ Object.assign(T.uz, {
       b.onclick = function () {
         if (running) return;
         focusMin = +b.getAttribute("data-d"); DUR.focus = focusMin * 60; remain = DUR.focus;
-        try { localStorage.setItem("fx_focusmin", focusMin); } catch (e) {}
+        saveDurs(); syncCust();
         render();
       };
     });
@@ -615,6 +670,11 @@ Object.assign(T.uz, {
     $("fxAuto").classList.toggle("on", optAuto);
     $("fxAutoHint").textContent = optAuto ? t("fx_auto_hint") : "";
     renderAmb();
+    $("fxNotif").textContent = t(optNotif ? "fx_notif_on" : "fx_notif_off");
+    $("fxNotif").classList.toggle("on", optNotif);
+    $("fxCustT").textContent = t("fx_cust_t"); $("fxCfL").textContent = t("fx_cust_f") + " (" + t("fx_min_u") + ")"; $("fxCsL").textContent = t("fx_cust_s") + " (" + t("fx_min_u") + ")"; $("fxClL").textContent = t("fx_cust_l") + " (" + t("fx_min_u") + ")";
+    ["fxCf", "fxCs", "fxCl"].forEach(function (id) { $(id).disabled = running; });
+    syncWake();
     $("fxMsg").textContent = running && mode === "focus" ? t("fx_going") : (msgKey ? t(msgKey) : "");
     $("fxMas").innerHTML = window.mascot(running && mode === "focus" ? "think" : mood);
     document.title = running ? fmt(remain) + " · " + t("fx_m_" + mode) : t("doc_title");
@@ -634,6 +694,45 @@ Object.assign(T.uz, {
     render(); ping();
   }
 
+
+  /* ---------- keep screen on, alerts, custom durations ---------- */
+  var wake = null, wakeWant = false, optNotif = false;
+  try { optNotif = localStorage.getItem("fx_notif") === "1" && window.Notification && Notification.permission === "granted"; } catch (e) {}
+  function syncWake() {
+    var want = running;
+    if (want === wakeWant) return;
+    wakeWant = want;
+    if (want) { reqWake(); }
+    else if (wake) { try { wake.release(); } catch (e) {} wake = null; }
+  }
+  function reqWake() {
+    try {
+      if (!navigator.wakeLock || wake) return;
+      navigator.wakeLock.request("screen").then(function (l) { wake = l; l.addEventListener("release", function () { wake = null; }); }).catch(function () {});
+    } catch (e) {}
+  }
+  document.addEventListener("visibilitychange", function () { if (!document.hidden && wakeWant) reqWake(); });
+  function notify(title, body) {
+    if (!optNotif || !document.hidden) return;
+    try {
+      var o = { body: body, icon: "/icon-192.png", badge: "/icon-192.png", tag: "studentpp-timer" };
+      if (navigator.serviceWorker && navigator.serviceWorker.getRegistration) {
+        navigator.serviceWorker.getRegistration().then(function (r) { if (r && r.showNotification) r.showNotification(title, o); else new Notification(title, o); }).catch(function () { try { new Notification(title, o); } catch (e) {} });
+      } else new Notification(title, o);
+    } catch (e) {}
+  }
+  function syncCust() {
+    if (!$("fxCf")) return;
+    $("fxCf").value = DUR.focus / 60; $("fxCs").value = DUR.short / 60; $("fxCl").value = DUR.long / 60;
+  }
+  function custInput(id, key, lo, hi) {
+    $(id).onchange = function () {
+      var v = clampMin(this.value, lo, hi, DUR[key] / 60);
+      DUR[key] = v * 60; if (key === "focus") focusMin = v;
+      if (!running) remain = DUR[mode];
+      saveDurs(); syncCust(); render();
+    };
+  }
   function unlockAudio() {
     if (!audio) { try { audio = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {} }
     if (audio && audio.state === "suspended") { try { audio.resume(); } catch (e) {} }
@@ -726,6 +825,7 @@ Object.assign(T.uz, {
     $("fxAmb").innerHTML = AMB_IDS.map(function (id) { return '<button data-a="' + id + '" class="' + (amb.id === id ? "cur" : "") + '">' + t("amb_" + id) + "</button>"; }).join("");
     $("fxAmb").querySelectorAll("button").forEach(function (b) { b.onclick = function () { toggleAmb(b.getAttribute("data-a")); }; });
   }
+  syncCust(); custInput("fxCf", "focus", 1, 180); custInput("fxCs", "short", 1, 60); custInput("fxCl", "long", 1, 90);
   $("fxVol").value = Math.round(ambVol * 100);
   $("fxVol").style.setProperty("--p", $("fxVol").value + "%");
   $("fxVol").oninput = function () {
@@ -764,10 +864,10 @@ Object.assign(T.uz, {
       if (window.recordAct) recordAct("focus", 25);
       var longBreak = stats.ses[k] % 4 === 0;
       mode = longBreak ? "long" : "short"; msgKey = longBreak ? "fx_done_long" : "fx_done"; mood = "cheer";
-      playSound("focusEnd");
+      playSound("focusEnd"); notify(t("fx_nf_t"), t("fx_nf_b"));
     } else {
       mode = "focus"; msgKey = optAuto ? "fx_bdone_auto" : "fx_bdone"; mood = "happy";
-      playSound("breakEnd");
+      playSound("breakEnd"); notify(t("fx_nb_t"), t("fx_nb_b"));
     }
     remain = DUR[mode];
     if (optAuto) { running = true; endAt = Date.now() + remain * 1000; }
@@ -793,6 +893,15 @@ Object.assign(T.uz, {
     optSound = !optSound; try { localStorage.setItem("fx_sound", optSound ? "1" : "0"); } catch (e) {}
     unlockAudio(); if (optSound) playSound("start");
     render();
+  };
+  $("fxNotif").onclick = function () {
+    if (optNotif) { optNotif = false; try { localStorage.setItem("fx_notif", "0"); } catch (e) {} render(); return; }
+    if (!window.Notification) { msgKey = "fx_notif_denied"; render(); return; }
+    var done = function (perm) {
+      optNotif = perm === "granted"; try { localStorage.setItem("fx_notif", optNotif ? "1" : "0"); } catch (e) {}
+      msgKey = optNotif ? "" : "fx_notif_denied"; render();
+    };
+    try { var r = Notification.requestPermission(done); if (r && r.then) r.then(done); } catch (e) { done("denied"); }
   };
   $("fxAuto").onclick = function () {
     optAuto = !optAuto; try { localStorage.setItem("fx_auto", optAuto ? "1" : "0"); } catch (e) {}
