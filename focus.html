@@ -26,6 +26,15 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
 <style>
+.tk-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.tk-row:first-child{border-top:0}
+.tk-row .tx{flex:1;min-width:0;word-break:break-word}
+.tk-row.done .tx{text-decoration:line-through;color:var(--muted)}
+.tk-row.cur{background:rgba(139,108,255,.12);border-radius:12px;padding-left:8px;padding-right:8px}
+.tk-row button{border:1px solid var(--line);background:var(--surface);color:var(--text);border-radius:10px;width:36px;height:36px;cursor:pointer;font-size:15px;flex:none}
+.tk-row button.go.on{border-color:var(--brand);box-shadow:0 0 0 2px var(--brand)}
+.tk-row .ses{color:var(--muted);font-size:13px;white-space:nowrap}
+#fxSubjRow.show{display:flex!important}
 #fxSnd,#fxAuto,#fxNotif{transition:box-shadow .2s,border-color .2s,color .2s}
 #fxSnd.on,#fxAuto.on,#fxNotif.on{border-color:var(--brand);color:var(--text);box-shadow:0 0 0 2px var(--brand),0 0 16px rgba(139,108,255,.55)}
 </style>
@@ -57,6 +66,11 @@
             <label class="note" style="margin:0"><span id="fxClL"></span><br><input class="fx-task" id="fxCl" type="number" min="1" max="90" style="width:84px;text-align:center"></label>
           </div>
         </details>
+        <select class="fx-task" id="fxSubj" aria-label="subject" style="margin-bottom:8px"></select>
+        <div id="fxSubjRow" hidden style="display:none;gap:8px;justify-content:center;margin-bottom:8px">
+          <input class="fx-task" id="fxSubjNew" maxlength="20" style="max-width:220px">
+          <button class="btn small" id="fxSubjOk"></button>
+        </div>
         <input class="fx-task" id="fxTask" maxlength="60" data-ph="fx_task" autocomplete="off">
         <div class="fx-btns">
           <button class="btn" id="fxGo"></button>
@@ -86,9 +100,21 @@
           <div class="row"><span data-i18n="fx_sessions"></span><b id="stSes">0</b></div>
           <div class="row"><span data-i18n="fx_streak"></span><b id="stStr">0</b></div>
           <div class="fx-bars" id="stBars"></div>
+          <h4 id="stSubjT" style="margin:16px 0 4px;font-size:14px"></h4>
+          <div id="stSubj"></div>
         </div>
       </div>
     </div>
+    <div class="card" id="tk" style="margin-top:22px">
+      <h3 id="tkT" style="margin:0 0 6px"></h3>
+      <p class="note" id="tkHint" style="margin:0 0 12px"></p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+        <input class="fx-task" id="tkNew" maxlength="60" style="flex:1 1 200px;max-width:none;min-width:0">
+        <button class="btn" id="tkAdd"></button>
+      </div>
+      <div id="tkList"></div>
+    </div>
+
     <div class="card tm" id="tm" style="margin-top:22px">
       <div class="tm-head">
         <div>
@@ -574,6 +600,71 @@ Object.assign(T.uz, {
 });
 </script>
 <script>
+Object.assign(T.en, {
+ "sj_none": "No subject",
+ "sj_math": "Math",
+ "sj_eng": "English",
+ "sj_phys": "Physics",
+ "sj_chem": "Chemistry",
+ "sj_bio": "Biology",
+ "sj_hist": "History",
+ "sj_other": "Other",
+ "sj_add": "➕ Add subject…",
+ "sj_ph": "Subject name",
+ "sj_ok": "Add",
+ "sj_stats": "By subject, last 7 days",
+ "sj_stats_empty": "Pick a subject before a session to see where your time goes.",
+ "tk_title": "Tasks for today",
+ "tk_ph": "Add a task…",
+ "tk_add": "Add",
+ "tk_hint": "Tap ▶ to work on a task. Every finished focus session is counted for it.",
+ "tk_empty": "No tasks yet. Add your first one.",
+ "tk_cur": "Working on it"
+});
+Object.assign(T.ru, {
+ "sj_none": "Без предмета",
+ "sj_math": "Математика",
+ "sj_eng": "Английский",
+ "sj_phys": "Физика",
+ "sj_chem": "Химия",
+ "sj_bio": "Биология",
+ "sj_hist": "История",
+ "sj_other": "Другое",
+ "sj_add": "➕ Добавить предмет…",
+ "sj_ph": "Название предмета",
+ "sj_ok": "Добавить",
+ "sj_stats": "По предметам за 7 дней",
+ "sj_stats_empty": "Выбери предмет перед сессией, чтобы видеть, куда уходит время.",
+ "tk_title": "Задачи на сегодня",
+ "tk_ph": "Добавь задачу…",
+ "tk_add": "Добавить",
+ "tk_hint": "Нажми ▶, чтобы заняться задачей. Каждая завершённая фокус-сессия засчитается на неё.",
+ "tk_empty": "Пока нет задач. Добавь первую.",
+ "tk_cur": "Делаю сейчас"
+});
+Object.assign(T.uz, {
+ "sj_none": "Fansiz",
+ "sj_math": "Matematika",
+ "sj_eng": "Ingliz tili",
+ "sj_phys": "Fizika",
+ "sj_chem": "Kimyo",
+ "sj_bio": "Biologiya",
+ "sj_hist": "Tarix",
+ "sj_other": "Boshqa",
+ "sj_add": "➕ Fan qo'shish…",
+ "sj_ph": "Fan nomi",
+ "sj_ok": "Qo'shish",
+ "sj_stats": "Fanlar bo'yicha, 7 kun",
+ "sj_stats_empty": "Vaqtingiz qayerga ketayotganini ko'rish uchun sessiyadan oldin fanni tanlang.",
+ "tk_title": "Bugungi vazifalar",
+ "tk_ph": "Vazifa qo'shing…",
+ "tk_add": "Qo'shish",
+ "tk_hint": "Vazifa ustida ishlash uchun ▶ ni bosing. Har bir tugagan fokus sessiya unga hisoblanadi.",
+ "tk_empty": "Hozircha vazifa yo'q. Birinchisini qo'shing.",
+ "tk_cur": "Hozir shu ustida"
+});
+</script>
+<script>
 (function () {
   var C = 2 * Math.PI * 88;
   var DUR = { focus: 25 * 60, short: 5 * 60, long: 15 * 60 };
@@ -626,6 +717,7 @@ Object.assign(T.uz, {
       try { w = d.toLocaleDateString(lg, { weekday: "short" }); } catch (e) { w = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"][d.getDay()]; }
       labels.push(w);
     }
+    renderSubjStats();
     $("stBars").innerHTML = vals.map(function (v, j) {
       return '<div title="' + Math.floor(v / 60) + " " + t("fx_min_u") + '"><i style="height:' + Math.round(v / max * 70) + 'px"></i>' + labels[j] + "</div>";
     }).join("");
@@ -669,7 +761,7 @@ Object.assign(T.uz, {
     $("fxSnd").classList.toggle("on", optSound);
     $("fxAuto").classList.toggle("on", optAuto);
     $("fxAutoHint").textContent = optAuto ? t("fx_auto_hint") : "";
-    renderAmb();
+    renderAmb(); renderSubj(); renderTodo();
     $("fxNotif").textContent = t(optNotif ? "fx_notif_on" : "fx_notif_off");
     $("fxNotif").classList.toggle("on", optNotif);
     $("fxCustT").textContent = t("fx_cust_t"); $("fxCfL").textContent = t("fx_cust_f") + " (" + t("fx_min_u") + ")"; $("fxCsL").textContent = t("fx_cust_s") + " (" + t("fx_min_u") + ")"; $("fxClL").textContent = t("fx_cust_l") + " (" + t("fx_min_u") + ")";
@@ -852,9 +944,96 @@ Object.assign(T.uz, {
     } catch (e) {}
   }
 
+
+  /* ---------- subjects and tasks ---------- */
+  var SUBJ = ["math", "eng", "phys", "chem", "bio", "hist", "other"];
+  function escH(v) { return String(v).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function jget(k, d) { try { var v = JSON.parse(localStorage.getItem(k) || "null"); return v === null ? d : v; } catch (e) { return d; } }
+  function jset(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  var subCustom = jget("fx_subj_list", []), subCur = "", subData = jget("fx_sub", { days: {} }), subKey = "", todo = jget("fx_todo", []), todoCur = "", tkKey = "";
+  try { subCur = localStorage.getItem("fx_subj_cur") || ""; todoCur = localStorage.getItem("fx_todo_cur") || ""; } catch (e) {}
+  if (!subData || !subData.days) subData = { days: {} };
+  // keep unfinished tasks, drop finished tasks from earlier days
+  todo = (Array.isArray(todo) ? todo : []).filter(function (x) { return x && x.t && (!x.d || x.day === dayKey()); }).slice(0, 30);
+  function subName(id) { return id.indexOf("c:") === 0 ? id.slice(2) : t("sj_" + id); }
+  function renderSubj() {
+    var key = [t("sj_none"), subCustom.join("|"), subCur, running].join("#");
+    if (key === subKey) return; subKey = key;
+    var h = '<option value="">' + t("sj_none") + "</option>";
+    SUBJ.forEach(function (id) { h += '<option value="' + id + '"' + (subCur === id ? " selected" : "") + ">" + t("sj_" + id) + "</option>"; });
+    subCustom.forEach(function (n) { h += '<option value="c:' + escH(n) + '"' + (subCur === "c:" + n ? " selected" : "") + ">" + escH(n) + "</option>"; });
+    h += '<option value="__add">' + t("sj_add") + "</option>";
+    $("fxSubj").innerHTML = h; $("fxSubj").disabled = running;
+    $("fxSubjNew").placeholder = t("sj_ph"); $("fxSubjOk").textContent = t("sj_ok");
+  }
+  $("fxSubj").onchange = function () {
+    if (this.value === "__add") { $("fxSubjRow").classList.add("show"); $("fxSubjNew").focus(); this.value = subCur; return; }
+    subCur = this.value; try { localStorage.setItem("fx_subj_cur", subCur); } catch (e) {}
+    $("fxSubjRow").classList.remove("show"); subKey = ""; renderSubj();
+  };
+  $("fxSubjOk").onclick = function () {
+    var n = $("fxSubjNew").value.replace(/[\u0000-\u001f<>&"'`|]/g, "").trim().slice(0, 20);
+    if (!n) return;
+    if (subCustom.indexOf(n) < 0 && subCustom.length < 8) { subCustom.push(n); jset("fx_subj_list", subCustom); }
+    subCur = "c:" + n; try { localStorage.setItem("fx_subj_cur", subCur); } catch (e) {}
+    $("fxSubjNew").value = ""; $("fxSubjRow").classList.remove("show"); subKey = ""; renderSubj();
+  };
+  $("fxSubjNew").onkeydown = function (ev) { if (ev.key === "Enter") $("fxSubjOk").click(); };
+  function addSubjSeconds(sec) {
+    if (!subCur || sec <= 0) return;
+    var k = dayKey(), d = subData.days[k] || (subData.days[k] = {});
+    d[subCur] = (d[subCur] || 0) + sec; jset("fx_sub", subData);
+  }
+  function renderSubjStats() {
+    $("stSubjT").textContent = t("sj_stats");
+    var tot = {}, i, d, k, id;
+    for (i = 0; i < 7; i++) {
+      d = new Date(); d.setDate(d.getDate() - i); k = subData.days[dayKey(d)] || {};
+      for (id in k) tot[id] = (tot[id] || 0) + k[id];
+    }
+    var rows = Object.keys(tot).map(function (x) { return [x, tot[x]]; }).filter(function (x) { return x[1] >= 30; }).sort(function (a, b) { return b[1] - a[1]; }).slice(0, 6);
+    if (!rows.length) { $("stSubj").innerHTML = '<p class="note" style="margin:0;font-size:13px">' + t("sj_stats_empty") + "</p>"; return; }
+    $("stSubj").innerHTML = rows.map(function (x) { return '<div class="row"><span>' + escH(subName(x[0])) + "</span><b>" + Math.max(1, Math.round(x[1] / 60)) + " " + t("fx_min_u") + "</b></div>"; }).join("");
+  }
+  function saveTodo() { jset("fx_todo", todo); }
+  function renderTodo() {
+    $("tkT").textContent = t("tk_title"); $("tkHint").textContent = t("tk_hint"); $("tkNew").placeholder = t("tk_ph"); $("tkAdd").textContent = t("tk_add");
+    var key = t("tk_title") + JSON.stringify(todo) + todoCur;
+    if (key === tkKey) return; tkKey = key;
+    if (!todo.length) { $("tkList").innerHTML = '<p class="note" style="margin:0">' + t("tk_empty") + "</p>"; return; }
+    $("tkList").innerHTML = todo.map(function (x) {
+      return '<div class="tk-row' + (x.d ? " done" : "") + (x.id === todoCur ? " cur" : "") + '" data-id="' + x.id + '">' +
+        '<button class="ck" aria-label="done">' + (x.d ? "☑" : "☐") + "</button>" +
+        '<span class="tx">' + escH(x.t) + "</span>" + (x.n ? '<span class="ses">🍅 ' + x.n + "</span>" : "") +
+        (x.d ? "" : '<button class="go' + (x.id === todoCur ? " on" : "") + '" aria-label="' + t("tk_cur") + '">▶</button>') +
+        '<button class="rm" aria-label="delete">✕</button></div>';
+    }).join("");
+    $("tkList").querySelectorAll(".tk-row").forEach(function (r) {
+      var id = r.getAttribute("data-id");
+      function item() { return todo.filter(function (x) { return x.id === id; })[0]; }
+      r.querySelector(".ck").onclick = function () { var x = item(); if (x) { x.d = !x.d; x.day = dayKey(); if (x.d && todoCur === id) setCur(""); saveTodo(); renderTodo(); } };
+      var g = r.querySelector(".go"); if (g) g.onclick = function () { var x = item(); if (!x) return; setCur(todoCur === id ? "" : id); if (todoCur) { $("fxTask").value = x.t; try { localStorage.setItem("fx_task", x.t); } catch (e) {} } renderTodo(); };
+      r.querySelector(".rm").onclick = function () { todo = todo.filter(function (x) { return x.id !== id; }); if (todoCur === id) setCur(""); saveTodo(); renderTodo(); };
+    });
+  }
+  function setCur(id) { todoCur = id; try { localStorage.setItem("fx_todo_cur", id); } catch (e) {} }
+  function todoAdd() {
+    var v = $("tkNew").value.replace(/[\u0000-\u001f]/g, "").trim().slice(0, 60);
+    if (!v || todo.length >= 30) return;
+    todo.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5), t: v, d: false, n: 0, day: dayKey() });
+    $("tkNew").value = ""; saveTodo(); renderTodo();
+  }
+  $("tkAdd").onclick = todoAdd;
+  $("tkNew").onkeydown = function (ev) { if (ev.key === "Enter") todoAdd(); };
+  function todoSession() {
+    var x = todo.filter(function (y) { return y.id === todoCur && !y.d; })[0];
+    if (x) { x.n = (x.n || 0) + 1; saveTodo(); }
+  }
+
   function addSeconds(s) {
     if (s <= 0) return;
     var k = dayKey(); stats.days[k] = (stats.days[k] || 0) + s; saveStats();
+    addSubjSeconds(s);
   }
 
   function complete() {
@@ -862,6 +1041,7 @@ Object.assign(T.uz, {
     if (mode === "focus") {
       var k = dayKey(); stats.ses[k] = (stats.ses[k] || 0) + 1; saveStats();
       if (window.recordAct) recordAct("focus", 25);
+      todoSession();
       var longBreak = stats.ses[k] % 4 === 0;
       mode = longBreak ? "long" : "short"; msgKey = longBreak ? "fx_done_long" : "fx_done"; mood = "cheer";
       playSound("focusEnd"); notify(t("fx_nf_t"), t("fx_nf_b"));

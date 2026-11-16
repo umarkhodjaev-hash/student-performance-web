@@ -71,6 +71,22 @@
       <div class="fx-bars" id="tdBars" style="height:110px"></div>
     </div>
 
+    <div class="card" id="achCard" style="margin-top:22px">
+      <h3 style="margin:0 0 4px" data-i18n="ac_h"></h3>
+      <p class="note" id="achSub" style="margin:0 0 12px"></p>
+      <div id="achGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px"></div>
+    </div>
+
+    <div class="card" id="exCard" style="margin-top:22px">
+      <h3 style="margin:0 0 8px" data-i18n="ex_title"></h3>
+      <div id="exBox"></div>
+    </div>
+
+    <div class="card" id="accCard" hidden style="margin-top:22px">
+      <h3 style="margin:0 0 6px" data-i18n="ac_title"></h3>
+      <div id="accBox"></div>
+    </div>
+
     <div class="card" style="margin-top:22px">
       <h3 style="margin:0 0 8px" data-i18n="pg_title"></h3>
       <div id="pgBox"></div>
@@ -528,6 +544,186 @@ Object.assign(T.uz, {
 });
 </script>
 <script>
+Object.assign(T.en, {
+ "ex_title": "Countdown to your exam",
+ "ex_lead": "Add your exam date to see how many days are left.",
+ "ex_name_ph": "Exam, e.g. IELTS",
+ "ex_save": "Save",
+ "ex_days": "{n} days until {x}",
+ "ex_day1": "1 day until {x}",
+ "ex_today": "Today is {x}. Good luck!",
+ "ex_past": "{x} has passed. Set a new date?",
+ "ex_edit": "Change",
+ "ex_remove": "Remove",
+ "ex_def": "your exam"
+});
+Object.assign(T.ru, {
+ "ex_title": "Обратный отсчёт до экзамена",
+ "ex_lead": "Добавь дату экзамена, чтобы видеть, сколько дней осталось.",
+ "ex_name_ph": "Экзамен, например IELTS",
+ "ex_save": "Сохранить",
+ "ex_days": "До {x} осталось {n} дн.",
+ "ex_day1": "До {x} остался 1 день",
+ "ex_today": "Сегодня {x}. Удачи!",
+ "ex_past": "{x} уже прошёл. Поставить новую дату?",
+ "ex_edit": "Изменить",
+ "ex_remove": "Убрать",
+ "ex_def": "экзамена"
+});
+Object.assign(T.uz, {
+ "ex_title": "Imtihongacha qolgan kunlar",
+ "ex_lead": "Qancha kun qolganini ko'rish uchun imtihon sanasini kiriting.",
+ "ex_name_ph": "Imtihon, masalan IELTS",
+ "ex_save": "Saqlash",
+ "ex_days": "{x} gacha {n} kun qoldi",
+ "ex_day1": "{x} gacha 1 kun qoldi",
+ "ex_today": "Bugun {x}. Omad!",
+ "ex_past": "{x} o'tib ketdi. Yangi sana qo'yasizmi?",
+ "ex_edit": "O'zgartirish",
+ "ex_remove": "O'chirish",
+ "ex_def": "imtihon"
+});
+</script>
+<script>
+Object.assign(T.en, {
+ "ac_h": "Achievements",
+ "ac_of": "{a} of {b} unlocked",
+ "ac_new": "NEW",
+ "ach_first_t": "First focus",
+ "ach_first_d": "Finish your first focus session",
+ "ach_ses10_t": "10 sessions",
+ "ach_ses10_d": "Finish 10 focus sessions",
+ "ach_ses50_t": "50 sessions",
+ "ach_ses50_d": "Finish 50 focus sessions",
+ "ach_h5_t": "5 hours",
+ "ach_h5_d": "Study 5 hours in total",
+ "ach_h25_t": "25 hours",
+ "ach_h25_d": "Study 25 hours in total",
+ "ach_st3_t": "3-day streak",
+ "ach_st3_d": "Study 3 days in a row",
+ "ach_st7_t": "7-day streak",
+ "ach_st7_d": "Study 7 days in a row",
+ "ach_st30_t": "30-day streak",
+ "ach_st30_d": "Study 30 days in a row",
+ "ach_quiz_t": "Quiz taker",
+ "ach_quiz_d": "Finish any quiz",
+ "ach_quiz3_t": "All topics",
+ "ach_quiz3_d": "Finish all three quiz topics",
+ "ach_pred_t": "First prediction",
+ "ach_pred_d": "Make your first prediction",
+ "ach_up_t": "Score up",
+ "ach_up_d": "Raise your predicted score",
+ "ach_goal_t": "Goal set",
+ "ach_goal_d": "Add your exam date"
+});
+Object.assign(T.ru, {
+ "ac_h": "Достижения",
+ "ac_of": "Открыто {a} из {b}",
+ "ac_new": "НОВОЕ",
+ "ach_first_t": "Первый фокус",
+ "ach_first_d": "Заверши первую фокус-сессию",
+ "ach_ses10_t": "10 сессий",
+ "ach_ses10_d": "Заверши 10 фокус-сессий",
+ "ach_ses50_t": "50 сессий",
+ "ach_ses50_d": "Заверши 50 фокус-сессий",
+ "ach_h5_t": "5 часов",
+ "ach_h5_d": "Поучись 5 часов в сумме",
+ "ach_h25_t": "25 часов",
+ "ach_h25_d": "Поучись 25 часов в сумме",
+ "ach_st3_t": "Серия 3 дня",
+ "ach_st3_d": "Занимайся 3 дня подряд",
+ "ach_st7_t": "Серия 7 дней",
+ "ach_st7_d": "Занимайся 7 дней подряд",
+ "ach_st30_t": "Серия 30 дней",
+ "ach_st30_d": "Занимайся 30 дней подряд",
+ "ach_quiz_t": "Знаток квизов",
+ "ach_quiz_d": "Пройди любой квиз",
+ "ach_quiz3_t": "Все темы",
+ "ach_quiz3_d": "Пройди все три темы квиза",
+ "ach_pred_t": "Первый прогноз",
+ "ach_pred_d": "Сделай первый прогноз",
+ "ach_up_t": "Балл вырос",
+ "ach_up_d": "Подними свой прогнозируемый балл",
+ "ach_goal_t": "Цель поставлена",
+ "ach_goal_d": "Добавь дату экзамена"
+});
+Object.assign(T.uz, {
+ "ac_h": "Yutuqlar",
+ "ac_of": "{b} tadan {a} ta ochildi",
+ "ac_new": "YANGI",
+ "ach_first_t": "Birinchi fokus",
+ "ach_first_d": "Birinchi fokus sessiyani tugating",
+ "ach_ses10_t": "10 sessiya",
+ "ach_ses10_d": "10 ta fokus sessiyani tugating",
+ "ach_ses50_t": "50 sessiya",
+ "ach_ses50_d": "50 ta fokus sessiyani tugating",
+ "ach_h5_t": "5 soat",
+ "ach_h5_d": "Jami 5 soat o'qing",
+ "ach_h25_t": "25 soat",
+ "ach_h25_d": "Jami 25 soat o'qing",
+ "ach_st3_t": "3 kunlik seriya",
+ "ach_st3_d": "3 kun ketma-ket o'qing",
+ "ach_st7_t": "7 kunlik seriya",
+ "ach_st7_d": "7 kun ketma-ket o'qing",
+ "ach_st30_t": "30 kunlik seriya",
+ "ach_st30_d": "30 kun ketma-ket o'qing",
+ "ach_quiz_t": "Viktorina ishtirokchisi",
+ "ach_quiz_d": "Istalgan viktorinani tugating",
+ "ach_quiz3_t": "Barcha mavzular",
+ "ach_quiz3_d": "Viktorinaning uchala mavzusini tugating",
+ "ach_pred_t": "Birinchi prognoz",
+ "ach_pred_d": "Birinchi prognozni qiling",
+ "ach_up_t": "Ball oshdi",
+ "ach_up_d": "Prognoz ballingizni oshiring",
+ "ach_goal_t": "Maqsad qo'yildi",
+ "ach_goal_d": "Imtihon sanasini qo'shing"
+});
+</script>
+<script>
+window.FB_CONFIG = {
+  apiKey: "PASTE_API_KEY",
+  authDomain: "PASTE_PROJECT.firebaseapp.com",
+  projectId: "PASTE_PROJECT_ID",
+  appId: "PASTE_APP_ID"
+};
+Object.assign(T.en, {
+ "ac_title": "Save your progress",
+ "ac_lead": "Sign in with Google to keep your streak, points and predictions safe and move them to another phone or computer.",
+ "ac_btn": "Sign in with Google",
+ "ac_in": "Signed in as {n}",
+ "ac_sync": "Your progress is saved to your account.",
+ "ac_last": "Last sync: {t}",
+ "ac_out": "Sign out",
+ "ac_err": "Could not sync. Check your connection and try again.",
+ "ac_busy": "Syncing…",
+ "ac_priv": "Only your progress is saved (points, streak, predictions, study minutes, nickname), in your own account. Nobody else can read it. Signing out keeps the data on this device."
+});
+Object.assign(T.ru, {
+ "ac_title": "Сохрани свой прогресс",
+ "ac_lead": "Войди через Google, чтобы серия, очки и прогнозы не пропали и переносились на другой телефон или компьютер.",
+ "ac_btn": "Войти через Google",
+ "ac_in": "Вход выполнен: {n}",
+ "ac_sync": "Твой прогресс сохраняется в аккаунте.",
+ "ac_last": "Последняя синхронизация: {t}",
+ "ac_out": "Выйти",
+ "ac_err": "Не удалось синхронизировать. Проверь интернет и попробуй ещё раз.",
+ "ac_busy": "Синхронизация…",
+ "ac_priv": "Сохраняется только твой прогресс (очки, серия, прогнозы, минуты учёбы, ник) в твоём личном аккаунте. Другие люди его не видят. После выхода данные остаются на этом устройстве."
+});
+Object.assign(T.uz, {
+ "ac_title": "Progressingizni saqlang",
+ "ac_lead": "Seriya, ball va prognozlaringiz yo'qolmasligi va boshqa telefon yoki kompyuterga ko'chishi uchun Google orqali kiring.",
+ "ac_btn": "Google orqali kirish",
+ "ac_in": "Kirdingiz: {n}",
+ "ac_sync": "Progressingiz akkauntingizda saqlanmoqda.",
+ "ac_last": "Oxirgi sinxronlash: {t}",
+ "ac_out": "Chiqish",
+ "ac_err": "Sinxronlab bo'lmadi. Internetni tekshirib, qayta urinib ko'ring.",
+ "ac_busy": "Sinxronlanmoqda…",
+ "ac_priv": "Faqat progressingiz (ball, seriya, prognozlar, o'qish daqiqalari, laqab) shaxsiy akkauntingizda saqlanadi. Boshqalar uni ko'ra olmaydi. Chiqsangiz, ma'lumotlar shu qurilmada qoladi."
+});
+</script>
+<script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
   var CH = [
@@ -663,11 +859,210 @@ Object.assign(T.uz, {
   $("tdReset").onclick = function () {
     if (!resetArmed) { resetArmed = true; render(); setTimeout(function () { resetArmed = false; render(); }, 4000); return; }
     try { localStorage.removeItem("act"); } catch (e) {}
-    resetArmed = false; render();
+    resetArmed = false; render(); if (window.accForce) window.accForce();
   };
   window.onLang = render;
+  window.tdRender = render;
   render();
 })();
+</script>
+<script>
+
+(function () {
+  var ICONS = {"first": "🌱", "ses10": "🍅", "ses50": "🏆", "h5": "⏱️", "h25": "🔥", "st3": "📅", "st7": "⚡", "st30": "👑", "quiz": "🧠", "quiz3": "🎓", "pred": "📊", "up": "📈", "goal": "🎯"}, IDS = ["first", "ses10", "ses50", "h5", "h25", "st3", "st7", "st30", "quiz", "quiz3", "pred", "up", "goal"];
+  var grid = document.getElementById("achGrid"), sub = document.getElementById("achSub");
+  function jget(k, d) { try { var v = JSON.parse(localStorage.getItem(k) || "null"); return v === null ? d : v; } catch (e) { return d; } }
+  function longest(days) {
+    var ks = Object.keys(days).filter(function (k) { return window.actDone(days[k]); }).sort(), best = 0, run = 0, prev = null;
+    ks.forEach(function (k) {
+      var p = k.split("-"), d = new Date(+p[0], +p[1] - 1, +p[2]);
+      if (prev && Math.round((d - prev) / 86400000) === 1) run++; else run = 1;
+      if (run > best) best = run; prev = d;
+    });
+    return best;
+  }
+  function compute() {
+    var st = jget("fx_stats", { days: {}, ses: {} }), act = jget("act", { days: {} }), h = jget("history", []), qb = jget("qbest", {}), ex = jget("exam", null);
+    var sec = 0, ses = 0, k;
+    for (k in st.days) sec += st.days[k] || 0;
+    for (k in st.ses) ses += st.ses[k] || 0;
+    var lg = longest(act.days || {}), cur = window.actStreak ? window.actStreak() : 0, streak = Math.max(lg, cur);
+    var up = h.length > 1 && h[h.length - 1].p > h[0].p;
+    return { first: ses >= 1, ses10: ses >= 10, ses50: ses >= 50, h5: sec >= 5 * 3600, h25: sec >= 25 * 3600, st3: streak >= 3, st7: streak >= 7, st30: streak >= 30,
+      quiz: Object.keys(qb).length >= 1 || ((act.days && Object.keys(act.days).some(function (d) { return act.days[d].quiz > 0; }))), quiz3: Object.keys(qb).length >= 3,
+      pred: h.length >= 1, up: up, goal: !!(ex && ex.date) };
+  }
+  function draw() {
+    var r = compute(), seen = jget("ach_seen", null), n = 0, fresh = [];
+    var h = IDS.map(function (id) {
+      var on = r[id]; if (on) n++;
+      var isNew = on && seen !== null && seen.indexOf(id) < 0; if (isNew) fresh.push(id);
+      return '<div style="border:1px solid ' + (on ? "var(--brand)" : "var(--line)") + ';border-radius:14px;padding:12px;opacity:' + (on ? 1 : 0.5) + ';position:relative' + (on ? ";box-shadow:0 0 14px rgba(139,108,255,.25)" : "") + '">' +
+        '<div style="font-size:26px;filter:' + (on ? "none" : "grayscale(1)") + '">' + ICONS[id] + '</div><b style="display:block;margin-top:4px">' + t("ach_" + id + "_t") + '</b><span class="note" style="font-size:12px">' + t("ach_" + id + "_d") + "</span>" +
+        (isNew ? '<span style="position:absolute;top:8px;right:8px;background:var(--brand);color:#fff;border-radius:99px;padding:2px 8px;font-size:11px;font-weight:700">' + t("ac_new") + "</span>" : "") + "</div>";
+    }).join("");
+    grid.innerHTML = h; sub.textContent = t("ac_of").replace("{a}", n).replace("{b}", IDS.length);
+    var all = IDS.filter(function (id) { return r[id]; });
+    if (seen === null || fresh.length === 0 && all.length !== seen.length) { try { localStorage.setItem("ach_seen", JSON.stringify(all)); } catch (e) {} }
+    else if (fresh.length) { setTimeout(function () { try { localStorage.setItem("ach_seen", JSON.stringify(all)); } catch (e) {} }, 8000); }
+  }
+  draw();
+  var old = window.onLang; window.onLang = function () { if (old) old(); draw(); };
+  window.achRedraw = draw;
+})();
+
+(function () {
+  var box = document.getElementById("exBox"), editing = false;
+  function load() { try { var e = JSON.parse(localStorage.getItem("exam") || "null"); return e && e.date ? e : null; } catch (x) { return null; } }
+  function esc(v) { return String(v).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+  function daysTo(date) {
+    var p = date.split("-"), d = new Date(+p[0], +p[1] - 1, +p[2]), n = new Date();
+    return Math.round((d - new Date(n.getFullYear(), n.getMonth(), n.getDate())) / 86400000);
+  }
+  function form(e) {
+    var tdy = window.actKey ? window.actKey() : "";
+    box.innerHTML = '<p class="note" style="margin:0 0 10px">' + t("ex_lead") + '</p><div style="display:flex;gap:10px;flex-wrap:wrap">' +
+      '<input class="fx-task" id="exName" maxlength="20" placeholder="' + esc(t("ex_name_ph")) + '" value="' + esc(e ? e.name : "") + '" style="flex:1 1 140px;min-width:0">' +
+      '<input class="fx-task" id="exDate" type="date" min="' + tdy + '" value="' + (e ? e.date : "") + '" style="flex:0 1 160px">' +
+      '<button class="btn" id="exSave">' + t("ex_save") + "</button></div>";
+    document.getElementById("exSave").onclick = function () {
+      var d = document.getElementById("exDate").value, nm = document.getElementById("exName").value.replace(/[\u0000-\u001f<>&"'`]/g, "").trim().slice(0, 20);
+      if (!d) return;
+      try { localStorage.setItem("exam", JSON.stringify({ name: nm, date: d })); } catch (x) {}
+      editing = false; draw();
+    };
+  }
+  function draw() {
+    var e = load();
+    if (!e || editing) { form(e); return; }
+    var n = daysTo(e.date), nm = e.name || t("ex_def"), big, txt;
+    if (n > 1) { big = n; txt = t("ex_days").replace("{n}", n).replace("{x}", esc(nm)); }
+    else if (n === 1) { big = 1; txt = t("ex_day1").replace("{x}", esc(nm)); }
+    else if (n === 0) { big = "🎯"; txt = t("ex_today").replace("{x}", esc(nm)); }
+    else { big = "✓"; txt = t("ex_past").replace("{x}", esc(nm)); }
+    box.innerHTML = '<div style="display:flex;align-items:center;gap:16px"><div style="font-size:44px;font-weight:800;min-width:72px;text-align:center">' + big + '</div><div><b>' + txt + '</b></div></div>' +
+      '<p style="margin:12px 0 0"><button class="chip" id="exEdit">' + t("ex_edit") + '</button> <button class="chip" id="exDel">' + t("ex_remove") + "</button></p>";
+    document.getElementById("exEdit").onclick = function () { editing = true; draw(); };
+    document.getElementById("exDel").onclick = function () { try { localStorage.removeItem("exam"); } catch (x) {} editing = false; draw(); };
+  }
+  draw();
+  var old = window.onLang; window.onLang = function () { if (old) old(); draw(); };
+})();
+
+(function () {
+  var cfg = window.FB_CONFIG, card = document.getElementById("accCard"), box = document.getElementById("accBox");
+  if (!card || (!window.FB_TEST && (!cfg || !cfg.apiKey || /PASTE/.test(cfg.apiKey)))) return;
+  card.hidden = false;
+  var KEYS = ["act", "history", "last", "fx_stats", "qbest", "fx_name", "exam", "fx_sub", "fx_subj_list"];
+  var fb = null, user = null, lastSync = 0, state = "idle", lastStr = "", timer = null;
+
+  function load() {
+    if (fb) return Promise.resolve(fb);
+    if (window.FB_TEST) { fb = window.FB_TEST; return Promise.resolve(fb); }
+    var B = "https://www.gstatic.com/firebasejs/10.12.2/";
+    return Promise.all([import(B + "firebase-app.js"), import(B + "firebase-auth.js"), import(B + "firebase-firestore.js")]).then(function (m) {
+      var A = m[0], U = m[1], F = m[2], app = A.initializeApp(cfg), auth = U.getAuth(app), db = F.getFirestore(app);
+      fb = {
+        onAuth: function (cb) { U.onAuthStateChanged(auth, cb); },
+        signIn: function () { return U.signInWithPopup(auth, new U.GoogleAuthProvider()); },
+        signOut: function () { return U.signOut(auth); },
+        get: function (uid) { return F.getDoc(F.doc(db, "users", uid)).then(function (d) { return d.exists() ? d.data().d : null; }); },
+        set: function (uid, str) { return F.setDoc(F.doc(db, "users", uid), { d: str, u: Date.now() }); }
+      };
+      return fb;
+    });
+  }
+
+  function rd(k) { try { var v = localStorage.getItem(k); if (v === null) return null; return k === "fx_name" ? v : JSON.parse(v); } catch (e) { return null; } }
+  function snap() { var o = {}; KEYS.forEach(function (k) { var v = rd(k); if (v !== null) o[k] = v; }); return o; }
+  function maxMap(a, b) { var o = {}, k; a = a || {}; b = b || {}; for (k in a) o[k] = a[k]; for (k in b) o[k] = Math.max(o[k] || 0, b[k] || 0); return o; }
+  function merge(a, b) {
+    b = b || {}; var o = {}, k;
+    // activity: per day, per kind max; points recomputed from days
+    var days = {}, da = (a.act && a.act.days) || {}, db = (b.act && b.act.days) || {};
+    for (k in da) days[k] = da[k];
+    for (k in db) days[k] = days[k] ? maxMap(days[k], db[k]) : db[k];
+    var xp = 0; for (k in days) xp += days[k].xp || 0;
+    if (Object.keys(days).length) o.act = { days: days, xp: xp };
+    // history: union by timestamp, keep latest 12
+    var seen = {}, h = (a.history || []).concat(b.history || []).filter(function (r) { if (!r || seen[r.t]) return false; seen[r.t] = 1; return true; });
+    h.sort(function (x, y) { return x.t - y.t; }); if (h.length > 12) h = h.slice(h.length - 12);
+    if (h.length) { o.history = h; o.last = null; }
+    var la = a.last, lb = b.last, ta = (a.history || []).length ? a.history[a.history.length - 1].t : 0, tb = (b.history || []).length ? b.history[b.history.length - 1].t : 0;
+    var lastv = ta >= tb ? (la || lb) : (lb || la);
+    if (lastv) o.last = lastv; else delete o.last;
+    // focus stats
+    var fa = a.fx_stats, fbb = b.fx_stats;
+    if (fa || fbb) o.fx_stats = { days: maxMap(fa && fa.days, fbb && fbb.days), ses: maxMap(fa && fa.ses, fbb && fbb.ses) };
+    if (a.qbest || b.qbest) o.qbest = maxMap(a.qbest, b.qbest);
+    var nm = a.fx_name || b.fx_name; if (nm) o.fx_name = nm;
+    var ex = a.exam || b.exam; if (ex) o.exam = ex;
+    if (a.fx_sub || b.fx_sub) {
+      var sd = {}, xa = (a.fx_sub && a.fx_sub.days) || {}, xb = (b.fx_sub && b.fx_sub.days) || {};
+      for (k in xa) sd[k] = xa[k];
+      for (k in xb) sd[k] = sd[k] ? maxMap(sd[k], xb[k]) : xb[k];
+      o.fx_sub = { days: sd };
+    }
+    var sl = (a.fx_subj_list || []).concat(b.fx_subj_list || []).filter(function (v, i, arr) { return arr.indexOf(v) === i; }).slice(0, 8);
+    if (sl.length) o.fx_subj_list = sl;
+    return o;
+  }
+  function apply(o) {
+    KEYS.forEach(function (k) { try { if (o[k] !== undefined && o[k] !== null) localStorage.setItem(k, k === "fx_name" ? String(o[k]) : JSON.stringify(o[k])); } catch (e) {} });
+  }
+
+  function say() {
+    var h;
+    if (!user) {
+      h = '<p class="note" style="margin:0 0 12px">' + t("ac_lead") + '</p><button class="btn" id="accIn">' + t("ac_btn") + "</button>" +
+        (state === "err" ? '<p class="note" style="margin:10px 0 0;color:var(--bad)">' + t("ac_err") + "</p>" : "");
+    } else {
+      var when = lastSync ? new Date(lastSync).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "";
+      h = '<p style="margin:0 0 4px"><b>' + t("ac_in").replace("{n}", esc(user.displayName || user.email || "")) + "</b></p>" +
+        '<p class="note" style="margin:0 0 4px">' + (state === "busy" ? t("ac_busy") : state === "err" ? t("ac_err") : t("ac_sync") + (when ? " " + t("ac_last").replace("{t}", when) : "")) + "</p>" +
+        '<button class="chip" id="accOut" style="margin-top:8px">' + t("ac_out") + "</button>";
+    }
+    h += '<p class="note" style="margin:14px 0 0;font-size:13px">' + t("ac_priv") + "</p>";
+    box.innerHTML = h;
+    var i = document.getElementById("accIn"); if (i) i.onclick = signIn;
+    var o = document.getElementById("accOut"); if (o) o.onclick = signOut;
+  }
+  function esc(v) { return String(v).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); }
+
+  function sync(force) {
+    if (!user || !fb) return Promise.resolve();
+    state = "busy"; say();
+    return fb.get(user.uid).then(function (remote) {
+      var rem = null; try { rem = remote ? JSON.parse(remote) : null; } catch (e) {}
+      var out = force ? snap() : merge(snap(), rem);
+      if (!force) apply(out);
+      var str = JSON.stringify(out);
+      lastStr = str;
+      var p = (str !== remote) ? fb.set(user.uid, str) : Promise.resolve();
+      return p.then(function () { state = "ok"; lastSync = Date.now(); say(); if (window.tdRender) window.tdRender(); });
+    }).catch(function () { state = "err"; say(); });
+  }
+  function signIn() {
+    state = "busy"; say();
+    load().then(function (f) { return f.signIn(); }).catch(function () { state = "err"; say(); });
+  }
+  function signOut() { load().then(function (f) { return f.signOut(); }); }
+
+  window.accForce = function () { if (user) sync(true); };
+  window.accSay = say;
+
+  say();
+  load().then(function (f) {
+    f.onAuth(function (u) {
+      user = u || null; state = "idle"; say();
+      if (timer) { clearInterval(timer); timer = null; }
+      if (user) { sync(); timer = setInterval(function () { sync(); }, 60000); }
+    });
+  }).catch(function () { state = "err"; say(); });
+  document.addEventListener("visibilitychange", function () { if (document.hidden && user) sync(); });
+  var oldLang = window.onLang; window.onLang = function () { if (oldLang) oldLang(); say(); };
+})();
+
 </script>
 <script>
 (function () {
